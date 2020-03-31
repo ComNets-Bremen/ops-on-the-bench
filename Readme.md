@@ -18,3 +18,7 @@ pip3 install rq
 pip3 install django-formtools
 ```
 
+worker
+------
+
+A basic test worker can be found here: `manager/utils/worker.py`.
