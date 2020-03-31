@@ -47,3 +47,9 @@ For a real productive deployment, the following should be done:
 - setup a revserse proxy?
 - fail2ban?
 - ...
+
+Ideas
+-----
+
+- Use magic wormhole to transfer the result? https://github.com/warner/magic-wormhole
+- ...
