@@ -22,3 +22,28 @@ worker
 ------
 
 A basic test worker can be found here: `manager/utils/worker.py`.
+
+
+Misc
+====
+
+Tests
+-----
+
+Tested with
+
+- Debian testing
+- Python 3.7
+- Django 3.0
+
+
+Deployment
+----------
+For a real productive deployment, the following should be done:
+
+- change the secure key in the `settings.py`
+- username / password for redis?
+- setup mail for notification
+- setup a revserse proxy?
+- fail2ban?
+- ...
