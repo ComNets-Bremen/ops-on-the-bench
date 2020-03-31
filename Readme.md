@@ -12,7 +12,9 @@ run:
 - Activate venv `. ./venv/bin/activate`
 
 - Add dependencies:
-```pip3 install django
+```
+pip3 install django
 pip3 install rq
-pip3 install django-formtools```
+pip3 install django-formtools
+```
 
