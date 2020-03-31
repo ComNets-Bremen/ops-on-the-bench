@@ -6,7 +6,12 @@ from django.conf import settings
 
 import configparser
 
-# Check for content type and filesize
+## Special field for uploading omnetpp.ini files.
+#
+# Check the following
+# - filesize
+# - mime-type
+# - can be parsed as a valid ini file (i.e. has at least one section)
 class OmnetppiniFileUploadField(forms.FileField):
     def validate(self, value):
         super().validate(value)
@@ -29,10 +34,17 @@ class OmnetppiniFileUploadField(forms.FileField):
                     _('No run configurations found in omnetpp.ini'),
                     )
 
+## Get the simulation name and upload a omnetpp.ini file
+#
+# Used for two step form
 class getOmnetppiniForm(forms.Form):
     simulation_title = forms.CharField(max_length=50)
     simulation_file  = OmnetppiniFileUploadField()
 
+## Select the simulation to run
+#
+# Used for two step form, choices are read from the omnetpp.ini file from
+# step 1
 class selectSimulationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

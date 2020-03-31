@@ -25,14 +25,16 @@ from utils.worker import run_simulation, SimulationRuntimes
 
 # Create your views here.
 
-
+## Redirect app from / -> /omnetppManager
 def redirect_to_here(request):
     return HttpResponseRedirect(reverse("omnetppManager_index"))
 
+## Index page
 @login_required
 def index(request):
     return render(request, 'omnetppManager/index.html', {})
 
+## Show status of views
 @login_required
 def status(request):
     status = []
@@ -69,8 +71,13 @@ def status(request):
         })
 
 
+## Manage the queues and get the results from the queue.
+#
+# No login required: Can be called from a script. Therefore, only little
+# information is given
+#
+# TODO: Maybe w/o HTML, json return? Increase security?
 def manage_queues(request):
-
     redis_conn = Redis(host="127.0.0.1")
     q = Queue(connection=redis_conn)
 
@@ -110,12 +117,17 @@ def manage_queues(request):
 
 
 
+## Start a new simulation using the form wizard module
+#
+# view is created directly in the urls.py
 class NewSimWizard(SessionWizardView):
+    # Store the omnetpp.ini files temporarily. TODO: Ensure they are removed
+    # everytime
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'temp_omnetppini_files'))
     template_name = 'omnetppManager/start_simulation.html'
 
+    # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
     def get_form_initial(self, step):
-
         if step == "1":
             simulation_file = self.get_cleaned_data_for_step("0")["simulation_file"]
             omnetppini = simulation_file.read().decode("utf-8")
@@ -123,12 +135,14 @@ class NewSimWizard(SessionWizardView):
             config = configparser.ConfigParser()
             config.read_string(omnetppini)
             sections = config.sections()
+            # Remove HTML etc. -> XSS
             sections = [strip_tags(section) for section in sections]
 
             return self.initial_dict.get(step, {"sections" : sections})
 
         return self.initial_dict.get(step, {})
 
+    # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         q = Queue(connection=Redis(host="127.0.0.1"))
@@ -147,13 +161,15 @@ class NewSimWizard(SessionWizardView):
                 }
 
 
+        # Start job
         job = q.enqueue(
                 run_simulation,
                 SimulationRuntimes.OPS_KEETCHI,
                 args,
                 )
-        job.id
+        print("Job with id", job.id, "started")
 
+        # Store simulation including the job id for later
         simulation = Simulation(
                 user = self.request.user,
                 title = str(cleaned_data["simulation_title"]),
@@ -165,4 +181,5 @@ class NewSimWizard(SessionWizardView):
         simulation.save()
 
 
+        # Go to index. TODO: Give feedback to user
         return redirect("/")

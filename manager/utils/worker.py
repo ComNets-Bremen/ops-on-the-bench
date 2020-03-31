@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Basic test worker to ensure the connection to Django is working
+
+
 import subprocess
 import os
 import shutil

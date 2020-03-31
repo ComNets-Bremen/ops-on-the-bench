@@ -14,3 +14,11 @@ urlpatterns = [
         path('manage_queues/', views.manage_queues, name="omnetppManager_manage_queues"),
 
         ]
+
+
+
+## Currently used URLs
+
+# status: show status of the queues
+# new-simulation: create a new simulation
+# manage_queues: get all data from the queues (after simulation finished)
