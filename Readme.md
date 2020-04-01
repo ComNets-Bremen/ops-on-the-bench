@@ -23,6 +23,9 @@ worker
 
 A basic test worker can be found here: `manager/utils/worker.py`.
 
+To use this inside a docker image, it should be sufficient to copy the utils
+directory to the image and start the worker by calling `worker.py` directly.
+
 
 Misc
 ====
