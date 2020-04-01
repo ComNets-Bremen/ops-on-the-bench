@@ -26,6 +26,7 @@
         <th scope="col">title</th>
         <th scope="col">run config</th>
         <th scope="col">started by</th>
+        <th scope="col">status</th>
         </tr>
     </thead>
     <tbody>
@@ -35,6 +36,7 @@
             <td>{{job.title}}</td>
             <td>{{job.runconfig}}</td>
             <td>{{job.user}}</td>
+            <td>{{job.get_status_display}}</td>
 
         </tr>
         {% endfor %}
