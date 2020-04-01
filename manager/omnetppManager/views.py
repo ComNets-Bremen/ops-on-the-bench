@@ -98,7 +98,13 @@ def manage_queues(request, output_format="json"):
     finished_jobs = len(q.finished_job_registry)
     failed_jobs = len(q.failed_job_registry)
 
+    updated_jobs = 0
+
+    update_sim_status("1d244db6-085c-440a-a4d8-c2e83497764b", Simulation.Status.STARTED)
+
     for j in q.finished_job_registry.get_job_ids():
+        update_sim_status(j, Simulation.Status.FINISHED)
+
         job = q.fetch_job(j)
         print("ID", j)
         print(job.result)
@@ -107,24 +113,38 @@ def manage_queues(request, output_format="json"):
 
 
     for j in q.failed_job_registry.get_job_ids():
+        update_sim_status(j, Simulation.Status.FAILED)
+
         job = q.fetch_job(j)
         print(job.id)
         print(job.meta)
 
         q.failed_job_registry.remove(job)
 
-    """
-    print("Jobs in queue", len(q))
-    print("Finished jobs:", len(q.finished_job_registry))
-    print("Failed jobs:", len(q.failed_job_registry))
-    print("Started jobs:", len(q.started_job_registry))
-    print("Deferred jobs:", len(q.deferred_job_registry))
-    print("Scheduled jobs:", len(q.scheduled_job_registry))
-    """
+
+    # update job status
+
+    for j in q.get_job_ids():
+        if update_sim_status(j, Simulation.Status.QUEUED):
+            updated_jobs += 1
+
+    for j in q.started_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.STARTED):
+            updated_jobs += 1
+
+    for j in q.deferred_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.DEFERRED):
+            updated_jobs += 1
+
+    for j in q.scheduled_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.SCHEDULED):
+            updated_jobs += 1
+
 
     return_values = {
                 "failed_jobs" : failed_jobs,
                 "finished_jobs" : finished_jobs,
+                "updated_jobs" : updated_jobs,
             }
 
 
@@ -205,3 +225,25 @@ class NewSimWizard(SessionWizardView):
 
         # Go to index. TODO: Give feedback to user
         return redirect("/")
+
+
+## helper
+
+## Update the status in the simulation db.
+#
+# Returns true, if something was updated
+def update_sim_status(simulation_id, new_status):
+    sim = None
+    try:
+        sim = Simulation.objects.get(simulation_id=simulation_id)
+        if sim.status != new_status:
+            sim.status = new_status
+            sim.save()
+            return True
+    except Simulation.DoesNotExist:
+        print("Sim does not exists in db")
+        sim = None
+        pass
+
+    return False
+
