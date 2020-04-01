@@ -18,7 +18,7 @@ import uuid
 # - simulationid: The id given by the queue
 class Simulation(models.Model):
     class Meta:
-        ordering = ["pk",]
+        ordering = ["-pk",]
 
     class Status(models.IntegerChoices):
         QUEUED      = 1, _("queued")
