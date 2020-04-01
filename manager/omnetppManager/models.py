@@ -17,6 +17,9 @@ import uuid
 # - runconfig   : Name of the config from the omnetpp.ini file
 # - simulationid: The id given by the queue
 class Simulation(models.Model):
+    class Meta:
+        ordering = ["pk",]
+
     class Status(models.IntegerChoices):
         QUEUED      = 1, _("queued")
         FINISHED    = 2, _("finished")
