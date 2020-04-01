@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -77,7 +77,7 @@ def status(request):
 # information is given
 #
 # TODO: Maybe w/o HTML, json return? Increase security?
-def manage_queues(request):
+def manage_queues(request, output_format="json"):
     redis_conn = Redis(host="127.0.0.1")
     q = Queue(connection=redis_conn)
 
@@ -95,6 +95,7 @@ def manage_queues(request):
     for j in q.failed_job_registry.get_job_ids():
         job = q.fetch_job(j)
         print(job.id)
+        print(job.meta)
 
         q.failed_job_registry.remove(job)
 
@@ -107,12 +108,19 @@ def manage_queues(request):
     print("Scheduled jobs:", len(q.scheduled_job_registry))
     """
 
-
-    return render(request, 'omnetppManager/manage_queues.html',
-            {
+    return_values = {
                 "failed_jobs" : failed_jobs,
                 "finished_jobs" : finished_jobs,
             }
+
+
+    if output_format == "json":
+        return JsonResponse(return_values)
+    else: # http output
+        return render(
+            request,
+            'omnetppManager/manage_queues.html',
+            return_values
             )
 
 

@@ -12,7 +12,7 @@ urlpatterns = [
         path('status/', views.status, name="omnetppManager_status"),
         path('new-simulation/', login_required(NewSimWizard.as_view([getOmnetppiniForm, selectSimulationForm])), name="omnetppManager_new-simulation"),
         path('manage_queues/', views.manage_queues, name="omnetppManager_manage_queues"),
-
+        path('manage_queues/<output_format>/', views.manage_queues, name="omnetppManager_manage_queues"),
         ]
 
 
