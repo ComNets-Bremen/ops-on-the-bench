@@ -42,5 +42,32 @@ class Simulation(models.Model):
             )
     status = models.IntegerField(choices=Status.choices, default=Status.UNKNOWN)
 
+    # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
+
+
+    ## status for template rendering: queued
+    def is_queued(self):
+        return self.status == self.Status.QUEUED
+
+    ## status for template rendering: finished
+    def is_finished(self):
+        return self.status == self.Status.FINISHED
+
+    ## status for template rendering: failed
+    def is_failed(self):
+        return self.status == self.Status.FAILED
+
+    ## status for template rendering: started
+    def is_started(self):
+        return self.status == self.Status.STARTED
+
+    ## status for template rendering: deferred
+    def is_deferred(self):
+        return self.status == self.Status.DEFERRED
+
+    ## status for template rendering: scheduled
+    def is_scheduled(self):
+        return self.status == self.Status.SCHEDULED
+

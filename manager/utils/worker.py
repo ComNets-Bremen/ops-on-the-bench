@@ -57,6 +57,8 @@ def run_simulation(executable, arguments):
         print(job.id)
         print(job.meta)
 
+#        raise Exception("Fail!") # test failed job
+
         ### end simulation processing
     except:
         # Any exception caused? -> store it in the meta data so we can access

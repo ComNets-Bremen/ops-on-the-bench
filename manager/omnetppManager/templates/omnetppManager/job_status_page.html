@@ -36,7 +36,7 @@
             <td>{{job.title}}</td>
             <td>{{job.runconfig}}</td>
             <td>{{job.user}}</td>
-            <td>{{job.get_status_display}}</td>
+            <td class="{% if job.is_finished %}bg-success{% elif job.is_failed %}bg-danger{% elif job.is_started%}bg-primary{% endif %}">{{job.get_status_display}}</td>
 
         </tr>
         {% endfor %}
