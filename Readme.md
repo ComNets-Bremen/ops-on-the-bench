@@ -30,6 +30,14 @@ directory to the image and start the worker by calling `worker.py` directly.
 Misc
 ====
 
+crontab
+-------
+
+Add the following line to your crontab to collect the simulation status
+regularly:
+
+`* * * * * wget -q -O /dev/null http://127.0.0.1:8888/omnetppManager/manage_queues/`
+
 Tests
 -----
 

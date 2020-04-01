@@ -100,8 +100,6 @@ def manage_queues(request, output_format="json"):
 
     updated_jobs = 0
 
-    update_sim_status("1d244db6-085c-440a-a4d8-c2e83497764b", Simulation.Status.STARTED)
-
     for j in q.finished_job_registry.get_job_ids():
         update_sim_status(j, Simulation.Status.FINISHED)
 
@@ -241,9 +239,8 @@ def update_sim_status(simulation_id, new_status):
             sim.save()
             return True
     except Simulation.DoesNotExist:
-        print("Sim does not exists in db")
+        print("Sim does not exists in db", simulation_id, new_status)
         sim = None
-        pass
 
     return False
 
