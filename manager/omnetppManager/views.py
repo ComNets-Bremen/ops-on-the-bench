@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.core.paginator import Paginator
 from django.utils.html import strip_tags
 
 from formtools.wizard.views import SessionWizardView
@@ -34,9 +35,9 @@ def redirect_to_here(request):
 def index(request):
     return render(request, 'omnetppManager/index.html', {})
 
-## Show status of views
+## Show status of queues
 @login_required
-def status(request):
+def queue_status(request):
     status = []
 
     q = Queue(connection=Redis(host="127.0.0.1"))
@@ -66,9 +67,22 @@ def status(request):
         "number" : len(q.scheduled_job_registry),
         })
 
-    return render(request, 'omnetppManager/statusPage.html', {
+    return render(request, 'omnetppManager/queue_status_page.html', {
             "status" : status,
         })
+
+## Show status of jobs
+@login_required
+def job_status(request):
+    simulations = Simulation.objects.all()
+    paginator = Paginator(simulations, 25) # 25 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "omnetppManager/job_status_page.html",
+            {
+                "jobs" : page_obj
+            })
 
 
 ## Manage the queues and get the results from the queue.

@@ -76,9 +76,14 @@
           <li class="nav-item">
           <a class="nav-link" href="{% url 'omnetppManager_new-simulation' %}">New Simulation campaign</a>
           </li>
-              <li class="nav-item">
-              <a class="nav-link" href="{% url 'omnetppManager_status' %}">Show status</a>
-          </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="dropdown-01" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Status</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown-01">
+                  <a class="dropdown-item" href="{% url 'omnetppManager_queue_status' %}">Queue status</a>
+                  <a class="dropdown-item" href="{% url 'omnetppManager_job_status' %}">Job status</a>
+                </div>
+         </li>
+
           </li>
               <li class="nav-item">
               <a class="nav-link" href="{% url 'omnetppManager_manage_queues' output_format='html' %}">Collect Simulation data</a>

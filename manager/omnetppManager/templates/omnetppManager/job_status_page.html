@@ -1,0 +1,61 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Simulation Status</h1>
+
+<div class="d-flex justify-content-center">
+        {% if jobs.has_previous %}
+            <div class="px-2"><a href="?page=1">&laquo; First page</a></div>
+            <div class="px-2"><a href="?page={{ jobs.previous_page_number }}">back</a></div>
+        {% endif %}
+
+            Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}
+
+        {% if jobs.has_next %}
+            <div class="px-2"><a href="?page={{ jobs.next_page_number }}">next</a></div>
+            <div class="px-2"><a href="?page={{ jobs.paginator.num_pages }}">last page &raquo;</a></div>
+        {% endif %}
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+        <th scope="col">job id</th>
+        <th scope="col">title</th>
+        <th scope="col">run config</th>
+        <th scope="col">started by</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+        <tr>
+            <td>{{job.simulation_id}}</td>
+            <td>{{job.title}}</td>
+            <td>{{job.runconfig}}</td>
+            <td>{{job.user}}</td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<div class="d-flex justify-content-center">
+        {% if jobs.has_previous %}
+            <div class="px-2"><a href="?page=1">&laquo; First page</a></div>
+            <div class="px-2"><a href="?page={{ jobs.previous_page_number }}">back</a></div>
+        {% endif %}
+
+            Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}
+
+        {% if jobs.has_next %}
+            <div class="px-2"><a href="?page={{ jobs.next_page_number }}">next</a></div>
+            <div class="px-2"><a href="?page={{ jobs.paginator.num_pages }}">last page &raquo;</a></div>
+        {% endif %}
+</div>
+
+
+{% endblock %}
