@@ -1,6 +1,7 @@
 from django.conf import settings
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 import uuid
@@ -45,6 +46,12 @@ class Simulation(models.Model):
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
+
+    # Return url for detail view
+    def get_absolute_url(self):
+        return reverse('job-details', kwargs={
+            'pk' : self.pk
+            })
 
 
     ## status for template rendering: queued

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.utils.html import strip_tags
+from django.views.generic.detail import DetailView
 
 from formtools.wizard.views import SessionWizardView
 
@@ -220,10 +221,16 @@ class NewSimWizard(SessionWizardView):
 
         simulation.save()
 
+        # Redirect to detail view for simulation
+        return redirect(simulation.get_absolute_url())
 
-        # Go to index. TODO: Give feedback to user
-        return redirect("/")
 
+class JobDetailView(DetailView):
+    model = Simulation
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 ## helper
 

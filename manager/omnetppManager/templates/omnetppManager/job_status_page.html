@@ -32,7 +32,7 @@
     <tbody>
         {% for job in jobs %}
         <tr>
-            <td>{{job.simulation_id}}</td>
+            <td><a href="{{ job.get_absolute_url }}">{{job.simulation_id}}</a></td>
             <td>{{job.title}}</td>
             <td>{{job.runconfig}}</td>
             <td>{{job.user}}</td>

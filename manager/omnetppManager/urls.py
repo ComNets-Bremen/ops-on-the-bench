@@ -5,7 +5,7 @@ from . import views
 
 from .forms import getOmnetppiniForm, selectSimulationForm
 
-from .views import NewSimWizard
+from .views import NewSimWizard, JobDetailView
 
 urlpatterns = [
         path('', views.index, name="omnetppManager_index"),
@@ -14,6 +14,7 @@ urlpatterns = [
         path('new-simulation/', login_required(NewSimWizard.as_view([getOmnetppiniForm, selectSimulationForm])), name="omnetppManager_new-simulation"),
         path('manage_queues/', views.manage_queues, name="omnetppManager_manage_queues"),
         path('manage_queues/<output_format>/', views.manage_queues, name="omnetppManager_manage_queues"),
+        path('job-details/<int:pk>/', login_required(JobDetailView.as_view()), name='job-details'),
         ]
 
 

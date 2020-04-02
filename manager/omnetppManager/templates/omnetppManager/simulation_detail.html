@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Simulation details for &quot;{{object.title}}&quot;</h1>
+
+<ul>
+    <li>Title: {{object.title}}</li>
+    <li>User: {{object.user}}</li>
+    <li>Run config: {{object.runconfig}}</li>
+    <li>Status: {{object.get_status_display}}</li>
+    <li>ID: {{object.simulation_id}}</li>
+</ul>
+
+<h2 class="display-5">omnetpp.ini</h2>
+<code>
+    {{object.omnetppini|linebreaks|safe}}
+</code>
+{% endblock %}
