@@ -7,6 +7,6 @@ from .models import Simulation
 
 # Admin view for Simulations
 class SimulationAdmin(admin.ModelAdmin):
-    readonly_fields = ("simulation_id",)
+    readonly_fields = ("simulation_id", "simulation_error", "handled_by",)
 
 admin.site.register(Simulation, SimulationAdmin)

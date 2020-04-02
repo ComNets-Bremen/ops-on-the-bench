@@ -10,10 +10,21 @@
     <li>Run config: {{object.runconfig}}</li>
     <li>Status: {{object.get_status_display}}</li>
     <li>ID: {{object.simulation_id}}</li>
+    {% if object.handled_by %}
+    <li>Simulation server: {{ object.handled_by }}</li>
+    {% endif %}
 </ul>
 
 <h2 class="display-5">omnetpp.ini</h2>
 <code>
     {{object.omnetppini|linebreaks|safe}}
 </code>
+
+{% if object.simulation_error%}
+
+<h2 class="display-5">Simulation error</h2>
+<code>
+    {{object.simulation_error|linebreaks|safe}}
+</code>
+{% endif %}
 {% endblock %}

@@ -105,9 +105,7 @@ def manage_queues(request, output_format="json"):
         update_sim_status(j, Simulation.Status.FINISHED)
 
         job = q.fetch_job(j)
-        print("ID", j)
-        print(job.result)
-        print(job.meta)
+        store_sim_results(j, job.meta, job.result)
         q.finished_job_registry.remove(job)
 
 
@@ -115,9 +113,7 @@ def manage_queues(request, output_format="json"):
         update_sim_status(j, Simulation.Status.FAILED)
 
         job = q.fetch_job(j)
-        print(job.id)
-        print(job.meta)
-
+        store_sim_results(j, job.meta, job.result)
         q.failed_job_registry.remove(job)
 
 
@@ -251,3 +247,24 @@ def update_sim_status(simulation_id, new_status):
 
     return False
 
+## Store results
+#
+# Returns true, if something was updated
+def store_sim_results(simulation_id, meta, data):
+    sim = None
+    try:
+        sim = Simulation.objects.get(simulation_id=simulation_id)
+        if "exception" in meta:
+            sim.simulation_error = meta["exception"]
+
+        if "handled_by" in meta:
+            sim.handled_by = meta["handled_by"]
+
+        # TODO: store results / data
+
+        sim.save()
+        return True
+    except Simulation.DoesNotExist:
+        print("Simulation does not exist")
+        sim = None
+    return False

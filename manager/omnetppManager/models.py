@@ -43,6 +43,10 @@ class Simulation(models.Model):
             )
     status = models.IntegerField(choices=Status.choices, default=Status.UNKNOWN)
 
+    simulation_error = models.TextField(default=None, blank=True, null=True)
+
+    handled_by = models.CharField(max_length=100, default=None, blank=True, null=True)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
