@@ -21,10 +21,42 @@ pip3 install django-formtools
 worker
 ------
 
-A basic test worker can be found here: `manager/utils/worker.py`.
+The code related to the worker side of things can be found in thwe following
+folders.
 
-To use this inside a docker image, it should be sufficient to copy the utils
-directory to the image and start the worker by calling `worker.py` directly.
+- `docker` - contains the Docker file to build the Ubuntu 16.04 based OPS
+image and the related scripts run inside the image
+
+- `utils` - contains the utility that brings up and tears down workers that
+perform the simulations
+
+The `ootb-ctl.py` in `utils` folder is a command line utility to bring up workers
+and to instantiate Docker container to server those worker. The command line
+syntax is as follows.
+
+- start a deamonized worker and bring up an instance of the OPS docker image, specifying
+where the output is placed
+```
+ootb-ctl.py -m new -r 10.10.160.103 -d /home/adu/datafolder
+``` 
+ 
+- show all the currently active workers
+```
+otb-ctl.py -m list -r 10.10.160.103
+```
+
+- tear down an active deamonized worker identified by an ID, brining down also the docker 
+container simultaneously
+```
+ootb-ctl.py -m stop -r 10.10.160.103 -i DD42F428C7
+
+- check the operation of the active workers by submitting jobs with an `omnetpp.ini`
+```
+otb-ctl.py -m test -r 10.10.160.103 -c ./omnetpp.ini
+```
+
+
+
 
 
 Misc
