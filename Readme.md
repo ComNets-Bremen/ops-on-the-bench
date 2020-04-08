@@ -49,6 +49,7 @@ otb-ctl.py -m list -r 10.10.160.103
 container simultaneously
 ```
 ootb-ctl.py -m stop -r 10.10.160.103 -i DD42F428C7
+```
 
 - check the operation of the active workers by submitting jobs with an `omnetpp.ini`
 ```
