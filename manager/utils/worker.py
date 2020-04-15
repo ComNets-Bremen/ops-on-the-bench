@@ -13,14 +13,15 @@ import sys
 import shutil
 import socket
 import traceback
-import opsrun
 
 # We have different import paths depending on the module import via django
 # or the direct calling as an app
 if __name__ == "__main__":
     import worker_utils
+    import opsrun
 else:
     import utils.worker_utils
+    import utils.opsrun
 
 from rq import get_current_job, Connection, Worker
 
