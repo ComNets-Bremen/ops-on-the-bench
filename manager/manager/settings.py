@@ -135,3 +135,5 @@ MEDIA_ROOT = str(os.path.abspath(os.path.join(os.getcwd(), "uploads")))
 # Settings for the omnetpp.ini upload
 OMNETPPINI_MAX_FILESIZE = 100*1024 # 100 kb
 OMNETPPINI_ALLOWED_MIMETYPE = ["application/x-wine-extension-ini",]
+
+DEFAULT_SIMULATION_TIMEOUT = "12h"

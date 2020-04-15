@@ -203,6 +203,7 @@ class NewSimWizard(SessionWizardView):
                 run_simulation,
                 SimulationRuntimes.OPS_KEETCHI,
                 args,
+                job_timeout=settings.DEFAULT_SIMULATION_TIMEOUT,    # TODO: Get as param, make configurable?
                 )
         print("Job with id", job.id, "started")
 
