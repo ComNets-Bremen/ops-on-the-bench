@@ -16,6 +16,8 @@ run:
 pip3 install django
 pip3 install rq
 pip3 install django-formtools
+pip3 install matplotlib
+pip3 install fpdf
 ```
 
 worker
