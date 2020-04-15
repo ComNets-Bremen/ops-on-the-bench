@@ -14,7 +14,7 @@ ENV PATH /usr/lib/ccache:$PATH
 
 
 # install Python modules
-RUN pip3 install --upgrade pip
+RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf
 
 
 # These are necessary to make Click in rq happy.
@@ -46,6 +46,19 @@ ENV PATH /opt/OPS:$PATH
 ENV LD_LIBRARY_PATH /opt/omnetpp-5.6.1/lib:/opt/OPS/modules/KeetchiLib/lib/.libs:/opt/OPS/modules/inet/src:$LD_LIBRARY_PATH
 
 
-# copy OPS running scripts
-COPY ops-run.sh /opt/OPS/simulations/
-RUN chmod +x /opt/OPS/simulations/ops-run.sh
+# copy scripts and other files
+COPY worker.py /opt/OPS/simulations/
+RUN chmod +x /opt/OPS/simulations/worker.py
+COPY opsrun.py /opt/OPS/simulations/
+RUN chmod +x /opt/OPS/simulations/opsrun.py
+RUN mkdir /opt/OPS/simulations/utils
+COPY worker_utils.py /opt/OPS/simulations/utils/
+RUN chmod +x /opt/OPS/simulations/utils/worker_utils.py
+COPY worker_utils.py /opt/OPS/simulations/
+RUN chmod +x /opt/OPS/simulations/worker_utils.py
+COPY stat-list.txt /opt/OPS/simulations/
+
+
+# start RQ worker 
+ENTRYPOINT ["rq", "worker"]
+

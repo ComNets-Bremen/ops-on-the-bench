@@ -13,6 +13,7 @@ import sys
 import shutil
 import socket
 import traceback
+import opsrun
 
 # We have different import paths depending on the module import via django
 # or the direct calling as an app
@@ -52,7 +53,8 @@ def run_simulation(executable, arguments):
         for arg in arguments:
     #        print(arg, arguments[arg])
             print(arg)
-        time.sleep(10)
+        # time.sleep(10)
+        opsrun.run_ops(str(job.get_id()), arguments)
 
         print(job.id)
         print(job.meta)
