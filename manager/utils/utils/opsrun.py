@@ -71,7 +71,7 @@ def run_sim(root_folder, omnetppini, runconfig):
     print('starting simulation ...')
 
     # place the omnetpp.ini in simulations folder
-    inipath = './omnetpp.ini'
+    inipath = '/opt/OPS/simulations/omnetpp.ini'
     with open(inipath, 'w') as inifp:
          inifp.write(omnetppini)
 
@@ -88,9 +88,9 @@ def run_sim(root_folder, omnetppini, runconfig):
     results_dir = '--result-dir=' + root_folder
     
     # run simulation
-    subprocess.call(['ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', 
-                    '-n', '.:../src:../modules/inet/src:../modules/KeetchiLib/src',
-                    '--image-path=../modules/inet/images',
+    subprocess.call(['/opt/OPS/ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', 
+                    '-n', '.:/opt/OPS/src:/opt/OPS//modules/inet/src:/opt/OPS/modules/KeetchiLib/src',
+                    '--image-path=/opt/OPS/modules/inet/images',
                     results_dir,
                     '-l', 'INET', '-l', 'keetchi', 
                     inipath], 

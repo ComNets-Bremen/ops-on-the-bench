@@ -68,6 +68,17 @@ job folder. Here are the details.
   - `csv` is the folder that contains the precision-changed .csv files 
   - `temp` is the folder where temporary files are stored (currently not removed)
 
+- Commands for trouble shooting
+  - When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
+of the worker and errors (where there are) on the command-line
+```bash
+docker run -i -v /home/data:/opt/data --network="host" ootb
+```
+  - To login to a running container to troubleshoot (`abcd` is the container name)
+```bash
+docker exec -i -t abcd /bin/bash
+```
+
 
 Misc
 ====

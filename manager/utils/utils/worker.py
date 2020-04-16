@@ -20,8 +20,8 @@ if __name__ == "__main__":
     import worker_utils
     import opsrun
 else:
-    import utils.worker_utils as worker_utils
-    import utils.opsrun as opsrun
+    import utils.worker_utils
+    import utils.opsrun
 
 from rq import get_current_job, Connection, Worker
 
