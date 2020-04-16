@@ -62,7 +62,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),            
+            os.path.join(BASE_DIR, 'templates'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -137,6 +137,7 @@ OMNETPPINI_MAX_FILESIZE = 100*1024 # 100 kb
 OMNETPPINI_ALLOWED_MIMETYPE = [
         "application/x-wine-extension-ini",
         "application/octet-stream",
+        "text/plain",
         ]
 
 DEFAULT_SIMULATION_TIMEOUT = "12h"
