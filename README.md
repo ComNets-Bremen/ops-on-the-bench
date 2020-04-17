@@ -59,22 +59,23 @@ host's
 from above example) using the job ID. There are files and sub-folders inside this 
 job folder. Here are the details.
 
-  - `omnetpp.ini` is the used OMNeT configuration file
-  - `omnetpp.ini-General-0.sca` is the scalar file created during the simulation
-  - `omnetpp.ini-General-0.vec` is the vector file created during the simulation
-  - `omnetpp.ini-General-0.vci` is the vector index file created during the simulation
+  - `orig-omnetpp.ini` is the original OMNeT configuration file sent by Django
+  - `omnetpp.ini` is the sanitized and actually used OMNeT configuration file in simulation
+  - `General-0.sca` is the scalar file created during the simulation
+  - `General-0.vec` is the vector file created during the simulation
+  - `General-0.vci` is the vector index file created during the simulation
   - `ops.log` is the activity log created by OPS
-  - `graphs` is the folder that contains all the results and graphs as .pdf files
-  - `csv` is the folder that contains the precision-changed .csv files 
+  - `graphs` is the folder that contains all the scalar results and vector results (graphs) as .pdf files
+  - `csv` is the folder that contains the precision-changed .csv files (currently set to 100 seconds) 
   - `temp` is the folder where temporary files are stored (currently not removed)
 
-- Commands for trouble shooting
-  - When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
-of the worker and errors (where there are) on the command-line
+- When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
+of the worker and errors (where there are) on the command-line (useful for troubleshooting)
 ```bash
 docker run -i -v /home/data:/opt/data --network="host" ootb
 ```
-  - To login to a running container to troubleshoot (`abcd` is the container name)
+
+- To login to a running container to troubleshoot (`abcd` is the container name)
 ```bash
 docker exec -i -t abcd /bin/bash
 ```

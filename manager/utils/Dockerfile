@@ -51,13 +51,15 @@ COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
 COPY worker_utils.py /opt/OPS/simulations/
 COPY stat-list.txt /opt/OPS/simulations/
+COPY net-list.txt /opt/OPS/simulations/
 RUN chmod +x /opt/OPS/simulations/*.py
 RUN mkdir /opt/OPS/simulations/utils
 COPY worker.py /opt/OPS/simulations/utils/
 COPY opsrun.py /opt/OPS/simulations/utils/
 COPY worker_utils.py /opt/OPS/simulations/utils/
 COPY stat-list.txt /opt/OPS/simulations/utils/
-RUN chmod +x /opt/OPS/simulations/*.py
+COPY net-list.txt /opt/OPS/simulations/utils/
+RUN chmod +x /opt/OPS/simulations/utils/*.py
 
 
 

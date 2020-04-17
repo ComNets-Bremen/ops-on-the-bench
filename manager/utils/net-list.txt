@@ -1,0 +1,5 @@
+# List of networks to extract results from
+#
+OPSMessengerNetwork
+OPSHeraldNetwork
+OPSUBMNetwork
