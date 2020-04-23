@@ -117,4 +117,5 @@ Ideas
 -----
 
 - Use magic wormhole to transfer the result? https://github.com/warner/magic-wormhole
+- Plik as a temporary file transfer service? https://github.com/root-gg/plik
 - ...
