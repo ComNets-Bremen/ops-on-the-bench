@@ -195,6 +195,7 @@ class NewSimWizard(SessionWizardView):
                 "title" : str(cleaned_data["simulation_title"]),
                 "omnetpp.ini" : str(omnetppini),
                 "runconfig" : str(cleaned_data["simulation_name"]),
+                "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
                 }
 
 
@@ -214,6 +215,7 @@ class NewSimWizard(SessionWizardView):
                 omnetppini = str(omnetppini),
                 runconfig = str(cleaned_data["simulation_name"]),
                 simulation_id = job.id,
+                summarizing_precision = float(cleaned_data["summarizing_precision"]),
                 )
 
         simulation.save()

@@ -34,12 +34,13 @@ class Simulation(models.Model):
             settings.AUTH_USER_MODEL,
             on_delete=models.CASCADE,
             )
-    title = models.CharField(max_length=100)
-    omnetppini = models.TextField()
-    runconfig = models.CharField(max_length=100)
-    simulation_id = models.UUIDField(
+    title           = models.CharField(max_length=100)
+    omnetppini      = models.TextField()
+    runconfig       = models.CharField(max_length=100)
+    summarizing_precision = models.FloatField(default=100)
+    simulation_id   = models.UUIDField(
             editable=False,
-            default=uuid.uuid4
+            default = uuid.uuid4
             )
     status = models.IntegerField(choices=Status.choices, default=Status.UNKNOWN)
 
