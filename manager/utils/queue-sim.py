@@ -21,7 +21,8 @@ def main():
                 'user' : 'adu',
                 'title' : 'Epidemic with SWIM mobility',
                 'omnetpp.ini' : inistr,
-                'runconfig' : 'General'
+                'runconfig' : 'General',
+                'summarizing_precision' : 100.0
                 }
 
     # connect to REDIS

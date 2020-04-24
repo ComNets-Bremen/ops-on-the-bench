@@ -22,6 +22,7 @@ def main():
                 'title' : 'Epidemic with SWIM mobility',
                 'omnetpp.ini' : inistr,
                 'runconfig' : 'General'
+                'summarizing_precision' : 100.0
                 }
 
     # connect to REDIS
@@ -29,7 +30,7 @@ def main():
     queue = rq.Queue(connection=redisconn)
 
     # queue the simulation
-    queue.enqueue(utils.worker.run_simulation, execution, arguments, job_timeout=43200)
+    queue.enqueue(worker.run_simulation, execution, arguments, job_timeout=43200)
 
 
 if __name__ == "__main__":

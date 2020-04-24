@@ -18,7 +18,7 @@ import fpdf
 
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
-SUM_TIME_RES = 100.0
+NET_LIST = '/opt/OPS/simulations/net-list.txt'
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -26,9 +26,12 @@ def run_ops(job_id, arguments):
 
     # make output folders
     root_folder, graphs_folder, csv_folder, temp_folder = create_folders(job_id)
-    
+
+    # santize given omnetpp.ini
+    sanitize_ini(root_folder, arguments['omnetpp.ini'])
+
     # run simulations
-    run_sim(root_folder, arguments['omnetpp.ini'], arguments['runconfig'])
+    run_sim(root_folder, arguments['runconfig'])
     
     # create graphs from vectors
     create_graphs(root_folder, graphs_folder, temp_folder)
@@ -37,8 +40,8 @@ def run_ops(job_id, arguments):
     create_stats(root_folder, graphs_folder, temp_folder)
     
     # create resolution changed CSV
-    create_csv(root_folder, csv_folder, temp_folder)
-    
+    create_csv(root_folder, csv_folder, temp_folder, arguments['summarizing_precision'])
+
     # # remove all temporary files
     # remove_temp(temp_folder)
 
@@ -65,38 +68,63 @@ def create_folders(job_id):
 
     return root_folder, graphs_folder, csv_folder, temp_folder
 
+
+# santize given omnetpp.ini
+def sanitize_ini(root_folder, omnetppini):
+
+    # create the original ini file
+    originipath = os.path.join(root_folder, 'orig-omnetpp.ini')
+    with open(originipath, 'w') as ofp:
+         ofp.write(omnetppini)
+
+    # place the omnetpp.ini in simulations folder
+    inipath = './omnetpp.ini'
+    inifp = open(inipath, 'w')
+    
+    # place a copy of the omnetpp.ini in the job folder
+    inicopypath = os.path.join(root_folder, 'omnetpp.ini')
+    inicfp = open(inicopypath, 'w')
+
+    # read original ini and create a santized versions
+    with open(originipath, 'r') as ofp:
+        for line in ofp:
+            row = line.split('=')
+            if 'result-dir' in row[0].strip() \
+                 or 'output-vector-file' in row[0].strip() \
+                 or 'output-scalar-file' in row[0].strip():
+                inifp.write('# --- sanitizer commented out --- -' + line)
+                inicfp.write('# --- sanitizer commented out --- -' + line)
+            else:
+                inifp.write(line)
+                inicfp.write(line)
+
+
 # run simulations
-def run_sim(root_folder, omnetppini, runconfig):
+def run_sim(root_folder, runconfig):
 
     print('starting simulation ...')
 
-    # place the omnetpp.ini in simulations folder
-    inipath = '/opt/OPS/simulations/omnetpp.ini'
-    with open(inipath, 'w') as inifp:
-         inifp.write(omnetppini)
-
-    # place a copy of the omnetpp.ini in the job folder
-    inicopypath = os.path.join(root_folder, 'omnetpp.ini')
-    with open(inicopypath, 'w') as inicfp:
-         inicfp.write(omnetppini)
+    # path of the sanitized .ini file
+    inipath = './omnetpp.ini'
 
     # create the simulation activity log
     logpath = os.path.join(root_folder, 'ops.log')
     logfp = open(logpath, 'w')
-    
+ 
     # create results location option
     results_dir = '--result-dir=' + root_folder
-    
+ 
     # run simulation
-    subprocess.call(['/opt/OPS/ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', 
-                    '-n', '.:/opt/OPS/src:/opt/OPS//modules/inet/src:/opt/OPS/modules/KeetchiLib/src',
-                    '--image-path=/opt/OPS/modules/inet/images',
+    subprocess.call(['ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', 
+                    '-n', '.:../src:../modules/inet/src:../modules/KeetchiLib/src',
+                    '--image-path=../modules/inet/images',
                     results_dir,
                     '-l', 'INET', '-l', 'keetchi', 
                     inipath], 
                     stdout=logfp, stderr=subprocess.STDOUT)
-    
+
     logfp.close()
+
 
 # create stat graphs
 def create_graphs(root_folder, graphs_folder, temp_folder):
@@ -119,7 +147,15 @@ def create_graphs(root_folder, graphs_folder, temp_folder):
             stat_var = row[6].strip()
 
             # create stat search filter
-            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND module(OPSHeraldNetwork) AND name(' + stat_var + ':vector)\"'
+            net_str = ''
+            with open(NET_LIST,'r') as netfp:
+                netlines = csv.reader(netfp, delimiter=',')
+                for netrow in netlines:
+                    if netrow[0].strip().startswith('#'):
+                        continue
+                    net_str += ('module(' + netrow[0].strip() + ') OR ')
+                net_str += ('module(ABCD)')
+            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':vector)\"'
 
             # build path of temporary CSV file
             temp_csv = os.path.join(temp_folder, (stat_var + '.csv'))
@@ -127,7 +163,11 @@ def create_graphs(root_folder, graphs_folder, temp_folder):
                 os.remove(temp_csv)
 
             # build search path for .vec file (created by simulation)
-            search_path = os.path.join(root_folder, 'omnetpp.ini-General-0.vec')
+            search_path = ''
+            wildcard = glob.glob(root_folder + '/*.vec')
+            for vecfile in wildcard:
+                search_path = vecfile
+                break
 
             # create the activity log
             logpath = os.path.join(graphs_folder, 'stat-creation.log')
@@ -173,7 +213,6 @@ def create_graphs(root_folder, graphs_folder, temp_folder):
                 plt.xlabel('Simulation Time (seconds)')
                 plt.ylabel(stat_name + '\n(' + stat_unit + ')')
                 plt.title(stat_name)
-                plt.legend('')
                 plt.tight_layout()
                 plt.savefig(graph_path)
                 plt.close()
@@ -186,8 +225,8 @@ def create_stats(root_folder, graphs_folder, temp_folder):
     # setup .pdf writer to write results
     pdf = fpdf.FPDF()
     pdf.add_page()
-    pdf.set_font('Arial', 'B', 9)
-    pdf.cell(40, 10, 'Simulation Scalar Results', 0, 1)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(40, 10, 'Scalar Results', 0, 1)
 
     # set positioning field
     
@@ -208,13 +247,25 @@ def create_stats(root_folder, graphs_folder, temp_folder):
             stat_var = row[6].strip()
 
             # create stat search filter
-            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND module(OPSHeraldNetwork) AND name(' + stat_var + ':' + stat_scastat + ')\"'
+            net_str = ''
+            with open(NET_LIST,'r') as netfp:
+                netlines = csv.reader(netfp, delimiter=',')
+                for netrow in netlines:
+                    if netrow[0].strip().startswith('#'):
+                        continue
+                    net_str += ('module(' + netrow[0].strip() + ') OR ')
+                net_str += ('module(ABCD)')
+            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':' + stat_scastat + ')\"'
 
             # build path of temporary CSV file
             temp_csv = os.path.join(temp_folder, (stat_var + '-sca.csv'))
 
             # build search path for .vec file (created by simulation)
-            search_path = os.path.join(root_folder, 'omnetpp.ini-General-0.sca')
+            search_path = ''
+            wildcard = glob.glob(root_folder + '/*.sca')
+            for scafile in wildcard:
+                search_path = scafile
+                break
 
             # create the activity log
             logpath = os.path.join(graphs_folder, 'stat-creation.log')
@@ -250,7 +301,7 @@ def create_stats(root_folder, graphs_folder, temp_folder):
 
 
 # create resolution changed CSV
-def create_csv(root_folder, csv_folder, temp_folder):
+def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
     
     print('creating CSV files ...')
 
@@ -285,14 +336,14 @@ def create_csv(root_folder, csv_folder, temp_folder):
                 with open(orig_csv,'r') as icsvfp:
                     dlines = csv.reader(icsvfp, delimiter=',')
                     val = 0
-                    nexttime = SUM_TIME_RES
+                    nexttime = summarizing_precision
                     for i, drow in enumerate(dlines):
                         if i == 0:
                             continue
                         while nexttime < float(drow[0].strip()):
                             wline = '%f, %d\n' % (nexttime, val)
                             ocsvfp.write(wline)
-                            nexttime = nexttime + SUM_TIME_RES
+                            nexttime = nexttime + summarizing_precision
                         val = val if 'Inf' in drow[1].strip() else int(drow[1].strip())
                     wline = '%f, %d\n' % (nexttime, val)
                     ocsvfp.write(wline)
@@ -301,14 +352,14 @@ def create_csv(root_folder, csv_folder, temp_folder):
                 with open(orig_csv,'r') as icsvfp:
                     dlines = csv.reader(icsvfp, delimiter=',')
                     val = 0.0
-                    nexttime = SUM_TIME_RES
+                    nexttime = summarizing_precision
                     for i, drow in enumerate(dlines):
                         if i == 0:
                             continue
                         while nexttime < float(drow[0].strip()):
                             wline = '%f, %f\n' % (nexttime, val)
                             ocsvfp.write(wline)
-                            nexttime = nexttime + SUM_TIME_RES
+                            nexttime = nexttime + summarizing_precision
                         val = val if 'Inf' in drow[1].strip() else float(drow[1].strip())
                     wline = '%f, %f\n' % (nexttime, val)
                     ocsvfp.write(wline)

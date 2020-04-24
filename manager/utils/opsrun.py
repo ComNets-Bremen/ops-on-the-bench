@@ -19,7 +19,6 @@ import fpdf
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
 NET_LIST = '/opt/OPS/simulations/net-list.txt'
-SUM_TIME_RES = 100.0
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -41,8 +40,8 @@ def run_ops(job_id, arguments):
     create_stats(root_folder, graphs_folder, temp_folder)
     
     # create resolution changed CSV
-    create_csv(root_folder, csv_folder, temp_folder)
-    
+    create_csv(root_folder, csv_folder, temp_folder, arguments['summarizing_precision'])
+
     # # remove all temporary files
     # remove_temp(temp_folder)
 
@@ -86,7 +85,7 @@ def sanitize_ini(root_folder, omnetppini):
     inicopypath = os.path.join(root_folder, 'omnetpp.ini')
     inicfp = open(inicopypath, 'w')
 
-    # read temp ini and create a santized versions
+    # read original ini and create a santized versions
     with open(originipath, 'r') as ofp:
         for line in ofp:
             row = line.split('=')
@@ -302,7 +301,7 @@ def create_stats(root_folder, graphs_folder, temp_folder):
 
 
 # create resolution changed CSV
-def create_csv(root_folder, csv_folder, temp_folder):
+def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
     
     print('creating CSV files ...')
 
@@ -337,14 +336,14 @@ def create_csv(root_folder, csv_folder, temp_folder):
                 with open(orig_csv,'r') as icsvfp:
                     dlines = csv.reader(icsvfp, delimiter=',')
                     val = 0
-                    nexttime = SUM_TIME_RES
+                    nexttime = summarizing_precision
                     for i, drow in enumerate(dlines):
                         if i == 0:
                             continue
                         while nexttime < float(drow[0].strip()):
                             wline = '%f, %d\n' % (nexttime, val)
                             ocsvfp.write(wline)
-                            nexttime = nexttime + SUM_TIME_RES
+                            nexttime = nexttime + summarizing_precision
                         val = val if 'Inf' in drow[1].strip() else int(drow[1].strip())
                     wline = '%f, %d\n' % (nexttime, val)
                     ocsvfp.write(wline)
@@ -353,14 +352,14 @@ def create_csv(root_folder, csv_folder, temp_folder):
                 with open(orig_csv,'r') as icsvfp:
                     dlines = csv.reader(icsvfp, delimiter=',')
                     val = 0.0
-                    nexttime = SUM_TIME_RES
+                    nexttime = summarizing_precision
                     for i, drow in enumerate(dlines):
                         if i == 0:
                             continue
                         while nexttime < float(drow[0].strip()):
                             wline = '%f, %f\n' % (nexttime, val)
                             ocsvfp.write(wline)
-                            nexttime = nexttime + SUM_TIME_RES
+                            nexttime = nexttime + summarizing_precision
                         val = val if 'Inf' in drow[1].strip() else float(drow[1].strip())
                     wline = '%f, %f\n' % (nexttime, val)
                     ocsvfp.write(wline)
