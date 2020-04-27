@@ -6,6 +6,8 @@ from django.conf import settings
 
 import configparser
 
+from .models import StorageBackend
+
 ## Special field for uploading omnetpp.ini files.
 #
 # Check the following
@@ -59,6 +61,14 @@ class selectSimulationForm(forms.Form):
                             help_text="simulation name from previously uploaded omnetpp.ini"
                             )
 
+        storage_names = []
 
+        for item in StorageBackend.objects.values("pk", "backend_name"):
+            storage_names.append((item["pk"], item["backend_name"]))
 
+        self.fields["storage_backend"] = forms.CharField(
+                label="Select storage backend",
+                widget=forms.Select(choices=storage_names),
+                help_text="Storage backend for the simulation output"
+                )
 

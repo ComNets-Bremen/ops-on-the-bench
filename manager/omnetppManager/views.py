@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -12,7 +12,7 @@ from django.core.mail import send_mail
 
 from formtools.wizard.views import SessionWizardView
 
-from .models import Simulation
+from .models import Simulation, StorageBackend
 
 from rq import Queue
 from redis import Redis
@@ -196,13 +196,24 @@ class NewSimWizard(SessionWizardView):
         if cleaned_data["notification_mail_address"] not in ["", None]:
             notification_mail_address = cleaned_data["notification_mail_address"]
 
+        # Handle backend
+        storage_backend_id = int(cleaned_data["storage_backend"])
+
+        # TODO: Do further checks on backend id?
+        storage_backend_object = get_object_or_404(StorageBackend, pk=storage_backend_id)
+
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
                 "omnetpp.ini" : str(omnetppini),
                 "runconfig" : str(cleaned_data["simulation_name"]),
                 "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
+                "storage_backend" : str(storage_backend_object.backend_name),
+                "storage_backend_id" : str(storage_backend_id),
                 }
+
+
+        print("Simulation arguments:", args)
 
 
         # Start job
@@ -223,6 +234,7 @@ class NewSimWizard(SessionWizardView):
                 simulation_id = job.id,
                 summarizing_precision = float(cleaned_data["summarizing_precision"]),
                 notification_mail_address = notification_mail_address,
+                storage_backend = storage_backend_object,
                 )
 
         simulation.save()
