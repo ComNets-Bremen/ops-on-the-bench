@@ -88,3 +88,8 @@ class Simulation(models.Model):
     def is_scheduled(self):
         return self.status == self.Status.SCHEDULED
 
+class StorageBackend(models.Model):
+    backend_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.backend_name)
