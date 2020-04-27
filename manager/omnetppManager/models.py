@@ -8,6 +8,15 @@ import uuid
 
 # Create your models here.
 
+## Model to store data storages
+#
+# Contains the data storage locations
+#
+class StorageBackend(models.Model):
+    backend_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.backend_name)
 
 ## Model to store Simulation details
 #
@@ -50,6 +59,8 @@ class Simulation(models.Model):
 
     notification_mail_address = models.EmailField(default=None, blank=True, null=True)
 
+    storage_backend = models.ForeignKey(StorageBackend, on_delete=models.SET_NULL, null=True, default=None)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
@@ -88,8 +99,4 @@ class Simulation(models.Model):
     def is_scheduled(self):
         return self.status == self.Status.SCHEDULED
 
-class StorageBackend(models.Model):
-    backend_name = models.CharField(max_length=100)
 
-    def __str__(self):
-        return str(self.backend_name)
