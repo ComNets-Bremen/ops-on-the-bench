@@ -48,6 +48,8 @@ class Simulation(models.Model):
 
     handled_by = models.CharField(max_length=100, default=None, blank=True, null=True)
 
+    notification_mail_address = models.EmailField(default=None, blank=True, null=True)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
@@ -58,6 +60,9 @@ class Simulation(models.Model):
             'pk' : self.pk
             })
 
+    ## Notify user on sim state change
+    def send_notify_mail(self):
+        return self.notification_mail_address not in ["", None]
 
     ## status for template rendering: queued
     def is_queued(self):

@@ -8,6 +8,8 @@ from django.core.paginator import Paginator
 from django.utils.html import strip_tags
 from django.views.generic.detail import DetailView
 
+from django.core.mail import send_mail
+
 from formtools.wizard.views import SessionWizardView
 
 from .models import Simulation
@@ -190,6 +192,10 @@ class NewSimWizard(SessionWizardView):
 #        print("simulation name", cleaned_data["simulation_name"])
         omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
 
+        notification_mail_address = None
+        if cleaned_data["notification_mail_address"] not in ["", None]:
+            notification_mail_address = cleaned_data["notification_mail_address"]
+
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
@@ -216,6 +222,7 @@ class NewSimWizard(SessionWizardView):
                 runconfig = str(cleaned_data["simulation_name"]),
                 simulation_id = job.id,
                 summarizing_precision = float(cleaned_data["summarizing_precision"]),
+                notification_mail_address = notification_mail_address,
                 )
 
         simulation.save()
@@ -243,6 +250,15 @@ def update_sim_status(simulation_id, new_status):
         if sim.status != new_status:
             sim.status = new_status
             sim.save()
+            if sim.send_notify_mail():
+                # Send status update mail
+                send_mail(
+                        "Simulation status update",
+                        "The status of your simulation with the id " + str(simulation_id) + " has changed. New status: " + str(sim.get_status_display()),
+                        settings.DEFAULT_SENDER_MAIL_ADDRESS,
+                        [sim.notification_mail_address, ],
+                        fail_silently = False,
+                        )
             return True
     except Simulation.DoesNotExist:
         print("Sim does not exists in db", simulation_id, new_status)

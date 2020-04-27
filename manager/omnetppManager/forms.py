@@ -46,7 +46,8 @@ class getOmnetppiniForm(forms.Form):
 # Used for two step form, choices are read from the omnetpp.ini file from
 # step 1
 class selectSimulationForm(forms.Form):
-    summarizing_precision = forms.FloatField(label="precision (avg every N seconds)", initial=100.0)
+    summarizing_precision = forms.FloatField(label="precision", initial=100.0, help_text="Average values every N seconds")
+    notification_mail_address = forms.EmailField(label="notify simulation state changes (optional)", required=False, help_text="A mail address or leave it empty to disable notification")
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         init_args = kwargs.get("initial", None)
@@ -54,7 +55,8 @@ class selectSimulationForm(forms.Form):
             self.fields["simulation_name"] = \
                     forms.CharField(
                             label="Select simulation",
-                            widget=forms.Select(choices=[(sec, sec) for sec in init_args["sections"]])
+                            widget=forms.Select(choices=[(sec, sec) for sec in init_args["sections"]]),
+                            help_text="simulation name from previously uploaded omnetpp.ini"
                             )
 
 
