@@ -20,9 +20,8 @@ import dropboxops
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
 NET_LIST = '/opt/OPS/simulations/net-list.txt'
-DROPBOX_TOKEN = '68xuOnr4c-AAAAAAAAAADorzKY3cfpxc9lHIoGb5hweKwLRWxVooWHfpsbYmyCp0'
 ARCHIVE_FILE = 'results.zip'
-ARCHIVE_LIST = ['orig-omnetpp.ini', 'graphs', 'csv']
+ARCHIVE_LIST = ['omnetpp.ini', 'General-#0.sca', 'graphs', 'csv']
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -49,8 +48,14 @@ def run_ops(job_id, arguments):
     # create an archive file of results to return
     archive_path = create_archive(root_folder, ARCHIVE_FILE, ARCHIVE_LIST)
 
-    # upload archive file to file sharing service
-    shared_link = dropboxops.upload_file(archive_path, DROPBOX_TOKEN)
+    # handle archive file as requested
+    shared_link = ''
+    if 'dropbox' in arguments['storage_backend_id']:
+        # use DropBox with given token
+        shared_link = dropboxops.upload_file(archive_path, arguments['storage_backend_token'])
+    else:
+        # move to some place in local storage
+        pass
 
     # remove all folders and files created
     # remove_files(root_folder):

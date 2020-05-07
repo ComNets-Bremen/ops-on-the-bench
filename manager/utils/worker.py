@@ -42,7 +42,7 @@ def run_simulation(executable, arguments):
         job.meta["exception"] = None
         job.save_meta()
 
-    shared_link = 'no link created'
+    shared_link = ''
     try:
         ### start the simulation here!
         print("Executable", executable)
