@@ -14,9 +14,16 @@ import uuid
 #
 class StorageBackend(models.Model):
     backend_name = models.CharField(max_length=100)
+    backend_description = models.TextField(default="")
+    backend_identifier = models.CharField(max_length=100, default="dropbox")
+    backend_token = models.CharField(max_length=100, null=True, blank=True, default=None)
+    backend_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.backend_name)
+        label = str(self.backend_name)
+        if self.backend_active:
+            label += " (active)"
+        return str(label)
 
 ## Model to store Simulation details
 #
