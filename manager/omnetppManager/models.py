@@ -69,6 +69,8 @@ class Simulation(models.Model):
 
     storage_backend = models.ForeignKey(StorageBackend, on_delete=models.SET_NULL, null=True, default=None)
 
+    shared_link = models.CharField(max_length=250, default="")
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
