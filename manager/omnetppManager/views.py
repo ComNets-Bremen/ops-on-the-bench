@@ -94,7 +94,7 @@ def job_status(request):
 # No login required: Can be called from a script. Therefore, only little
 # information is given
 #
-# TODO: Maybe w/o HTML, json return? Increase security?
+# TODO: Increase security?
 def manage_queues(request, output_format="json"):
     redis_conn = Redis(host="127.0.0.1")
     q = Queue(connection=redis_conn)
@@ -318,6 +318,12 @@ def store_sim_results(simulation_id, meta, data):
 
         if "handled_by" in meta:
             sim.handled_by = meta["handled_by"]
+
+        if isinstance(data, dict):
+            print(data)
+            if "shared_link" in data and data["shared_link"] and data["shared_link"] != "":
+                sim.shared_link = data["shared_link"]
+                print("Stored shared link")
 
         # TODO: store results / data
 

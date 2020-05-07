@@ -20,6 +20,9 @@
     {% if object.handled_by %}
     <li>Simulation server: {{ object.handled_by }}</li>
     {% endif %}
+    {% if object.shared_link %}
+    <li><a href="{{object.shared_link}}" target="_blank">Download results</a></li>
+    {% endif %}
 </ul>
 
 <h2 class="display-5">omnetpp.ini</h2>
