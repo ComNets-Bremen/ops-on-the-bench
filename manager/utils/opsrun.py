@@ -15,10 +15,14 @@ import subprocess
 import os
 import glob
 import fpdf
+import dropboxops
 
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
 NET_LIST = '/opt/OPS/simulations/net-list.txt'
+DROPBOX_TOKEN = '68xuOnr4c-AAAAAAAAAADorzKY3cfpxc9lHIoGb5hweKwLRWxVooWHfpsbYmyCp0'
+ARCHIVE_FILE = 'results.zip'
+ARCHIVE_LIST = ['orig-omnetpp.ini', 'graphs', 'csv']
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -42,8 +46,17 @@ def run_ops(job_id, arguments):
     # create resolution changed CSV
     create_csv(root_folder, csv_folder, temp_folder, arguments['summarizing_precision'])
 
-    # # remove all temporary files
-    # remove_temp(temp_folder)
+    # create an archive file of results to return
+    archive_path = create_archive(root_folder, ARCHIVE_FILE, ARCHIVE_LIST)
+
+    # upload archive file to file sharing service
+    shared_link = dropboxops.upload_file(archive_path, DROPBOX_TOKEN)
+
+    # remove all folders and files created
+    # remove_files(root_folder):
+
+    # return the created link's URL
+    return shared_link
 
 # make output folders
 def create_folders(job_id):
@@ -370,13 +383,35 @@ def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
             ocsvfp.close()
 
 
-# remove all temporary files
-def remove_temp(temp_folder):
+# create an archive file of results to return
+def create_archive(root_folder, archive_file, archive_list):
 
-    # remove all temp files
-    wildcard = glob.glob(temp_folder + '/*.csv')
-    for rmfile in wildcard:
-        os.remove(rmfile)  
+    # build path of archive file
+    archive_path = os.path.join(root_folder, archive_file)
 
-    # remove temp folder  
-    os.rmdir(temp_folder)
+    # save current path and change to root folder
+    cwd = os.getcwd()
+    os.chdir(root_folder)
+
+    # build the zip command array
+    cmd = ['zip', '-r', archive_path]
+    for entry in archive_list:
+        cmd.append(entry)
+
+    # run command
+    subprocess.call(cmd)
+
+    # set to original path
+    os.chdir(cwd)
+
+    return archive_path
+
+# remove all created files and folders
+def remove_files(root_folder):
+
+    # build command
+    cmd = ['rm', '-rf', root_folder]
+
+    # run command
+    subprocess.call(cmd)
+
