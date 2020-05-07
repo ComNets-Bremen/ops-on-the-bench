@@ -200,7 +200,10 @@ class NewSimWizard(SessionWizardView):
         storage_backend_id = int(cleaned_data["storage_backend"])
 
         # TODO: Do further checks on backend id?
-        storage_backend_object = get_object_or_404(StorageBackend, pk=storage_backend_id)
+        storage_backend_object = get_object_or_404(
+                StorageBackend.objects.filter(backend_active=True),
+                pk=storage_backend_id
+                )
 
         args = {
                 "user" : str(self.request.user),
@@ -209,7 +212,8 @@ class NewSimWizard(SessionWizardView):
                 "runconfig" : str(cleaned_data["simulation_name"]),
                 "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
                 "storage_backend" : str(storage_backend_object.backend_name),
-                "storage_backend_id" : str(storage_backend_id),
+                "storage_backend_id" : str(storage_backend_object.backend_identifier),
+                "storage_backend_token" : str(storage_backend_object.backend_token),
                 }
 
 

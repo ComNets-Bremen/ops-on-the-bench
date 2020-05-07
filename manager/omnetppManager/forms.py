@@ -63,7 +63,7 @@ class selectSimulationForm(forms.Form):
 
         storage_names = []
 
-        for item in StorageBackend.objects.values("pk", "backend_name"):
+        for item in StorageBackend.objects.filter(backend_active=True).values("pk", "backend_name"):
             storage_names.append((item["pk"], item["backend_name"]))
 
         self.fields["storage_backend"] = forms.CharField(

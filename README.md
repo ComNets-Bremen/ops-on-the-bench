@@ -80,6 +80,21 @@ docker run -i -v /home/data:/opt/data --network="host" ootb
 docker exec -i -t abcd /bin/bash
 ```
 
+Storage backend
+===============
+
+The following information are transferred to the worker for handling the result
+data:
+
+- `storage_backend_id`: An identifier for the upload service like `dropbox` or
+  `local`. Has to be implemented on the worker. One should check this variable
+  on the worker side to select the upload method.
+
+- `storage_backend`: A descriptive name of the backend like "Dropbox account of
+  abc"
+
+- `storage_backend_token`: The token required for the backend
+
 
 Misc
 ====
