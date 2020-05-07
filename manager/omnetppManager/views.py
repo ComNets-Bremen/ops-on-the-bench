@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
@@ -153,6 +154,29 @@ def manage_queues(request, output_format="json"):
             'omnetppManager/manage_queues.html',
             return_values
             )
+
+## Kill queues sims
+#
+# Tries to kill a simulation. Currently only kills queued sims
+# TODO: Extend, kill all kind of simulations
+# TODO: Ask if it is okay to kill the sim
+@login_required
+@require_http_methods(["POST",])
+def job_kill(request, pk):
+    simulation = get_object_or_404(
+            Simulation,
+            pk=pk
+            )
+    print("Trying to kill simulation", simulation.simulation_id)
+
+    redis_conn = Redis(host="127.0.0.1")
+    q = Queue(connection=redis_conn)
+
+    if q.remove(str(simulation.simulation_id)) > 0:
+        # We removed one job. update status:
+        update_sim_status(simulation.simulation_id, Simulation.Status.ABORTED)
+
+    return HttpResponseRedirect(reverse("omnetppManager_job_status"))
 
 
 

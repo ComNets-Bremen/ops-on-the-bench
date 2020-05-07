@@ -15,6 +15,7 @@ urlpatterns = [
         path('manage_queues/', views.manage_queues, name="omnetppManager_manage_queues"),
         path('manage_queues/<output_format>/', views.manage_queues, name="omnetppManager_manage_queues"),
         path('job-details/<int:pk>/', login_required(JobDetailView.as_view()), name='job-details'),
+        path('job-kill/<int:pk>/', views.job_kill, name='job-kill'),
         ]
 
 

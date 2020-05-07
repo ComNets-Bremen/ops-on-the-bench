@@ -45,6 +45,7 @@ class Simulation(models.Model):
         DEFERRED    = 5, _("deferred")
         SCHEDULED   = 6, _("scheduled")
         UNKNOWN     = 7, _("unknown")
+        ABORTED     = 8, _("aborted")
 
     user = models.ForeignKey(
             settings.AUTH_USER_MODEL,
@@ -105,5 +106,9 @@ class Simulation(models.Model):
     ## status for template rendering: scheduled
     def is_scheduled(self):
         return self.status == self.Status.SCHEDULED
+
+    ## status for template rendering: aborted
+    def is_aborted(self):
+        return self.status == self.Status.ABORTED
 
 
