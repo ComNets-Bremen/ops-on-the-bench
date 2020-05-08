@@ -26,9 +26,16 @@
 </ul>
 
 <h2 class="display-5">omnetpp.ini</h2>
-<code>
-    {{object.omnetppini|linebreaks|safe}}
-</code>
+<p>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCode" aria-expanded="false" aria-controls="collapseCode">
+      Show / hide omnetpp.ini
+  </button>
+</p>
+<div class="collapse" id="collapseCode">
+    <code>
+        {{object.omnetppini|linebreaks|safe}}
+    </code>
+</div>
 
 {% if object.simulation_error%}
 
