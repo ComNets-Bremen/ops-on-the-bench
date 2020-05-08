@@ -7,6 +7,7 @@ RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
       build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget \
 	  git autoconf automake libtool python3-matplotlib vim
 RUN apt-get install ccache -y
+RUN apt-get install zip unzip
 
 
 # set caching path
@@ -14,7 +15,7 @@ ENV PATH /usr/lib/ccache:$PATH
 
 
 # install Python modules
-RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf
+RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf && pip3 install dropbox
 
 
 # These are necessary to make Click in rq happy.
@@ -50,6 +51,7 @@ ENV LD_LIBRARY_PATH /opt/omnetpp-5.6.1/lib:/opt/OPS/modules/KeetchiLib/lib/.libs
 COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
 COPY worker_utils.py /opt/OPS/simulations/
+COPY dropboxops.py /opt/OPS/simulations/
 COPY stat-list.txt /opt/OPS/simulations/
 COPY net-list.txt /opt/OPS/simulations/
 RUN chmod +x /opt/OPS/simulations/*.py
@@ -57,10 +59,10 @@ RUN mkdir /opt/OPS/simulations/utils
 COPY worker.py /opt/OPS/simulations/utils/
 COPY opsrun.py /opt/OPS/simulations/utils/
 COPY worker_utils.py /opt/OPS/simulations/utils/
+COPY dropboxops.py /opt/OPS/simulations/utils/
 COPY stat-list.txt /opt/OPS/simulations/utils/
 COPY net-list.txt /opt/OPS/simulations/utils/
 RUN chmod +x /opt/OPS/simulations/utils/*.py
-
 
 
 # start RQ worker 
