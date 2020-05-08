@@ -210,7 +210,7 @@ class NewSimWizard(SessionWizardView):
     # Add additional template information like the title
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
-        context.update({"title" : "Create a new simulation: Step " + str(int(self.steps.current)+1)})
+        context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
         return context
 
     # Form is finished, process the data, start the job
