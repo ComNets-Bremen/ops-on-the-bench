@@ -37,7 +37,7 @@ def redirect_to_here(request):
 ## Index page
 @login_required
 def index(request):
-    return render(request, 'omnetppManager/index.html', {})
+    return render(request, 'omnetppManager/index.html', {'title':"Overview"})
 
 ## Show status of queues
 @login_required
@@ -73,6 +73,7 @@ def queue_status(request):
 
     return render(request, 'omnetppManager/queue_status_page.html', {
             "status" : status,
+            "title"  : "Queue status",
         })
 
 ## Show status of jobs
@@ -85,7 +86,8 @@ def job_status(request):
 
     return render(request, "omnetppManager/job_status_page.html",
             {
-                "jobs" : page_obj
+                "jobs" : page_obj,
+                "title" : "Job status",
             })
 
 
@@ -205,6 +207,12 @@ class NewSimWizard(SessionWizardView):
 
         return self.initial_dict.get(step, {})
 
+    # Add additional template information like the title
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        context.update({"title" : "Create a new simulation: Step " + str(int(self.steps.current)+1)})
+        return context
+
     # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
@@ -276,6 +284,7 @@ class JobDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["title"] = "Job detail view"
         return context
 
 ## helper
