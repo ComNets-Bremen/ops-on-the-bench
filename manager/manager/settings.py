@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'omnetppManager.processors.get_general',
             ],
         },
     },
@@ -143,3 +144,5 @@ OMNETPPINI_ALLOWED_MIMETYPE = [
 DEFAULT_SIMULATION_TIMEOUT = "12h"
 
 DEFAULT_SENDER_MAIL_ADDRESS = "server@comnets.uni-bremen.de"
+
+DEFAULT_MAIN_TITLE = "OPS on the bench"
