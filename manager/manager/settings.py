@@ -143,6 +143,13 @@ OMNETPPINI_ALLOWED_MIMETYPE = [
 
 DEFAULT_SIMULATION_TIMEOUT = "12h"
 
+# Sender mail address
 DEFAULT_SENDER_MAIL_ADDRESS = "server@comnets.uni-bremen.de"
 
+# Base title for the webpage
 DEFAULT_MAIN_TITLE = "OPS on the bench"
+
+# Redis connection setup
+REDIS_DB_HOST       = "localhost"
+REDIS_DB_PORT       = 6379
+REDIS_DB_PASSWORD   = None

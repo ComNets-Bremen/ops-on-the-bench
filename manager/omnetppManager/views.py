@@ -44,7 +44,7 @@ def index(request):
 def queue_status(request):
     status = []
 
-    q = Queue(connection=Redis(host="127.0.0.1"))
+    q = Queue(connection=get_redis_conn())
 
     status.append({
         "name" : "Queued jobs",
@@ -98,8 +98,7 @@ def job_status(request):
 #
 # TODO: Increase security?
 def manage_queues(request, output_format="json"):
-    redis_conn = Redis(host="127.0.0.1")
-    q = Queue(connection=redis_conn)
+    q = Queue(connection=get_redis_conn())
 
     finished_jobs = len(q.finished_job_registry)
     failed_jobs = len(q.failed_job_registry)
@@ -171,8 +170,7 @@ def job_kill(request, pk):
             )
     print("Trying to kill simulation", simulation.simulation_id)
 
-    redis_conn = Redis(host="127.0.0.1")
-    q = Queue(connection=redis_conn)
+    q = Queue(connection=get_redis_conn())
 
     if q.remove(str(simulation.simulation_id)) > 0:
         # We removed one job. update status:
@@ -216,7 +214,7 @@ class NewSimWizard(SessionWizardView):
     # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
-        q = Queue(connection=Redis(host="127.0.0.1"))
+        q = Queue(connection=get_redis_conn())
 #        print(cleaned_data)
 #        print("User", self.request.user)
 #        print("Simulation title", cleaned_data["simulation_title"])
@@ -342,3 +340,23 @@ def store_sim_results(simulation_id, meta, data):
         print("Simulation does not exist")
         sim = None
     return False
+
+# Return a valid redis connection
+def get_redis_conn():
+    # default values:
+    host = "localhost"
+    port = 6379
+    password = None
+
+    if hasattr(settings, "REDIS_DB_PASSWORD"):
+        password = settings.REDIS_DB_PASSWORD
+
+    if hasattr(settings, "REDIS_DB_HOST"):
+        host = settings.REDIS_DB_HOST
+
+    if hasattr(settings, "REDIS_DB_PORT"):
+        port = settings.REDIS_DB_PORT
+
+    return Redis(host=host, port=port, password=password)
+
+
