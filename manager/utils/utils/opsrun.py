@@ -15,7 +15,10 @@ import subprocess
 import os
 import glob
 import fpdf
-import dropboxops
+try:
+    import dropboxops
+except ModuleNotFoundError:
+    from . import dropboxops
 
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'

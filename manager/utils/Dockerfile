@@ -48,6 +48,8 @@ ENV LD_LIBRARY_PATH /opt/omnetpp-5.6.1/lib:/opt/OPS/modules/KeetchiLib/lib/.libs
 
 
 # copy scripts and other files
+COPY start-redis-client.sh /opt/OPS/simulations/
+RUN chmod +x /opt/OPS/simulations/*.sh
 COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
 COPY worker_utils.py /opt/OPS/simulations/
@@ -66,5 +68,5 @@ RUN chmod +x /opt/OPS/simulations/utils/*.py
 
 
 # start RQ worker 
-ENTRYPOINT ["rq", "worker"]
+ENTRYPOINT ["/bin/bash", "-c", "/opt/OPS/simulations/start-redis-client.sh"]
 

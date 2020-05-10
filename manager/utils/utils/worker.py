@@ -20,8 +20,8 @@ if __name__ == "__main__":
     import worker_utils
     import opsrun
 else:
-    import utils.worker_utils
-    import utils.opsrun
+    import utils.worker_utils as worker_utils
+    import utils.opsrun as opsrun
 
 from rq import get_current_job, Connection, Worker
 
@@ -42,6 +42,7 @@ def run_simulation(executable, arguments):
         job.meta["exception"] = None
         job.save_meta()
 
+    shared_link = ''
     try:
         ### start the simulation here!
         print("Executable", executable)
@@ -55,7 +56,7 @@ def run_simulation(executable, arguments):
     #        print(arg, arguments[arg])
             print(arg)
         # time.sleep(10)
-        opsrun.run_ops(str(job.get_id()), arguments)
+        shared_link = opsrun.run_ops(str(job.get_id()), arguments)
 
         print(job.id)
         print(job.meta)
@@ -74,6 +75,7 @@ def run_simulation(executable, arguments):
     return {
             "errors"  : [], # simulation errors?
             "results" : [], # simulation results?
+            "shared_link" : shared_link, # link to results
             }
 
 

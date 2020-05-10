@@ -39,6 +39,7 @@ Here are the worker side details. The code related to the worker is available in
 ```bash
 pip3 install matplotlib
 pip3 install fpdf
+pip3 install dropbox
 ```
 
 - Command for building OPS Docker image
@@ -48,13 +49,15 @@ docker build . -t ootb
 
 - Command for bringning up OPS Docker image
 ```bash
-docker run -i -d -v /home/data:/opt/data --network="host" ootb
+docker run -i -d -v /home/data:/opt/data -e "REDIS_URL=redis://192.168.0.1:6379" --network="host" ootb
 ```
 
 `/home/data` is a folder in the host machine which is mounted as `/opt/data` inside 
-the `ootb` Docker container, the `-d` option brings up the container detached and 
+the `ootb` Docker container, the `-d` option brings up the container detached,
 `--network` says the networking environment of the container is the same as the 
-host's 
+host's and `-e REDIS_URL=redis://192.168.0.1:6379` specifies the IP address of
+the server and the port on which the REDIS job queue is located 
+
 
 - When each simulation is run, a (unique) folder is created in the mounted folder ('/home/data' 
 from above example) using the job ID. There are files and sub-folders inside this 
@@ -70,10 +73,14 @@ job folder. Here are the details.
   - `csv` is the folder that contains the precision-changed .csv files (currently set to 100 seconds) 
   - `temp` is the folder where temporary files are stored (currently not removed)
 
+- When the simulation is completed, a selected set of files are zipped and sent to the remote file
+sharing service configured (e.g., DropBox), and currently `omnetpp.ini`, `General-0.sca`, `graphs` folder,
+and the `csv` folder are part of this zip file
+
 - When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
 of the worker and errors (where there are) on the command-line (useful for troubleshooting)
 ```bash
-docker run -i -v /home/data:/opt/data --network="host" ootb
+docker run -i -v /home/data:/opt/data -e "REDIS_URL=redis://192.168.0.1:6379" --network="host" ootb
 ```
 
 - To login to a running container to troubleshoot (`abcd` is the container name)
