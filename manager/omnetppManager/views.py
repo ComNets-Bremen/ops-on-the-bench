@@ -98,54 +98,8 @@ def job_status(request):
 #
 # TODO: Increase security?
 def manage_queues(request, output_format="json"):
-    q = Queue(connection=get_redis_conn())
 
-    finished_jobs = len(q.finished_job_registry)
-    failed_jobs = len(q.failed_job_registry)
-
-    updated_jobs = 0
-
-    for j in q.finished_job_registry.get_job_ids():
-        update_sim_status(j, Simulation.Status.FINISHED)
-
-        job = q.fetch_job(j)
-        store_sim_results(j, job.meta, job.result)
-        q.finished_job_registry.remove(job)
-
-
-    for j in q.failed_job_registry.get_job_ids():
-        update_sim_status(j, Simulation.Status.FAILED)
-
-        job = q.fetch_job(j)
-        store_sim_results(j, job.meta, job.result)
-        q.failed_job_registry.remove(job)
-
-
-    # update job status
-
-    for j in q.get_job_ids():
-        if update_sim_status(j, Simulation.Status.QUEUED):
-            updated_jobs += 1
-
-    for j in q.started_job_registry.get_job_ids():
-        if update_sim_status(j, Simulation.Status.STARTED):
-            updated_jobs += 1
-
-    for j in q.deferred_job_registry.get_job_ids():
-        if update_sim_status(j, Simulation.Status.DEFERRED):
-            updated_jobs += 1
-
-    for j in q.scheduled_job_registry.get_job_ids():
-        if update_sim_status(j, Simulation.Status.SCHEDULED):
-            updated_jobs += 1
-
-
-    return_values = {
-                "failed_jobs" : failed_jobs,
-                "finished_jobs" : finished_jobs,
-                "updated_jobs" : updated_jobs,
-            }
-
+    return_values = sync_simulations()
 
     if output_format == "json":
         return JsonResponse(return_values)
@@ -273,10 +227,14 @@ class NewSimWizard(SessionWizardView):
 
         simulation.save()
 
+        # Make sure the simulation status in the db is up to date
+        sync_simulations()
+
         # Redirect to detail view for simulation
         return redirect(simulation.get_absolute_url())
 
 
+## Generic view: Show job information
 class JobDetailView(DetailView):
     model = Simulation
 
@@ -341,6 +299,7 @@ def store_sim_results(simulation_id, meta, data):
         sim = None
     return False
 
+
 # Return a valid redis connection
 def get_redis_conn():
     # default values:
@@ -358,5 +317,56 @@ def get_redis_conn():
         port = settings.REDIS_DB_PORT
 
     return Redis(host=host, port=port, password=password)
+
+
+# Sync sim status with queue / sim database
+def sync_simulations(redis_conn=get_redis_conn()):
+    q = Queue(connection=get_redis_conn())
+
+    finished_jobs = len(q.finished_job_registry)
+    failed_jobs = len(q.failed_job_registry)
+
+    updated_jobs = 0
+
+    for j in q.finished_job_registry.get_job_ids():
+        update_sim_status(j, Simulation.Status.FINISHED)
+
+        job = q.fetch_job(j)
+        store_sim_results(j, job.meta, job.result)
+        q.finished_job_registry.remove(job)
+
+
+    for j in q.failed_job_registry.get_job_ids():
+        update_sim_status(j, Simulation.Status.FAILED)
+
+        job = q.fetch_job(j)
+        store_sim_results(j, job.meta, job.result)
+        q.failed_job_registry.remove(job)
+
+
+    # update job status
+
+    for j in q.get_job_ids():
+        if update_sim_status(j, Simulation.Status.QUEUED):
+            updated_jobs += 1
+
+    for j in q.started_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.STARTED):
+            updated_jobs += 1
+
+    for j in q.deferred_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.DEFERRED):
+            updated_jobs += 1
+
+    for j in q.scheduled_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.SCHEDULED):
+            updated_jobs += 1
+
+
+    return {
+                "failed_jobs" : failed_jobs,
+                "finished_jobs" : finished_jobs,
+                "updated_jobs" : updated_jobs,
+            }
 
 
