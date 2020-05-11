@@ -24,7 +24,7 @@ OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
 NET_LIST = '/opt/OPS/simulations/net-list.txt'
 ARCHIVE_FILE = 'results.zip'
-ARCHIVE_LIST = ['omnetpp.ini', 'General-#0.sca', 'graphs', 'csv']
+ARCHIVE_LIST = ['omnetpp.ini', 'General-#0.sca', 'ops.log', 'graphs', 'csv']
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -230,7 +230,7 @@ def create_graphs(root_folder, graphs_folder, temp_folder):
             if x != [] and y != []:
                 plt.figure(figsize=(12, 4))
                 plt.grid(True)
-                plt.plot(x, y, '-')
+                plt.plot(x, y, '-', rasterized=True)
                 plt.xlabel('Simulation Time (seconds)')
                 plt.ylabel(stat_name + '\n(' + stat_unit + ')')
                 plt.title(stat_name)

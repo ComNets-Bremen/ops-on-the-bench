@@ -27,11 +27,19 @@ worker
 Here are the worker side details. The code related to the worker is available in the 
 `manager/utils` folder.
 
+- `worker.py` - implements the worker called through the REDIS queue which calls other functions (in `opsrun.py`)
+
 - `opsrun.py` - implements the functions that run simulations and process results
+
+- `worker_utils.py` - implements the some helper functions required by other functions
+
+- `dropboxops.py` - implements all operations related to uploading results to a DropBox account
 
 - `Docker` - spec to create the OPS based Docker image
 
 - `stat-list.txt` - contains the details of each stat used in the results processing
+
+- `net-list.txt` - contains the details of all the network names possible to be simulated which are required when extracting results using the `scavetool`
 
 - `queue-sim.py` and `omnetpp.ini` are to run test simulations without the Django front-end
 
@@ -49,7 +57,7 @@ docker build . -t ootb
 
 - Command for bringning up OPS Docker image
 ```bash
-docker run -i -d -v /home/data:/opt/data -e "REDIS_URL=redis://192.168.0.1:6379" --network="host" ootb
+docker run -i -d -v /home/data:/opt/data -e "REDIS_URL=redis://:password@192.168.0.1:6379" --network="host" ootb
 ```
 
 `/home/data` is a folder in the host machine which is mounted as `/opt/data` inside 
@@ -74,13 +82,13 @@ job folder. Here are the details.
   - `temp` is the folder where temporary files are stored (currently not removed)
 
 - When the simulation is completed, a selected set of files are zipped and sent to the remote file
-sharing service configured (e.g., DropBox), and currently `omnetpp.ini`, `General-0.sca`, `graphs` folder,
+sharing service configured (e.g., DropBox), and currently `omnetpp.ini`, `General-0.sca`, `ops.log`, `graphs` folder,
 and the `csv` folder are part of this zip file
 
 - When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
 of the worker and errors (where there are) on the command-line (useful for troubleshooting)
 ```bash
-docker run -i -v /home/data:/opt/data -e "REDIS_URL=redis://192.168.0.1:6379" --network="host" ootb
+docker run -i -v /home/data:/opt/data -e "REDIS_URL=redis://:password@192.168.0.1:6379" --network="host" ootb
 ```
 
 - To login to a running container to troubleshoot (`abcd` is the container name)
