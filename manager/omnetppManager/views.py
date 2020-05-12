@@ -257,9 +257,14 @@ def update_sim_status(simulation_id, new_status):
             sim.save()
             if sim.send_notify_mail():
                 # Send status update mail
+                userMessage = "The status of your simulation with the id " + str(simulation_id) + " has changed. New status: " + str(sim.get_status_display())
+
+                if sim.is_finished() and sim.get_shared_link():
+                    userMessage += "\n\nYou can download the results here: " + str(sim.get_shared_link())
+
                 send_mail(
                         "Simulation status update",
-                        "The status of your simulation with the id " + str(simulation_id) + " has changed. New status: " + str(sim.get_status_display()),
+                        userMessage,
                         settings.DEFAULT_SENDER_MAIL_ADDRESS,
                         [sim.notification_mail_address, ],
                         fail_silently = False,
@@ -329,20 +334,18 @@ def sync_simulations(redis_conn=get_redis_conn()):
     updated_jobs = 0
 
     for j in q.finished_job_registry.get_job_ids():
-        update_sim_status(j, Simulation.Status.FINISHED)
-
         job = q.fetch_job(j)
         store_sim_results(j, job.meta, job.result)
         q.finished_job_registry.remove(job)
 
+        update_sim_status(j, Simulation.Status.FINISHED)
 
     for j in q.failed_job_registry.get_job_ids():
-        update_sim_status(j, Simulation.Status.FAILED)
-
         job = q.fetch_job(j)
         store_sim_results(j, job.meta, job.result)
         q.failed_job_registry.remove(job)
 
+        update_sim_status(j, Simulation.Status.FAILED)
 
     # update job status
 

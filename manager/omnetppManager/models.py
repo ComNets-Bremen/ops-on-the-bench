@@ -81,6 +81,12 @@ class Simulation(models.Model):
             'pk' : self.pk
             })
 
+    ## Has shared link
+    def get_shared_link(self):
+        if self.shared_link and self.shared_link != "":
+            return self.shared_link
+        return None
+
     ## Notify user on sim state change
     def send_notify_mail(self):
         return self.notification_mail_address not in ["", None]
@@ -112,5 +118,4 @@ class Simulation(models.Model):
     ## status for template rendering: aborted
     def is_aborted(self):
         return self.status == self.Status.ABORTED
-
 
