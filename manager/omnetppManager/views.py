@@ -145,6 +145,12 @@ class NewSimWizard(SessionWizardView):
 
     # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
     def get_form_initial(self, step):
+        returnDict = {}
+
+        # Set default mail address (if available)
+        if self.request.user.email and self.request.user.email != "":
+            returnDict["notification_mail_address"] = self.request.user.email
+
         if step == "1":
             simulation_file = self.get_cleaned_data_for_step("0")["simulation_file"]
             omnetppini = simulation_file.read().decode("utf-8")
@@ -154,10 +160,9 @@ class NewSimWizard(SessionWizardView):
             sections = config.sections()
             # Remove HTML etc. -> XSS
             sections = [strip_tags(section) for section in sections]
+            returnDict["sections"] = sections
 
-            return self.initial_dict.get(step, {"sections" : sections})
-
-        return self.initial_dict.get(step, {})
+        return self.initial_dict.get(step, returnDict)
 
     # Add additional template information like the title
     def get_context_data(self, form, **kwargs):
