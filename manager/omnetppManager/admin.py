@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Simulation, StorageBackend
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage
 
 # Register your models here.
 
@@ -12,3 +12,5 @@ class SimulationAdmin(admin.ModelAdmin):
 admin.site.register(Simulation, SimulationAdmin)
 
 admin.site.register(StorageBackend)
+
+admin.site.register(ConfigKeyValueStorage)

@@ -119,3 +119,22 @@ class Simulation(models.Model):
     def is_aborted(self):
         return self.status == self.Status.ABORTED
 
+
+## Simple key value storage management for config (besides settings.py)
+class ConfigKeyValueStorage(models.Model):
+    config_key = models.CharField(
+            max_length = 100,
+            unique=True
+            )
+
+    config_value = models.CharField(
+            max_length = 100
+            )
+
+    def __str__(self):
+        return str(self.config_key)
+
+    #TODO: Handle data types and return correspondingly
+
+
+
