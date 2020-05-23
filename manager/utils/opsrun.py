@@ -500,6 +500,14 @@ def create_sim_stats(root_folder, simrun_folder, op_times):
     # get time of results processing 
     results_proc_time = op_times["time_after_vec_data"] - op_times["time_after_sim"]
 
+    # get storage use
+    total_used = 0
+    for folder_path, folder_names, file_names in os.walk(root_folder):
+        for f in file_names:
+            fp = os.path.join(folder_path, f)
+            if not os.path.islink(fp):
+                total_used += os.path.getsize(fp)
+
     # write .pdf with sim details
     pdf.set_font('Arial', '', 9)
     pdf.cell(40, 10, ('Simulation Run Clock Time - %f seconds' % (clock_time_sec)), 0, 1)
@@ -511,6 +519,7 @@ def create_sim_stats(root_folder, simrun_folder, op_times):
     pdf.cell(40, 10, ('Total Messages Created - %d' % (msgs_created)), 0, 1)
     pdf.cell(40, 10, ('Results Processing Clock Time - %f seconds' % (results_proc_time)), 0, 1)
     pdf.cell(40, 10, ('Total Job Clock Time - %f seconds' % (clock_time_sec + results_proc_time)), 0, 1)
+    pdf.cell(40, 10, ('Total Storage Used - %d bytes' % (total_used)), 0, 1)
 
     # write .csv file
     ocsvfp.write(('simrunclocktimesec, %f, Simulation Run Clock Time in seconds\n' % (clock_time_sec)))
@@ -522,6 +531,7 @@ def create_sim_stats(root_folder, simrun_folder, op_times):
     ocsvfp.write(('totmsgs, %d, Total Messages Created\n' % (msgs_created)))
     ocsvfp.write(('resultsprocclocktimesec, %f, Results Processing Clock Time in seconds\n' % (results_proc_time)))
     ocsvfp.write(('totaljobclocktimesec, %f, Total Job Clock Time in seconds\n' % (clock_time_sec + results_proc_time)))
+    ocsvfp.write(('totalstorageusedbytes, %d, Total Storage Used in bytes\n' % (total_used)))
 
     # create the .pdf file
     results_path = os.path.join(simrun_folder, 'simrun-stats.pdf')
