@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 
 from formtools.wizard.views import SessionWizardView
 
-from .models import Simulation, StorageBackend
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage
 
 from rq import Queue
 from redis import Redis

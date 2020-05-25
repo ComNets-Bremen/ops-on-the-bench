@@ -120,6 +120,23 @@ class Simulation(models.Model):
         return self.status == self.Status.ABORTED
 
 
+
+## Manager class for key value storage access
+#
+# Tries to access the value from the key value storage. Not defined -> tries to
+# access using settings. Not defines -> return None
+class ConfigKeyValueStorageManager(models.Manager):
+    def get_value(self, key):
+        o = None
+        try:
+            o = self.model.objects.get(config_key=key).config_value
+        except self.model.DoesNotExist:
+            if hasattr(settings, key):
+                o = getattr(settings, key)
+        return o
+
+    #TODO: Convert to int, bool etc?
+
 ## Simple key value storage management for config (besides settings.py)
 class ConfigKeyValueStorage(models.Model):
     config_key = models.CharField(
@@ -131,10 +148,9 @@ class ConfigKeyValueStorage(models.Model):
             max_length = 100
             )
 
+    objects = models.Manager()
+    config = ConfigKeyValueStorageManager()
+
     def __str__(self):
         return str(self.config_key)
-
-    #TODO: Handle data types and return correspondingly
-
-
 
