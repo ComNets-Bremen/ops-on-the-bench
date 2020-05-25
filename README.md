@@ -63,9 +63,9 @@ docker run -i -d -v /home/data:/opt/data -e "REDIS_URL=redis://:password@192.168
 `/home/data` is a folder in the host machine which is mounted as `/opt/data` inside 
 the `ootb` Docker container, the `-d` option brings up the container detached,
 `--network` says the networking environment of the container is the same as the 
-host's and `-e REDIS_URL=redis://192.168.0.1:6379` specifies the IP address of
-the server and the port on which the REDIS job queue is located 
-
+host's and `-e REDIS_URL=redis://:password@192.168.0.1:6379` specifies the connecting
+password, the IP address and the hosted port of the server on which the REDIS job queue 
+is located 
 
 - When each simulation is run, a (unique) folder is created in the mounted folder ('/home/data' 
 from above example) using the job ID. There are files and sub-folders inside this 
@@ -79,11 +79,13 @@ job folder. Here are the details.
   - `ops.log` is the activity log created by OPS
   - `graphs` is the folder that contains all the scalar results and vector results (graphs) as .pdf files
   - `csv` is the folder that contains the precision-changed .csv files (currently set to 100 seconds) 
-  - `temp` is the folder where temporary files are stored (currently not removed)
+  - `simrun` is the folder that contains data about the simulation run (e.g., simulation duration, events, etc.)
+  - `temp` is the folder where temporary files are stored 
+  - `INFO.txt` contains info on the files and folders included in the archive sent to user
 
-- When the simulation is completed, a selected set of files are zipped and sent to the remote file
-sharing service configured (e.g., DropBox), and currently `omnetpp.ini`, `General-0.sca`, `ops.log`, `graphs` folder,
-and the `csv` folder are part of this zip file
+- When the simulation is completed, a selected set of files and folders are zipped and sent to the remote file
+sharing service configured (e.g., DropBox), and currently `omnetpp.ini`, `INFO.txt`, `graphs` folder,
+`csv` folder and the `simrun` folder are included in this zip file
 
 - When OPS Docker image is run attached (without `-d`), it creates a container that shows the operation 
 of the worker and errors (where there are) on the command-line (useful for troubleshooting)
@@ -95,6 +97,10 @@ docker run -i -v /home/data:/opt/data -e "REDIS_URL=redis://:password@192.168.0.
 ```bash
 docker exec -i -t abcd /bin/bash
 ```
+
+- Once the zip file is made and uploaded to the file sharing service, all files related to the simulation are 
+removed
+
 
 Storage backend
 ===============
