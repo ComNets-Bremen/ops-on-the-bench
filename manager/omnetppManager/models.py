@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.core.exceptions import ValidationError
 
 import uuid
 
@@ -120,6 +121,14 @@ class Simulation(models.Model):
         return self.status == self.Status.ABORTED
 
 
+# Validator for config code
+def is_valid_python(value):
+    try:
+        eval(value)
+    except:
+        raise ValidationError(
+                _("Invalid python code"),
+                )
 
 ## Manager class for key value storage access
 #
@@ -129,13 +138,11 @@ class ConfigKeyValueStorageManager(models.Manager):
     def get_value(self, key):
         o = None
         try:
-            o = self.model.objects.get(config_key=key).config_value
+            o = eval(self.model.objects.get(config_key=key).config_value, {}, {})
         except self.model.DoesNotExist:
             if hasattr(settings, key):
                 o = getattr(settings, key)
         return o
-
-    #TODO: Convert to int, bool etc?
 
 ## Simple key value storage management for config (besides settings.py)
 class ConfigKeyValueStorage(models.Model):
@@ -145,7 +152,9 @@ class ConfigKeyValueStorage(models.Model):
             )
 
     config_value = models.CharField(
-            max_length = 100
+            max_length = 100,
+            validators = [is_valid_python],
+            help_text = _("A python expression like \"abc\", [1, 2, 3], True etc."),
             )
 
     objects = models.Manager()
