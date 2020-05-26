@@ -64,6 +64,8 @@ class Simulation(models.Model):
 
     simulation_error = models.TextField(default=None, blank=True, null=True)
 
+    job_error = models.TextField(default=None, blank=True, null=True)
+
     handled_by = models.CharField(max_length=100, default=None, blank=True, null=True)
 
     notification_mail_address = models.EmailField(default=None, blank=True, null=True)
@@ -71,6 +73,8 @@ class Simulation(models.Model):
     storage_backend = models.ForeignKey(StorageBackend, on_delete=models.SET_NULL, null=True, default=None)
 
     shared_link = models.CharField(max_length=250, default="")
+
+    meta_full = models.TextField(default=None, blank=True, null=True)
 
     # String representation, mainly for debugging and admin model
     def __str__(self):
