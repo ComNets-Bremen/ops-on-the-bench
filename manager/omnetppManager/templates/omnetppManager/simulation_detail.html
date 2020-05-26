@@ -37,6 +37,24 @@
     </code>
 </div>
 
+{% if object.meta_full %}
+
+<h2 class="display-5">Raw meta data</h2>
+<p>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseMeta" aria-expanded="false" aria-controls="collapseMeta">
+      Show / hide full meta data
+  </button>
+</p>
+<div class="collapse" id="collapseMeta">
+    <code>
+        {{object.meta_full|linebreaks|safe}}
+    </code>
+</div>
+
+
+
+{% endif %}
+
 {% if object.simulation_error%}
 
 <h2 class="display-5">Simulation error</h2>
@@ -44,4 +62,14 @@
     {{object.simulation_error|linebreaks|safe}}
 </code>
 {% endif %}
+
+{% if object.job_error%}
+
+<h2 class="display-5">Job execution error</h2>
+<code>
+    {{object.job_error|linebreaks|safe}}
+</code>
+{% endif %}
+
+
 {% endblock %}
