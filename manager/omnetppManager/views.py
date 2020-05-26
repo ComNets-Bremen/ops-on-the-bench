@@ -284,23 +284,30 @@ def update_sim_status(simulation_id, new_status):
 ## Store results
 #
 # Returns true, if something was updated
-def store_sim_results(simulation_id, meta, data):
+def store_sim_results(simulation_id, meta, data=None, job_error=None):
     sim = None
     try:
         sim = Simulation.objects.get(simulation_id=simulation_id)
+
+        if job_error != None:
+            sim.job_error = str(job_error)
+
         if "exception" in meta:
             sim.simulation_error = meta["exception"]
 
         if "handled_by" in meta:
             sim.handled_by = meta["handled_by"]
 
-        if isinstance(data, dict):
-            print(data)
-            if "shared_link" in data and data["shared_link"] and data["shared_link"] != "":
-                sim.shared_link = data["shared_link"]
-                print("Stored shared link")
+        if data != None:
+            if isinstance(data, dict):
+                print(data)
+                if "shared_link" in data and data["shared_link"] and data["shared_link"] != "":
+                    sim.shared_link = data["shared_link"]
+                    print("Stored shared link")
 
-        # TODO: store results / data
+        if len(meta):
+            # Do not store empty meta data
+            sim.meta_full = meta
 
         sim.save()
         return True
@@ -340,14 +347,15 @@ def sync_simulations(redis_conn=get_redis_conn()):
 
     for j in q.finished_job_registry.get_job_ids():
         job = q.fetch_job(j)
-        store_sim_results(j, job.meta, job.result)
+        store_sim_results(j, job.meta, job.result, job.exc_info)
         q.finished_job_registry.remove(job)
 
         update_sim_status(j, Simulation.Status.FINISHED)
 
     for j in q.failed_job_registry.get_job_ids():
         job = q.fetch_job(j)
-        store_sim_results(j, job.meta, job.result)
+
+        store_sim_results(j, job.meta, job.result, job.exc_info)
         q.failed_job_registry.remove(job)
 
         update_sim_status(j, Simulation.Status.FAILED)
@@ -361,6 +369,8 @@ def sync_simulations(redis_conn=get_redis_conn()):
     for j in q.started_job_registry.get_job_ids():
         if update_sim_status(j, Simulation.Status.STARTED):
             updated_jobs += 1
+        # update meta
+        store_sim_results(j, q.fetch_job(j).meta)
 
     for j in q.deferred_job_registry.get_job_ids():
         if update_sim_status(j, Simulation.Status.DEFERRED):
