@@ -139,8 +139,8 @@ def is_valid_python(value):
 # Tries to access the value from the key value storage. Not defined -> tries to
 # access using settings. Not defines -> return None
 class ConfigKeyValueStorageManager(models.Manager):
-    def get_value(self, key):
-        o = None
+    def get_value(self, key, default=None):
+        o = default
         try:
             o = eval(self.model.objects.get(config_key=key).config_value, {}, {})
         except self.model.DoesNotExist:
