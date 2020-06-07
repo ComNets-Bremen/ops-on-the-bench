@@ -162,7 +162,7 @@ def run_ops(job, arguments):
         # set time after file removal and status
         with lock:
             common['time_after_file_removal'] = time.time()
-            common['status'] = STATUSVALS.CRASHED
+            job.save_meta()
 
         # wait for monitor thread to finish
         monitor_thread.join()
@@ -743,20 +743,10 @@ def monitor(common, lock):
             elif common['status'] == STATUSVALS.ARCHIVING:
                 update_peak_disk_usage(common)
 
-            elif common['status'] == STATUSVALS.UPLOADING \
-                    or common['status'] == STATUSVALS.TERMINATING:
-                pass
-
-            elif common['status'] == STATUSVALS.COMPLETED:
-                break
-
-            else:
-                # unknow status
-                break
-
             # adjusting the results parsing progress in case the estimation
             # went wrong
-            update_progress(common)
+            if common['status'].value > STATUSVALS.PARSING.value:
+                common['results_completed_perc'] = 100
 
             # update job with status data
             job = common['job']
@@ -768,6 +758,10 @@ def monitor(common, lock):
             job.meta['results_completed_perc'] = common['results_completed_perc'] if 'results_completed_perc' in common else 0
             job.meta['current_state'] = common['status'].name
             job.save_meta()
+
+            # if completed or crashed, then stop thread
+            if common['status'].value >= STATUSVALS.COMPLETED.value:
+                break
 
             # # dump all dict values
             # dump_dict(job.meta, common)
@@ -917,11 +911,3 @@ def update_results_progress(common):
     current_results_size = total_size - vec_size
     results_completed_perc = round(current_results_size / estimated_total_results_size * 100.0)
     common['results_completed_perc'] = results_completed_perc if results_completed_perc <= 100 else 100
-
-# adjusting the results parsing progress in case the estimation
-# goes wrong
-def update_progress(common):
-
-    # if results parsing is over, just say 100% completed
-    if common['status'].value >= STATUSVALS.ARCHIVING.value:
-        common['results_completed_perc'] = 100

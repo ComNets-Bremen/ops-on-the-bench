@@ -31,7 +31,7 @@ RUN tar xf omnetpp-5.6.1-src-core.tgz && rm omnetpp-5.6.1-src-core.tgz
 ENV PATH /opt/omnetpp-5.6.1/bin:$PATH
 WORKDIR omnetpp-5.6.1
 RUN ./configure WITH_TKENV=no WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no
-RUN make MODE=release -j $(nproc)
+RUN make MODE=release -j$(nproc)
 WORKDIR /opt/
 
 
