@@ -27,21 +27,23 @@ worker
 Here are the worker side details. The code related to the worker is available in the 
 `manager/utils` folder.
 
-- `worker.py` - implements the worker called through the REDIS queue which calls other functions (in `opsrun.py`)
+- The code and other files that implement the worker
 
-- `opsrun.py` - implements the functions that run simulations and process results
+  - `worker.py` - implements the worker called through the REDIS queue which calls other functions (in `opsrun.py`)
 
-- `worker_utils.py` - implements the some helper functions required by other functions
+  - `opsrun.py` - implements the functions that run simulations and process results
 
-- `dropboxops.py` - implements all operations related to uploading results to a DropBox account
+  - `worker_utils.py` - implements the some helper functions required by other functions
 
-- `Docker` - spec to create the OPS based Docker image
+  - `dropboxops.py` - implements all operations related to uploading results to a DropBox account
 
-- `stat-list.txt` - contains the details of each stat used in the results processing
+  - `Docker` - spec to create the OPS based Docker image
 
-- `net-list.txt` - contains the details of all the network names possible to be simulated which are required when extracting results using the `scavetool`
+  - `stat-list.txt` - contains the details of each stat used in the results processing
 
-- `queue-sim.py` and `omnetpp.ini` are to run test simulations without the Django front-end
+  - `net-list.txt` - contains the details of all the network names possible to be simulated which are required when extracting results using the `scavetool`
+
+  - `queue-sim.py` and `omnetpp.ini` are to run test simulations without the Django front-end
 
 - Dependancies
 ```bash
@@ -101,6 +103,17 @@ docker exec -i -t abcd /bin/bash
 - Once the zip file is made and uploaded to the file sharing service, all files related to the simulation are 
 removed
 
+- The worker code sends the status of the activities periodically (every 3 seconds) using the `meta` dictionary of the job.
+
+  - `current_state` - what activity is the worker in currently (INITILIZING, SIMULATING, PARSING, ARCHIVING, UPLOADING, TERMINATING, COMPLETED, CRASHED)
+  - `start_time_str` - starting time of the work
+  - `peak_disk_usage` - peak disk space used by all programs (simulation, results parsing, etc) 
+  - `peak_sim_ram_usage` - peak RAM used duriung the simulation
+  - `peak_results_ram_usage` - peak RAM used when parsing results
+  - `sim_completed_perc` - percentage completion of the simulation itself
+  - `results_completed_perc` - percentage completion of results parsing (this only an estimation)
+  - `shared_link` - link to the Dropbox zip file containing the job output
+  
 
 Storage backend
 ===============

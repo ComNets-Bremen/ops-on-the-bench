@@ -22,7 +22,9 @@ def main():
                 'title' : 'Epidemic with SWIM mobility',
                 'omnetpp.ini' : inistr,
                 'runconfig' : 'General',
-                'summarizing_precision' : 100.0
+                'summarizing_precision' : 100.0,
+                'storage_backend_id' : 'dropbox',
+                'storage_backend_token' : '68xuOnr4c-AAAAAAAAAAIG1w-UhkxyhddCb9Hu011bedIpjsDwaO0Iujk4XPtcx_'
                 }
 
     # connect to REDIS

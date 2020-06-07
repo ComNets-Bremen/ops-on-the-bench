@@ -56,7 +56,7 @@ def run_simulation(executable, arguments):
     #        print(arg, arguments[arg])
             print(arg)
         # time.sleep(10)
-        shared_link = opsrun.run_ops(str(job.get_id()), arguments)
+        shared_link = opsrun.run_ops(job, arguments)
 
         print(job.id)
         print(job.meta)
