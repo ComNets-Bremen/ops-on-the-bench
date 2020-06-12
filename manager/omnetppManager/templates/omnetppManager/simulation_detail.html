@@ -8,7 +8,7 @@
     <li>Title: {{object.title}}</li>
     <li>User: {{object.user}}</li>
     <li>Run config: {{object.runconfig}}</li>
-    <li>Status: {{object.get_status_display}}</li>
+    <li>Status: <code>{{object.get_status_display}}</code></li>
     <li>Precision: {{object.summarizing_precision}} s</li>
     <li>ID: <code>{{object.simulation_id}}</code></li>
     <li>Storage backend: {{object.storage_backend.backend_name}}</li>
@@ -28,8 +28,23 @@
 {% if object.meta_full %}
 <h2 class="display-5">Simulation Meta Data</h2>
 <ul>
-    <li>Simulation Percentage: {{ object.get_meta.sim_completed_perc }}&percnt;</li>
-    <li>Result processing Percentage: {{ object.get_meta.results_completed_perc }}&percnt;</li>
+    <li>
+        <label for="sim_percentage">
+            Simulation Percentage: {{ object.get_meta.sim_completed_perc }}&percnt;
+        </label>
+        <progress id="sim_percentage" value="{{ object.get_meta.sim_completed_perc }}" max="100">
+            {{ object.get_meta.sim_completed_perc }}&percnt;
+        </progress>
+    </li>
+    <li>
+        <label for="res_percentage">
+            Result Processing Percentage: {{ object.get_meta.results_completed_perc }}&percnt;
+        </label>
+        <progress id="res_percentage" value="{{ object.get_meta.results_completed_perc }}" max="100">
+            {{ object.get_meta.results_completed_perc }}&percnt;
+        </progress>
+    </li>
+
     <li>Current state: <code>{{ object.get_meta.current_state }}</code></li>
     <li>Simulation start time: {{ object.get_meta.start_time_str }}</li>
     <li>Resource usage:
