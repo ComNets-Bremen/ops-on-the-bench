@@ -22,6 +22,8 @@ import configparser
 
 import io
 
+import json
+
 import os
 
 from .forms import getOmnetppiniForm, selectSimulationForm
@@ -307,7 +309,10 @@ def store_sim_results(simulation_id, meta, data=None, job_error=None):
 
         if len(meta):
             # Do not store empty meta data
-            sim.meta_full = meta
+            try:
+                sim.meta_full = json.dumps(meta)
+            except:
+                sim.meta_full = meta
 
         sim.save()
         return True
