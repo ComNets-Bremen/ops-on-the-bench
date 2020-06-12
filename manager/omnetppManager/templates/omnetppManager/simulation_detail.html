@@ -10,7 +10,7 @@
     <li>Run config: {{object.runconfig}}</li>
     <li>Status: {{object.get_status_display}}</li>
     <li>Precision: {{object.summarizing_precision}} s</li>
-    <li>ID: {{object.simulation_id}}</li>
+    <li>ID: <code>{{object.simulation_id}}</code></li>
     <li>Storage backend: {{object.storage_backend.backend_name}}</li>
     {% if object.send_notify_mail%}
     <li>Notifications to {{object.notification_mail_address}}</li>
@@ -24,6 +24,25 @@
     <li><a href="{{object.shared_link}}" target="_blank">Download results</a></li>
     {% endif %}
 </ul>
+
+{% if object.meta_full %}
+<h2 class="display-5">Simulation Meta Data</h2>
+<ul>
+    <li>Simulation Percentage: {{ object.get_meta.sim_completed_perc }}&percnt;</li>
+    <li>Result processing Percentage: {{ object.get_meta.results_completed_perc }}&percnt;</li>
+    <li>Current state: <code>{{ object.get_meta.current_state }}</code></li>
+    <li>Simulation start time: {{ object.get_meta.start_time_str }}</li>
+    <li>Resource usage:
+        <ul>
+            <li>Simulation: Peak RAM usage: {{ object.get_meta.peak_sim_ram_usage|filesizeformat }}</li>
+            <li>Results: Peak RAM usage: {{ object.get_meta.peak_results_ram_usage|filesizeformat }}</li>
+            <li>Peak disk usage: {{ object.get_meta.peak_disk_usage|filesizeformat }}</li>
+        </ul>
+    </li>
+
+
+</ul>
+{% endif %}
 
 <h2 class="display-5">omnetpp.ini</h2>
 <p>
