@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 
 import uuid
+import json
 
 # Create your models here.
 
@@ -90,6 +91,20 @@ class Simulation(models.Model):
     def get_shared_link(self):
         if self.shared_link and self.shared_link != "":
             return self.shared_link
+        return None
+
+    # Return the meta data in a proper way for the template processing
+    def get_meta(self):
+        if self.meta_full:
+            try:
+                # json object?
+                return json.loads(self.meta_full)
+            except:
+                try:
+                    # non json object? # TODO: rm eval
+                    return eval(self.meta_full)
+                except:
+                    pass
         return None
 
     ## Notify user on sim state change
