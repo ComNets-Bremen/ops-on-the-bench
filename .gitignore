@@ -142,3 +142,7 @@ bin
 # ignore uploads
 
 manager/uploads
+
+
+# ignore local settings
+manager/manager/settings_local.py
