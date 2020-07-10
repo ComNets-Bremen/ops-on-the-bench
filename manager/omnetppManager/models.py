@@ -176,6 +176,7 @@ class ConfigKeyValueStorageManager(models.Manager):
         try:
             o = eval(self.model.objects.get(config_key=key).config_value, {}, {})
         except self.model.DoesNotExist:
+            # Get key from settings.py
             if hasattr(settings, key):
                 o = getattr(settings, key)
         return o
@@ -197,5 +198,5 @@ class ConfigKeyValueStorage(models.Model):
     config = ConfigKeyValueStorageManager()
 
     def __str__(self):
-        return str(self.config_key)
+        return str(self.config_key) + "=" + str(self.config_value)
 

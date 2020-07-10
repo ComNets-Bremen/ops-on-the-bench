@@ -39,6 +39,7 @@ def redirect_to_here(request):
 ## Index page
 @login_required
 def index(request):
+#    print(ConfigKeyValueStorage.config.get_value("TESTKEY"))
     return render(request, 'omnetppManager/index.html', {'title':"Overview"})
 
 ## Show status of queues
@@ -216,7 +217,7 @@ class NewSimWizard(SessionWizardView):
                 run_simulation,
                 SimulationRuntimes.OPS_KEETCHI,
                 args,
-                job_timeout=settings.DEFAULT_SIMULATION_TIMEOUT,    # TODO: Get as param, make configurable?
+                job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
                 )
         print("Job with id", job.id, "started")
 
@@ -272,7 +273,7 @@ def update_sim_status(simulation_id, new_status):
                 send_mail(
                         "Simulation status update",
                         userMessage,
-                        settings.DEFAULT_SENDER_MAIL_ADDRESS,
+                        ConfigKeyValueStorage.config.get_value("DEFAULT_SENDER_MAIL_ADDRESS"),
                         [sim.notification_mail_address, ],
                         fail_silently = False,
                         )
@@ -324,19 +325,9 @@ def store_sim_results(simulation_id, meta, data=None, job_error=None):
 
 # Return a valid redis connection
 def get_redis_conn():
-    # default values:
-    host = "localhost"
-    port = 6379
-    password = None
-
-    if hasattr(settings, "REDIS_DB_PASSWORD"):
-        password = settings.REDIS_DB_PASSWORD
-
-    if hasattr(settings, "REDIS_DB_HOST"):
-        host = settings.REDIS_DB_HOST
-
-    if hasattr(settings, "REDIS_DB_PORT"):
-        port = settings.REDIS_DB_PORT
+    host = ConfigKeyValueStorage.config.get_value("REDIS_DB_HOST", "localhost")
+    port = ConfigKeyValueStorage.config.get_value("REDIS_DB_PORT", 6379)
+    password = ConfigKeyValueStorage.config.get_value("REDIS_DB_PASSWORD", None)
 
     return Redis(host=host, port=port, password=password)
 
