@@ -27,6 +27,23 @@ class StorageBackend(models.Model):
             label += " (active)"
         return str(label)
 
+## User predefined simulations (templates)
+#
+# Contains omnetpp.ini files
+#
+class SimOmnetppTemplate(models.Model):
+    template_name = models.CharField(max_length=100)
+    template_description = models.TextField(default="")
+    template = models.TextField()
+    template_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        label = str(self.template_name)
+        if self.template_active:
+            label += " (active)"
+        return str(label)
+
+
 ## Model to store Simulation details
 #
 # Stores the following data

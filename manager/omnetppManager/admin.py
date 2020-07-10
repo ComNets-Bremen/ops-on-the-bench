@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Simulation, StorageBackend, ConfigKeyValueStorage
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate
 
 # Register your models here.
 
@@ -25,3 +25,5 @@ admin.site.register(Simulation, SimulationAdmin)
 admin.site.register(StorageBackend)
 
 admin.site.register(ConfigKeyValueStorage)
+
+admin.site.register(SimOmnetppTemplate)
