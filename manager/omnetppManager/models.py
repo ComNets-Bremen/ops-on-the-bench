@@ -164,7 +164,12 @@ class Simulation(models.Model):
 
     ## Calculate simulation timeout
     def get_timeout(self):
-        return self.simulation_enqueue_time + datetime.timedelta(seconds=self.simulation_timeout)
+        return self.simulation_enqueue_time +\
+                datetime.timedelta(seconds=self.simulation_timeout)
+
+    ## Return formatted timeout
+    def get_simulation_timeout_formatted(self):
+        return str(datetime.timedelta(seconds=self.simulation_timeout))
 
 
 
