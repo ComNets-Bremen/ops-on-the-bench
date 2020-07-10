@@ -18,6 +18,8 @@ class SimulationAdmin(admin.ModelAdmin):
             "storage_backend",
             "runconfig",
             "omnetppini",
+            "simulation_timeout",
+            "simulation_enqueue_time",
             )
 
 admin.site.register(Simulation, SimulationAdmin)

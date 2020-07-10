@@ -231,6 +231,7 @@ class NewSimWizard(SessionWizardView):
                 summarizing_precision = float(cleaned_data["summarizing_precision"]),
                 notification_mail_address = notification_mail_address,
                 storage_backend = storage_backend_object,
+                simulation_timeout = job.timeout,
                 )
 
         simulation.save()

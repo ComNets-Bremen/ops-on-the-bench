@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 import uuid
 import json
 
+import datetime
+
 # Create your models here.
 
 ## Model to store data storages
@@ -94,6 +96,10 @@ class Simulation(models.Model):
 
     meta_full = models.TextField(default=None, blank=True, null=True)
 
+    simulation_timeout = models.IntegerField(default=0)
+
+    simulation_enqueue_time = models.DateTimeField(auto_now_add=True)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
@@ -155,6 +161,11 @@ class Simulation(models.Model):
     ## status for template rendering: aborted
     def is_aborted(self):
         return self.status == self.Status.ABORTED
+
+    ## Calculate simulation timeout
+    def get_timeout(self):
+        return self.simulation_enqueue_time + datetime.timedelta(seconds=self.simulation_timeout)
+
 
 
 # Validator for config code
