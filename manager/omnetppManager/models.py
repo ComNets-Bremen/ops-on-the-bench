@@ -5,10 +5,14 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 
+from django.core.validators import RegexValidator
+
 import uuid
 import json
 
 import datetime
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
 
 # Create your models here.
 
@@ -100,6 +104,8 @@ class Simulation(models.Model):
 
     simulation_enqueue_time = models.DateTimeField(auto_now_add=True)
 
+    simulation_start_time = models.DateTimeField(null=True, default=None)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
@@ -170,6 +176,62 @@ class Simulation(models.Model):
     ## Return formatted timeout
     def get_simulation_timeout_formatted(self):
         return str(datetime.timedelta(seconds=self.simulation_timeout))
+
+
+# Type of config (mobility, node etc.)
+class OmnetppConfigType(models.Model):
+    name = models.CharField(
+            max_length=100,
+            help_text="Human readable name for this category",
+            validators=[alphanumeric,],
+            )
+    label = models.CharField(
+            default="<undefined>",
+            max_length=100,
+            )
+    multiple_instances = models.BooleanField(
+            default=False,
+            help_text="Can this category be used several times in one omnetpp.ini?",
+            )
+
+    def __str__(self):
+        return self.name
+
+
+## Part of omnetpp config
+class OmnetppConfig(models.Model):
+    name = models.CharField(max_length=100)
+
+    model_type = models.ForeignKey(
+            "OmnetppConfigType",
+            related_name = "model_type",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        params = OmnetppConfigParameter.objects.filter(config=self).count()
+        if params > 1:
+            return self.name + " with " + str(params) + " parameters"
+        else:
+            return self.name + " with one parameter"
+
+## Parameters for the selected mobility model
+class OmnetppConfigParameter(models.Model):
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.CharField(max_length=100)
+    param_unit = models.CharField(max_length=10, default="", blank=True)
+    user_editable = models.BooleanField(default=False)
+
+    param_description = models.CharField(default="", max_length=400, blank=True)
+
+    config = models.ForeignKey(
+            "OmnetppConfig",
+            related_name="parameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)
 
 
 
