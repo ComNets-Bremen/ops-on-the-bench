@@ -40,7 +40,7 @@ RUN git clone https://github.com/ComNets-Bremen/OPS.git
 WORKDIR /opt/OPS/
 RUN ./bootstrap.sh
 RUN ./ops-makefile-setup.sh
-RUN make
+RUN make MODE=release -j$(nproc)
 WORKDIR /opt/OPS/simulations/
 RUN mkdir /opt/data
 ENV PATH /opt/OPS:$PATH

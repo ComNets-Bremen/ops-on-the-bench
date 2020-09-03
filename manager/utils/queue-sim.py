@@ -10,7 +10,7 @@ import rq
 import worker
 import argparse
 
-def main(inifile):
+def main(inifile, runconfig):
 
     # make string of the omnetpp.ini file
     with open (inifile, 'r') as inifilefp:
@@ -22,7 +22,7 @@ def main(inifile):
                 'user' : 'adu',
                 'title' : 'Epidemic with SWIM mobility',
                 'omnetpp.ini' : inistr,
-                'runconfig' : 'General',
+                'runconfig' : runconfig,
                 'summarizing_precision' : 100.0,
                 'storage_backend_id' : 'dropbox',
                 'storage_backend_token' : '68xuOnr4c-AAAAAAAAAAIG1w-UhkxyhddCb9Hu011bedIpjsDwaO0Iujk4XPtcx_'
@@ -39,7 +39,8 @@ def main(inifile):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--inifile', help='.ini file to use', required=True)
+    parser.add_argument('-r', '--runconfig', help='Config tag to use', required=True)
     args = parser.parse_args()
 
-    main(args.inifile)
+    main(args.inifile, args.runconfig)
 

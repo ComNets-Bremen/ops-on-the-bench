@@ -31,7 +31,7 @@ ARCHIVE_FILE = 'results.zip'
 ARCHIVE_LIST = ['INFO.txt', 'omnetpp.ini', 'graphs', 'csv', 'simrun']
 STATUSVALS = enum.Enum('STATUSVALS', 'INITILIZING SIMULATING PARSING ARCHIVING UPLOADING TERMINATING COMPLETED CRASHED', start=1)
 MONITOR_INTERVAL_SEC = 3.0
-ARCHIVE_LIFETIME_DAYS = 365
+ARCHIVE_LIFETIME_DAYS = 7
 ESTIMATED_TOTAL_RESULTS_SIZE_PERC = 20.0
 
 # main entry point for performing a single job,
@@ -82,14 +82,14 @@ def run_ops(job, arguments):
             common['status'] = STATUSVALS.PARSING
 
         # create graphs from vectors 
-        create_graphs(root_folder, graphs_folder, temp_folder, common, lock)
+        create_graphs(root_folder, graphs_folder, temp_folder, arguments['runconfig'], common, lock)
 
         # set time after creating graphs
         with lock:
             common['time_after_graphs'] = time.time()
 
         # create scalar stats
-        create_stats(root_folder, graphs_folder, csv_folder, temp_folder)
+        create_stats(root_folder, graphs_folder, csv_folder, temp_folder, arguments['runconfig'])
 
         # set time after creating scalar stats 
         with lock:
@@ -244,7 +244,7 @@ def run_sim(root_folder, runconfig, common, lock):
     results_dir = '--result-dir=' + root_folder
  
     # run simulation
-    proc = subprocess.Popen(['ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', 
+    proc = subprocess.Popen(['ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', '-c', runconfig,
                     '-n', '.:../src:../modules/inet/src:../modules/KeetchiLib/src',
                     '--image-path=../modules/inet/images',
                     results_dir,
@@ -265,7 +265,7 @@ def run_sim(root_folder, runconfig, common, lock):
 
 
 # create stat graphs
-def create_graphs(root_folder, graphs_folder, temp_folder, common, lock):
+def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lock):
 
     print('creating graphs ...')
 
@@ -293,7 +293,7 @@ def create_graphs(root_folder, graphs_folder, temp_folder, common, lock):
                         continue
                     net_str += ('module(' + netrow[0].strip() + ') OR ')
                 net_str += ('module(ABCD)')
-            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':vector)\"'
+            filter_str = '\"attr:configname(' + runconfig + ') AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':vector)\"'
 
             # build path of temporary CSV file
             temp_csv = os.path.join(temp_folder, (stat_var + '.csv'))
@@ -362,7 +362,7 @@ def create_graphs(root_folder, graphs_folder, temp_folder, common, lock):
                 plt.close()
 
 
-def create_stats(root_folder, graphs_folder, csv_folder, temp_folder):
+def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig):
 
     print('creating scalar stats ...')
 
@@ -404,7 +404,7 @@ def create_stats(root_folder, graphs_folder, csv_folder, temp_folder):
                         continue
                     net_str += ('module(' + netrow[0].strip() + ') OR ')
                 net_str += ('module(ABCD)')
-            filter_str = '\"attr:configname(General) AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':' + stat_scastat + ')\"'
+            filter_str = '\"attr:configname(' + runconfig + ') AND attr:runnumber(0) AND (' + net_str + ') AND name(' + stat_var + ':' + stat_scastat + ')\"'
 
             # build path of temporary CSV file
             temp_csv = os.path.join(temp_folder, (stat_var + '-sca.csv'))
@@ -747,7 +747,7 @@ def monitor(common, lock):
             # went wrong
             if common['status'].value > STATUSVALS.PARSING.value:
                 common['results_completed_perc'] = 100
-            
+
             # update job with status data
             job = common['job']
             job.meta['start_time_str'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(common['start_time']))
@@ -758,7 +758,6 @@ def monitor(common, lock):
             job.meta['results_completed_perc'] = common['results_completed_perc'] if 'results_completed_perc' in common else 0
             job.meta['current_state'] = common['status'].name
             job.save_meta()
-
 
             # if completed or crashed, then stop thread
             if common['status'].value >= STATUSVALS.COMPLETED.value:
