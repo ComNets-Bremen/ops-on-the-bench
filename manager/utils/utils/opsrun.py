@@ -233,6 +233,9 @@ def run_sim(root_folder, runconfig, common, lock):
 
     print('starting simulation ...')
 
+    # prepare runconfig string
+    runconfig = runconfig.split(' ')[1].strip() if len(runconfig.split(' ')) > 1 else runconfig.strip()
+
     # path of the sanitized .ini file
     inipath = './omnetpp.ini'
 
@@ -269,6 +272,10 @@ def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lo
 
     print('creating graphs ...')
 
+    # prepare runconfig string
+    runconfig = runconfig.split(' ')[1].strip() if len(runconfig.split(' ')) > 1 else runconfig.strip()
+
+    # create graphs in a loop for every stat 
     with open(STAT_LIST,'r') as listfp:
         lines = csv.reader(listfp, delimiter=',')
         for row in lines:
@@ -365,6 +372,9 @@ def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lo
 def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig):
 
     print('creating scalar stats ...')
+
+    # prepare runconfig string
+    runconfig = runconfig.split(' ')[1].strip() if len(runconfig.split(' ')) > 1 else runconfig.strip()
 
     # setup .pdf writer to write results
     pdf = fpdf.FPDF()
