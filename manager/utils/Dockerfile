@@ -15,7 +15,7 @@ ENV PATH /usr/lib/ccache:$PATH
 
 
 # install Python modules
-RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf && pip3 install dropbox
+RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf && pip3 install dropbox && pip3 install python-slugify
 
 
 # These are necessary to make Click in rq happy.

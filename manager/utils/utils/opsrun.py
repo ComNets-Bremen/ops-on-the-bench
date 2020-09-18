@@ -23,6 +23,7 @@ except ModuleNotFoundError:
 import threading
 import enum
 import datetime
+import slugify
 
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
@@ -126,7 +127,7 @@ def run_ops(job, arguments):
             common['status'] = STATUSVALS.UPLOADING
 
         # handle archive file as requested
-        shared_link = upload_archive(archive_path, arguments['storage_backend_id'], arguments['storage_backend_token'], keep_days=ARCHIVE_LIFETIME_DAYS)
+        shared_link = upload_archive(archive_path, arguments['storage_backend_id'], arguments['storage_backend_token'], title=arguments['title'], keep_days=ARCHIVE_LIFETIME_DAYS)
 
         # set time after arch file upload and status
         with lock:
@@ -683,12 +684,14 @@ def create_archive(root_folder, archive_file, archive_list):
 
 
 # handle (e.g., upload) archive file
-def upload_archive(archive_path, storage_id, token, keep_days=7):
+def upload_archive(archive_path, storage_id, token, title='no title', keep_days=7):
+    # slugify the title and create prefix to use in archieve name
+    prefix = slugify.slugify('ootb ' + title)
 
     shared_link = ''
     if 'dropbox' in storage_id:
         # use DropBox with given token
-        shared_link = dropboxops.upload_file(archive_path, token, livetime=datetime.timedelta(days=keep_days))
+        shared_link = dropboxops.upload_file(archive_path, token, prefix, livetime=datetime.timedelta(days=keep_days))
     else:
         # move to some place in local storage (not implemented)
         pass

@@ -20,6 +20,7 @@ TOKEN = "S40VTTCeGpoAAAAAAAB_2brkwdVbb874TpDCsrdLAORtfWpRu4g6Zl2xYMoDR4uN"
 
 def upload_file(filename,
         token,
+        prefix,
         livetime=datetime.timedelta(days=7),
         dropbox_path=None,
         chunksize=100*1000*1000):
@@ -29,7 +30,7 @@ def upload_file(filename,
     if dropbox_path:
         path = dropbox_path
     else:
-        path = "/upload_" + str(uuid.uuid4()) + "_" + os.path.basename(filename)
+        path = "/" + prefix + "_" + str(uuid.uuid4()) + "_" + os.path.basename(filename)
 
     dbx = dropbox.Dropbox(token)
 
