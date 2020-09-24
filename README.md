@@ -19,6 +19,7 @@ pip3 install django-formtools
 pip3 install matplotlib
 pip3 install fpdf
 pip3 install dropbox
+pip3 install slugify
 ```
 
 worker
