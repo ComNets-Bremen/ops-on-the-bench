@@ -4,9 +4,11 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.html import strip_tags
 from django.conf import settings
 
+from django.forms import BaseFormSet
+
 import configparser
 
-from .models import StorageBackend
+from .models import StorageBackend, OmnetppConfigType, OmnetppConfig, OmnetppConfigParameter
 
 ## Special field for uploading omnetpp.ini files.
 #
@@ -71,4 +73,204 @@ class selectSimulationForm(forms.Form):
                 widget=forms.Select(choices=storage_names),
                 help_text="Storage backend for the simulation output"
                 )
+
+
+# Guest user omnetpp config forms
+
+
+# General detailed settings form
+class GeneralSettingForm(forms.Form):
+    simulation_title = forms.CharField(max_length=50)
+    simulation_title.widget.attrs.update({"class":"form-control"})
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        types = OmnetppConfigType.objects.filter(has_multiple_instances=False)
+        for t in types:
+            options = OmnetppConfig.objects.filter(model_type=t)
+            name = "generalSetting_"+"".join(t.name.split(" "))
+            self.fields[name] = forms.CharField(
+                    label = t.label,
+                    widget=forms.Select(
+                        choices = [[o.id, o.name] for o in options],
+                        )
+                    )
+
+    def get_fields(self):
+        return self.cleaned_data
+
+# set the models for the nodes
+class NodeSettingForm(forms.Form):
+    name = forms.CharField(
+            label="Node Name",
+            widget=forms.TextInput(attrs={
+                "class" : "form-control",
+                "placeholder":"Enter name here",
+                })
+            )
+    node_number = forms.DecimalField(
+            label="Number of nodes",
+            widget=forms.NumberInput(attrs={
+                "class" : "form-control",
+                "placeholder" : 0,
+                })
+            )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        types = OmnetppConfigType.objects.filter(has_multiple_instances=True)
+
+        for t in types:
+
+            options = OmnetppConfig.objects.filter(model_type=t)
+
+            name = "setting_"+"".join(t.name.split(" "))
+            self.fields[name] = forms.CharField(
+                    label = t.label,
+                    widget=forms.Select(
+                        choices = [[o.id, o.name] for o in options],
+                        attrs={
+                            "class" : "form-control",
+                            "placeholder" : t.label,
+                            }),
+                        )
+
+
+    def get_fields(self):
+        return self.cleaned_data
+
+
+
+class BaseNodeSettingFormSet(BaseFormSet):
+    def clean(self):
+        node_names = []
+
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            node_name = form.cleaned_data.get("name")
+            if node_name in node_names:
+                raise forms.ValidationError("Nodes in a set must have distinct names.")
+            node_names.append(node_name)
+
+
+
+# Detailed config
+class ModelDetailSettingForm(forms.Form):
+    parameters = {}
+
+    def __init__(self, *args, **kwargs):
+        base_data = None
+        data = None
+
+        if "base_sim_settings" in kwargs:
+            base_data = kwargs.pop("base_sim_settings")
+
+        if "nodes_sim_settings" in kwargs:
+            data = kwargs.pop("nodes_sim_settings")
+
+        super().__init__(*args, **kwargs)
+
+
+        field_count = 0
+
+        total_number_nodes = 0
+
+        ## First handle general simulation settings
+
+        if base_data:
+            for s in base_data:
+                if not s.startswith("generalSetting_"):
+                    continue
+                base_objects = OmnetppConfig.objects.filter(id__in=base_data[s]).all()
+                for field in base_objects:
+                    parameters = OmnetppConfigParameter.objects.filter(config__id=field.id).all()
+                    multiple = None
+                    for p in parameters:
+                        if multiple==None:
+                            multiple = p.config.model_type.has_multiple_instances
+                        f = forms.CharField(
+                                label= p.param_name,
+                                disabled=not p.user_editable,
+                                help_text = p.param_description,
+                                initial=p.param_default_value + str(p.param_unit),
+                                )
+                        f.widget.attrs.update({"class" : "form-control"})
+                        field_name = "field_"+str(field_count)
+                        self.fields[field_name] = f
+                        field_count += 1
+                        self.parameters[field_name] = {
+                                "param_name" : p.param_name,
+                                "user_editable" : p.user_editable,
+                                "param_default_value" : p.param_default_value,
+                                }
+
+        ## Base settings done, now start with user defined settings
+        if data:
+            for notegroupsetting in data:
+                number_nodes = notegroupsetting["node_number"]
+                for subsetting in notegroupsetting:
+                    if not subsetting.startswith("setting_"):
+                        continue
+                    nodes_setting_objects = OmnetppConfigParameter.objects.filter(config__id=notegroupsetting[subsetting]).all()
+                    multiple = None
+
+                    for setting in nodes_setting_objects:
+                        if multiple == None:
+                            multiple = setting.config.model_type.has_multiple_instances
+
+                        param_name = setting.param_name
+                        if multiple and param_name.startswith("**."):
+                            param_name = "**.hosts[" + str(total_number_nodes) + ":" + str(total_number_nodes+number_nodes) + "]." + param_name[3:]
+                        f = forms.CharField(
+                                label=param_name,
+                                disabled = not setting.user_editable,
+                                help_text = setting.param_description,
+                                initial=setting.param_default_value + str(setting.param_unit),
+                                )
+                        f.widget.attrs.update({"class" : "form-control"})
+                        field_name = "field_"+str(field_count)
+                        self.fields[field_name] = f
+                        field_count += 1
+                        self.parameters[field_name] = {
+                                "param_name" : param_name,
+                                "user_editable" : setting.user_editable,
+                                "param_default_value" : setting.param_default_value
+                                }
+
+
+
+                total_number_nodes += number_nodes
+
+        ## Static (context-generated) parameters
+
+        f = forms.CharField(
+                label="**.numNodes",
+                disabled=True,
+                help_text = "Total number of nodes",
+                initial = total_number_nodes,
+                )
+        f.widget.attrs.update({"class" : "form-control"})
+        field_name = "field_" + str(field_count),
+        self.fields[field_name] = f
+        field_count += 1
+        self.parameters[field_name] = {
+                "param_name" : "**.numNodes",
+                "user_editable" : False,
+                "param_default_value" : total_number_nodes,
+                }
+
+    def get_fields(self):
+        r = {}
+
+        for field in self.fields:
+            if field in self.parameters:
+                if self.parameters[field]["user_editable"]:
+                    r[self.parameters[field]["param_name"]] = self.cleaned_data[field]
+                else:
+                    r[self.parameters[field]["param_name"]] = self.parameters[field]["param_default_value"]
+            else:
+                r[field] = self.cleaned_data[field]
+        return r
 

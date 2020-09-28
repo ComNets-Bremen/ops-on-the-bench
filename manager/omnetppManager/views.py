@@ -9,6 +9,8 @@ from django.core.paginator import Paginator
 from django.utils.html import strip_tags
 from django.views.generic.detail import DetailView
 
+from django.forms import formset_factory
+
 from django.core.mail import send_mail
 
 from formtools.wizard.views import SessionWizardView
@@ -26,7 +28,10 @@ import json
 
 import os
 
-from .forms import getOmnetppiniForm, selectSimulationForm
+import datetime
+import pytz
+
+from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet
 
 from utils.worker import run_simulation, SimulationRuntimes
 
@@ -206,6 +211,7 @@ class NewSimWizard(SessionWizardView):
                 "storage_backend" : str(storage_backend_object.backend_name),
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
+                "storage_backend_keep_days" : str(storage_backend_object.keep_days),
                 }
 
 
@@ -252,6 +258,69 @@ class JobDetailView(DetailView):
         context["title"] = "Job detail view"
         return context
 
+
+class DetailSimWizard(SessionWizardView):
+    template_name = "omnetppManager/create_detail_sim.html"
+    form_list     = [
+            GeneralSettingForm,
+            formset_factory(NodeSettingForm, extra=1, formset=BaseNodeSettingFormSet),
+            ModelDetailSettingForm
+            ]
+
+    # Get the data from the previous sections
+    def get_form_kwargs(self, step):
+
+        returnDict = super().get_form_kwargs(step)
+        returnDict = {}
+
+        # Set default mail address (if available)
+#        if self.request.user.email and self.request.user.email != "":
+#            returnDict["notification_mail_address"] = self.request.user.email
+
+        if step == "2":
+            base_data = self.get_cleaned_data_for_step("0")
+            data = self.get_cleaned_data_for_step("1")
+
+            returnDict["base_sim_settings"] = base_data
+            returnDict["nodes_sim_settings"] = data
+
+            """
+            # Node specific data
+            for item in data:
+                returnDict["models"].append( {
+                        item["name"] : [item[i] for i in item if i.startswith("setting_")]
+                    } )
+
+
+            # general data
+            returnDict["models"].append( {
+                "general" : [base_data[i] for i in base_data if i.startswith("generalSetting_")]
+                })
+            """
+
+        return returnDict
+
+    def done(self, form_list, form_dict, **kwargs):
+        print([form.cleaned_data for form in form_list])
+        omnetpp_ini = createOmnetppFromForm(form_list, form_dict)
+        #return HttpResponseRedirect(reverse("omnetppManager_job_status"))
+        #TODO Redirect!
+        return render(
+                self.request,
+                'omnetppManager/final_detail_sim.html',
+                {
+                    "title" : "New omnetpp.ini",
+                    "omnetpp_ini" : omnetpp_ini,
+                }
+                )
+
+
+    # Add additional template information like the title
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
+        return context
+
 ## helper
 
 ## Update the status in the simulation db.
@@ -288,10 +357,13 @@ def update_sim_status(simulation_id, new_status):
 ## Store results
 #
 # Returns true, if something was updated
-def store_sim_results(simulation_id, meta, data=None, job_error=None):
+def store_sim_results(simulation_id, meta, data=None, job_error=None, job=None):
     sim = None
     try:
         sim = Simulation.objects.get(simulation_id=simulation_id)
+
+        if job:
+            sim.simulation_start_time = job.started_at.replace(tzinfo=pytz.UTC)
 
         if job_error != None:
             sim.job_error = str(job_error)
@@ -344,7 +416,7 @@ def sync_simulations(redis_conn=get_redis_conn()):
 
     for j in q.finished_job_registry.get_job_ids():
         job = q.fetch_job(j)
-        store_sim_results(j, job.meta, job.result, job.exc_info)
+        store_sim_results(j, job.meta, job.result, job.exc_info, job=job)
         q.finished_job_registry.remove(job)
 
         update_sim_status(j, Simulation.Status.FINISHED)
@@ -352,7 +424,7 @@ def sync_simulations(redis_conn=get_redis_conn()):
     for j in q.failed_job_registry.get_job_ids():
         job = q.fetch_job(j)
 
-        store_sim_results(j, job.meta, job.result, job.exc_info)
+        store_sim_results(j, job.meta, job.result, job.exc_info, job=job)
         q.failed_job_registry.remove(job)
 
         update_sim_status(j, Simulation.Status.FAILED)
@@ -367,7 +439,7 @@ def sync_simulations(redis_conn=get_redis_conn()):
         if update_sim_status(j, Simulation.Status.STARTED):
             updated_jobs += 1
         # update meta
-        store_sim_results(j, q.fetch_job(j).meta)
+        store_sim_results(j, q.fetch_job(j).meta, job=q.fetch_job(j))
 
     for j in q.deferred_job_registry.get_job_ids():
         if update_sim_status(j, Simulation.Status.DEFERRED):
@@ -384,4 +456,29 @@ def sync_simulations(redis_conn=get_redis_conn()):
                 "updated_jobs" : updated_jobs,
             }
 
+# Sim helper
+
+# Create a valid omnetpp.ini from the form data
+# TODO: Evaluate?
+def createOmnetppFromForm(form_list, form_dict):
+    form_out = ""
+
+    for form in form_list:
+        if isinstance(form, ModelDetailSettingForm):
+            fields = form.get_fields()
+            for field in fields:
+                form_out += str(field) + " = " + str(fields[field]) + "\n"
+
+        elif hasattr(form, "__len__") and len(form)>0 and isinstance(form[0], NodeSettingForm):
+            for f in form:
+                print(f.get_fields())
+
+        elif isinstance(form, GeneralSettingForm):
+            print(form.get_fields())
+        else:
+            print("not impl")
+
+            #print(form_dict)
+            #print("CLEANED", form.cleaned_data)
+    return form_out
 
