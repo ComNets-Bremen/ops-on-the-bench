@@ -26,6 +26,7 @@ class StorageBackend(models.Model):
     backend_identifier = models.CharField(max_length=100, default="dropbox")
     backend_token = models.CharField(max_length=100, null=True, blank=True, default=None)
     backend_active = models.BooleanField(default=False)
+    backend_keep_days = models.PositiveIntegerField(default=7)
 
     def __str__(self):
         label = str(self.backend_name)
@@ -189,7 +190,7 @@ class OmnetppConfigType(models.Model):
             default="<undefined>",
             max_length=100,
             )
-    multiple_instances = models.BooleanField(
+    has_multiple_instances = models.BooleanField(
             default=False,
             help_text="Can this category be used several times in one omnetpp.ini?",
             )

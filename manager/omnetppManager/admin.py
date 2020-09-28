@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType
 
 # Register your models here.
 
@@ -20,12 +20,25 @@ class SimulationAdmin(admin.ModelAdmin):
             "omnetppini",
             "simulation_timeout",
             "simulation_enqueue_time",
+            "simulation_start_time",
             )
 
+class OmnetppConfigParameterInline(admin.TabularInline):
+    model = OmnetppConfigParameter
+
+class OmnetppConfigAdmin(admin.ModelAdmin):
+    inlines = [
+            OmnetppConfigParameterInline,
+            ]
+
 admin.site.register(Simulation, SimulationAdmin)
+
+admin.site.register(OmnetppConfig, OmnetppConfigAdmin)
 
 admin.site.register(StorageBackend)
 
 admin.site.register(ConfigKeyValueStorage)
 
 admin.site.register(SimOmnetppTemplate)
+
+admin.site.register(OmnetppConfigType)
