@@ -273,10 +273,6 @@ class DetailSimWizard(SessionWizardView):
         returnDict = super().get_form_kwargs(step)
         returnDict = {}
 
-        # Set default mail address (if available)
-#        if self.request.user.email and self.request.user.email != "":
-#            returnDict["notification_mail_address"] = self.request.user.email
-
         if step == "2":
             base_data = self.get_cleaned_data_for_step("0")
             data = self.get_cleaned_data_for_step("1")
@@ -284,21 +280,16 @@ class DetailSimWizard(SessionWizardView):
             returnDict["base_sim_settings"] = base_data
             returnDict["nodes_sim_settings"] = data
 
-            """
-            # Node specific data
-            for item in data:
-                returnDict["models"].append( {
-                        item["name"] : [item[i] for i in item if i.startswith("setting_")]
-                    } )
-
-
-            # general data
-            returnDict["models"].append( {
-                "general" : [base_data[i] for i in base_data if i.startswith("generalSetting_")]
-                })
-            """
-
         return returnDict
+
+        # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
+    def get_form_initial(self, step):
+        returnDict = {}
+
+        # Set default mail address (if available)
+        if self.request.user.email and self.request.user.email != "" and step=="0":
+            returnDict["notification_mail_address"] = self.request.user.email
+        return self.initial_dict.get(step, returnDict)
 
     def done(self, form_list, form_dict, **kwargs):
         print([form.cleaned_data for form in form_list])
@@ -461,7 +452,7 @@ def sync_simulations(redis_conn=get_redis_conn()):
 # Create a valid omnetpp.ini from the form data
 # TODO: Evaluate?
 def createOmnetppFromForm(form_list, form_dict):
-    form_out = ""
+    form_out = "[General]\n"
 
     for form in form_list:
         if isinstance(form, ModelDetailSettingForm):

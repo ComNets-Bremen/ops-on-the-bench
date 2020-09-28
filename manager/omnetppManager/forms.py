@@ -51,7 +51,11 @@ class getOmnetppiniForm(forms.Form):
 # step 1
 class selectSimulationForm(forms.Form):
     summarizing_precision = forms.FloatField(label="precision", initial=100.0, help_text="Average values every N seconds")
+    summarizing_precision.widget.attrs.update({"class" : "form-control"})
+
     notification_mail_address = forms.EmailField(label="notify simulation state changes (optional)", required=False, help_text="A mail address or leave it empty to disable notification")
+    notification_mail_address.widget.attrs.update({"class" : "form-control"})
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         init_args = kwargs.get("initial", None)
@@ -62,6 +66,8 @@ class selectSimulationForm(forms.Form):
                             widget=forms.Select(choices=[(sec, sec) for sec in init_args["sections"]]),
                             help_text="simulation name from previously uploaded omnetpp.ini"
                             )
+            self.fields["simulation_name"].widget.attrs.update({"class" : "form-control"})
+
 
         storage_names = []
 
@@ -70,7 +76,12 @@ class selectSimulationForm(forms.Form):
 
         self.fields["storage_backend"] = forms.CharField(
                 label="Select storage backend",
-                widget=forms.Select(choices=storage_names),
+                widget=forms.Select(
+                    choices=storage_names,
+                    attrs={
+                    "class" : "form-control",
+                    },
+                ),
                 help_text="Storage backend for the simulation output"
                 )
 
@@ -83,6 +94,17 @@ class GeneralSettingForm(forms.Form):
     simulation_title = forms.CharField(max_length=50)
     simulation_title.widget.attrs.update({"class":"form-control"})
 
+    notification_mail_address = forms.EmailField(label="notify simulation state changes (optional)", required=False, help_text="A mail address or leave it empty to disable notification")
+    notification_mail_address.widget.attrs.update({"class":"form-control"})
+
+    summarizing_precision = forms.FloatField(label="precision", initial=100.0, help_text="Average values every N seconds")
+    summarizing_precision.widget.attrs.update({"class" : "form-control"})
+
+    advanced_settings = forms.BooleanField(label="Advanced settings", help_text="Show advanced settings", required=False)
+    advanced_settings.widget.attrs.update({"class" : "form-control"})
+
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -94,8 +116,30 @@ class GeneralSettingForm(forms.Form):
                     label = t.label,
                     widget=forms.Select(
                         choices = [[o.id, o.name] for o in options],
+                        attrs = {
+                            "class" : "form-control",
+                            }
                         )
                     )
+
+        storage_names = []
+
+        for item in StorageBackend.objects.filter(backend_active=True).values("pk", "backend_name"):
+            storage_names.append((item["pk"], item["backend_name"]))
+
+        self.fields["storage_backend"] = forms.CharField(
+                label="Select storage backend",
+                widget=forms.Select(
+                    choices=storage_names,
+                    attrs = {
+                        "class" : "form-control",
+                        },
+                    ),
+                help_text="Storage backend for the simulation output"
+                )
+
+
+
 
     def get_fields(self):
         return self.cleaned_data
@@ -163,9 +207,11 @@ class ModelDetailSettingForm(forms.Form):
     def __init__(self, *args, **kwargs):
         base_data = None
         data = None
+        advanced = None
 
         if "base_sim_settings" in kwargs:
             base_data = kwargs.pop("base_sim_settings")
+            advanced = base_data["advanced_settings"]
 
         if "nodes_sim_settings" in kwargs:
             data = kwargs.pop("nodes_sim_settings")
@@ -197,6 +243,9 @@ class ModelDetailSettingForm(forms.Form):
                                 initial=p.param_default_value + str(p.param_unit),
                                 )
                         f.widget.attrs.update({"class" : "form-control"})
+                        if not advanced and not p.user_editable:
+                            f.widget = forms.HiddenInput()
+
                         field_name = "field_"+str(field_count)
                         self.fields[field_name] = f
                         field_count += 1
@@ -230,6 +279,9 @@ class ModelDetailSettingForm(forms.Form):
                                 initial=setting.param_default_value + str(setting.param_unit),
                                 )
                         f.widget.attrs.update({"class" : "form-control"})
+                        if not advanced and not setting.user_editable:
+                            f.widget = forms.HiddenInput()
+
                         field_name = "field_"+str(field_count)
                         self.fields[field_name] = f
                         field_count += 1
@@ -252,6 +304,8 @@ class ModelDetailSettingForm(forms.Form):
                 initial = total_number_nodes,
                 )
         f.widget.attrs.update({"class" : "form-control"})
+        if not advanced:
+            f.widget = forms.HiddenInput()
         field_name = "field_" + str(field_count),
         self.fields[field_name] = f
         field_count += 1
