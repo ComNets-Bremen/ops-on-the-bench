@@ -211,7 +211,7 @@ class NewSimWizard(SessionWizardView):
                 "storage_backend" : str(storage_backend_object.backend_name),
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
-                "storage_backend_keep_days" : str(storage_backend_object.keep_days),
+                "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
                 }
 
 
