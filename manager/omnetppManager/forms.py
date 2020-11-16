@@ -271,7 +271,7 @@ class ModelDetailSettingForm(forms.Form):
 
                         param_name = setting.param_name
                         if multiple and param_name.startswith("**."):
-                            param_name = "**.hosts[" + str(total_number_nodes) + ":" + str(total_number_nodes+number_nodes) + "]." + param_name[3:]
+                            param_name = "**.hosts[" + str(total_number_nodes) + ":" + str(total_number_nodes+number_nodes-1) + "]." + param_name[3:]
                         f = forms.CharField(
                                 label=param_name,
                                 disabled = not setting.user_editable,
@@ -293,7 +293,7 @@ class ModelDetailSettingForm(forms.Form):
 
 
 
-                total_number_nodes += number_nodes
+                total_number_nodes += number_nodes-1
 
         ## Static (context-generated) parameters
 
