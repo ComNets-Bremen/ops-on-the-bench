@@ -181,6 +181,10 @@ class Simulation(models.Model):
 
 # Type of config (mobility, node etc.)
 class OmnetppConfigType(models.Model):
+
+    class Meta:
+        ordering = ("order", "-pk",) # Allow manual ordering
+
     name = models.CharField(
             max_length=100,
             help_text="Human readable name for this category",
@@ -194,6 +198,7 @@ class OmnetppConfigType(models.Model):
             default=False,
             help_text="Can this category be used several times in one omnetpp.ini?",
             )
+    order = models.IntegerField(default=10, help_text="Order the fields manually. Lower number = higher priority")
 
     def __str__(self):
         return self.name
@@ -201,6 +206,9 @@ class OmnetppConfigType(models.Model):
 
 ## Part of omnetpp config
 class OmnetppConfig(models.Model):
+    class Meta:
+        ordering = ("model_type__order","-model_type__pk", "pk") # Order according to higher level model
+
     name = models.CharField(max_length=100)
 
     model_type = models.ForeignKey(
@@ -218,6 +226,9 @@ class OmnetppConfig(models.Model):
 
 ## Parameters for the selected mobility model
 class OmnetppConfigParameter(models.Model):
+    class Meta:
+        ordering = ("pk",) # Just for clarification
+
     param_name = models.CharField(max_length=100)
     param_default_value = models.CharField(max_length=100)
     param_unit = models.CharField(max_length=10, default="", blank=True)
