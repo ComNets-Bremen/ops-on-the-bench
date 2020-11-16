@@ -253,6 +253,7 @@ class ModelDetailSettingForm(forms.Form):
                                 "param_name" : p.param_name,
                                 "user_editable" : p.user_editable,
                                 "param_default_value" : p.param_default_value,
+                                "param_unit" : p.param_unit,
                                 }
 
         ## Base settings done, now start with user defined settings
@@ -288,7 +289,8 @@ class ModelDetailSettingForm(forms.Form):
                         self.parameters[field_name] = {
                                 "param_name" : param_name,
                                 "user_editable" : setting.user_editable,
-                                "param_default_value" : setting.param_default_value
+                                "param_default_value" : setting.param_default_value,
+                                "param_unit" : setting.param_unit,
                                 }
 
 
@@ -313,6 +315,7 @@ class ModelDetailSettingForm(forms.Form):
                 "param_name" : "**.numNodes",
                 "user_editable" : False,
                 "param_default_value" : total_number_nodes,
+                "param_unit" : "",
                 }
 
     def get_fields(self):
@@ -323,7 +326,7 @@ class ModelDetailSettingForm(forms.Form):
                 if self.parameters[field]["user_editable"]:
                     r[self.parameters[field]["param_name"]] = self.cleaned_data[field]
                 else:
-                    r[self.parameters[field]["param_name"]] = self.parameters[field]["param_default_value"]
+                    r[self.parameters[field]["param_name"]] = str(self.parameters[field]["param_default_value"]) + str(self.parameters[field]["param_unit"])
             else:
                 r[field] = self.cleaned_data[field]
         return r
