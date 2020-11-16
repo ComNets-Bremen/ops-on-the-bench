@@ -293,7 +293,7 @@ class ModelDetailSettingForm(forms.Form):
 
 
 
-                total_number_nodes += number_nodes-1
+                total_number_nodes += number_nodes
 
         ## Static (context-generated) parameters
 
