@@ -292,18 +292,81 @@ class DetailSimWizard(SessionWizardView):
         return self.initial_dict.get(step, returnDict)
 
     def done(self, form_list, form_dict, **kwargs):
-        print([form.cleaned_data for form in form_list])
-        omnetpp_ini = createOmnetppFromForm(form_list, form_dict)
-        #return HttpResponseRedirect(reverse("omnetppManager_job_status"))
-        #TODO Redirect!
-        return render(
-                self.request,
-                'omnetppManager/final_detail_sim.html',
-                {
-                    "title" : "New omnetpp.ini",
-                    "omnetpp_ini" : omnetpp_ini,
-                }
+        cleaned_data = self.get_all_cleaned_data()
+
+        #print([form.cleaned_data for form in form_list])
+        omnetppini = createOmnetppFromForm(form_list, form_dict)
+
+        # Get config from generated omnetpp.ini
+        config = configparser.ConfigParser()
+        config.read_string(omnetppini)
+        sections = config.sections()
+        simulation_name = "[General]" # Default to general config
+        # get 1st config found
+        if len(sections):
+            simulation_name = sections[0]
+
+        q = Queue(connection=get_redis_conn())
+
+        notification_mail_address = None
+        if cleaned_data["notification_mail_address"] not in ["", None]:
+            notification_mail_address = cleaned_data["notification_mail_address"]
+
+        # Handle backend
+        storage_backend_id = int(cleaned_data["storage_backend"])
+
+        # TODO: Do further checks on backend id?
+        storage_backend_object = get_object_or_404(
+                StorageBackend.objects.filter(backend_active=True),
+                pk=storage_backend_id
                 )
+
+        args = {
+                "user" : str(self.request.user),
+                "title" : str(cleaned_data["simulation_title"]),
+                "omnetpp.ini" : str(omnetppini),
+                "runconfig" : str(simulation_name),
+                "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
+                "storage_backend" : str(storage_backend_object.backend_name),
+                "storage_backend_id" : str(storage_backend_object.backend_identifier),
+                "storage_backend_token" : str(storage_backend_object.backend_token),
+                "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                }
+
+
+        print("Simulation arguments:", args)
+
+
+        # Start job
+        job = q.enqueue(
+                run_simulation,
+                SimulationRuntimes.OPS_KEETCHI,
+                args,
+                job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
+                )
+        print("Job with id", job.id, "started")
+
+        # Store simulation including the job id for later
+        simulation = Simulation(
+                user = self.request.user,
+                title = str(cleaned_data["simulation_title"]),
+                omnetppini = str(omnetppini),
+                runconfig = str(simulation_name),
+                simulation_id = job.id,
+                summarizing_precision = float(cleaned_data["summarizing_precision"]),
+                notification_mail_address = notification_mail_address,
+                storage_backend = storage_backend_object,
+                simulation_timeout = job.timeout,
+                )
+
+        simulation.save()
+
+        # Make sure the simulation status in the db is up to date
+        sync_simulations()
+
+        # Redirect to detail view for simulation
+        return redirect(simulation.get_absolute_url())
+
 
 
     # Add additional template information like the title
