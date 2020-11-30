@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType, ServerConfig, ServerConfigValue
 
 # Register your models here.
 
@@ -42,3 +42,8 @@ admin.site.register(ConfigKeyValueStorage)
 admin.site.register(SimOmnetppTemplate)
 
 admin.site.register(OmnetppConfigType)
+
+admin.site.register(ServerConfig)
+
+admin.site.register(ServerConfigValue)
+

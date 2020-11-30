@@ -290,3 +290,46 @@ class ConfigKeyValueStorage(models.Model):
     def __str__(self):
         return str(self.config_key) + "=" + str(self.config_value)
 
+
+## Server config API
+class ServerConfig(models.Model):
+    server_token = models.UUIDField(
+            default=uuid.uuid4,
+            help_text="The token for this server",
+            )
+    server_id = models.SlugField(
+            max_length=30,
+            unique=True,
+            help_text="The server ID, has to be unique",
+            )
+    server_name = models.CharField(
+            max_length=30,
+            help_text="A human readable name for this server"
+            )
+
+    def __str__(self):
+        return self.server_name
+
+
+class ServerConfigValue(models.Model):
+    server = models.ForeignKey(
+            "ServerConfig",
+            on_delete=models.CASCADE,
+            )
+    key = models.CharField(
+            max_length=30,
+            help_text="The key for the value",
+            )
+    value = models.CharField(
+            max_length=30,
+            help_text="The value for the key",
+            )
+
+    class Meta:
+        constraints = [
+                models.UniqueConstraint(fields=["server", "key"], name="unique key for server"),
+                ]
+
+    def __str__(self):
+        return self.server.server_name + ": " + self.key + "=" + self.value
+

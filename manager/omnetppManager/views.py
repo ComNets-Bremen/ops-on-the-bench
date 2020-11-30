@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 
 from formtools.wizard.views import SessionWizardView
 
-from .models import Simulation, StorageBackend, ConfigKeyValueStorage
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerConfig, ServerConfigValue
 
 from rq import Queue
 from redis import Redis
@@ -536,3 +536,27 @@ def createOmnetppFromForm(form_list, form_dict):
             #print("CLEANED", form.cleaned_data)
     return form_out
 
+
+## Server config access
+
+def get_server_config(request):
+    server_token = request.headers.get("HTTP-X-HEADER-TOKEN")
+    server_id = request.headers.get("HTTP-X-HEADER-SERVER-ID")
+
+    json_response = {}
+
+    # Check for the headers
+    server = ServerConfig.objects.filter(server_token=server_token, server_id=server_id)
+    if len(server) == 1:
+        print("HERE")
+        config = ServerConfigValue.objects.filter(server=server[0]).values("key", "value")
+        json_response[server.first().server_id] = list(config)
+
+    # No auth headers -> is user logged in?
+    elif request.user.is_authenticated:
+        for server in ServerConfig.objects.all():
+            config = ServerConfigValue.objects.filter(server=server).values("key", "value")
+            json_response[server.server_id] = list(config)
+
+    # If nothing fits: empty json object
+    return JsonResponse(json_response)
