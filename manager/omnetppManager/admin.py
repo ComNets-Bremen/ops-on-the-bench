@@ -31,6 +31,15 @@ class OmnetppConfigAdmin(admin.ModelAdmin):
             OmnetppConfigParameterInline,
             ]
 
+class ServerConfigValueInline(admin.TabularInline):
+    model = ServerConfigValue
+
+
+class ServerConfigAdmin(admin.ModelAdmin):
+    inlines = [
+            ServerConfigValueInline,
+            ]
+
 admin.site.register(Simulation, SimulationAdmin)
 
 admin.site.register(OmnetppConfig, OmnetppConfigAdmin)
@@ -43,7 +52,5 @@ admin.site.register(SimOmnetppTemplate)
 
 admin.site.register(OmnetppConfigType)
 
-admin.site.register(ServerConfig)
-
-admin.site.register(ServerConfigValue)
+admin.site.register(ServerConfig, ServerConfigAdmin)
 
