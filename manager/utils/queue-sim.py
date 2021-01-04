@@ -20,7 +20,7 @@ def main(inifile, runconfig):
     execution = 1
     arguments = {
                 'user' : 'adu',
-                'title' : 'Epidemic with SWIM mobility',
+                'title' : runconfig,
                 'omnetpp.ini' : inistr,
                 'runconfig' : runconfig,
                 'summarizing_precision' : 100.0,

@@ -104,7 +104,7 @@ def run_ops(job, arguments):
             common['time_after_summary_data'] = time.time()
 
         # create simulator performance stats
-        create_sim_stats(root_folder, simrun_folder, common, lock)
+        create_sim_stats(root_folder, simrun_folder, arguments['runconfig'], common, lock)
 
         # update final percentage and set time after creating simulator performance stats
         with lock:
@@ -112,7 +112,7 @@ def run_ops(job, arguments):
             common['time_after_sim_stats'] = time.time()
     
         # create INFO file
-        create_info_file(root_folder, arguments['summarizing_precision'], common, lock)
+        create_info_file(root_folder, arguments['summarizing_precision'], arguments['runconfig'], common, lock)
 
         # set status
         with lock:
@@ -543,7 +543,7 @@ def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
 
 
 # create simulator related stats
-def create_sim_stats(root_folder, simrun_folder, common, lock):
+def create_sim_stats(root_folder, simrun_folder, runconfig, common, lock):
 
     # setup .pdf writer to write results
     pdf = fpdf.FPDF()
@@ -610,6 +610,8 @@ def create_sim_stats(root_folder, simrun_folder, common, lock):
     pdf.cell(40, 10, ('Peak Disk Space Used - {:,} bytes'.format(peak_disk)), 0, 1)
     pdf.cell(40, 10, ('Peak RAM Used (Simulation) - {:,} bytes'.format(peak_sim_ram_usage)), 0, 1)
     pdf.cell(40, 10, ('Peak RAM Used (Results Parsing) - {:,} bytes'.format(peak_results_ram_usage)), 0, 1)
+    pdf.cell(40, 10, ('Configuration file - omnetpp.ini'), 0, 1)
+    pdf.cell(40, 10, ('Configuration - ' + runconfig), 0, 1)
 
     # write .csv file
     ocsvfp.write(('startclocktimeepochsec, %f, Start Wall Clock Time in Epoch seconds\n' % (start_time)))
@@ -625,6 +627,8 @@ def create_sim_stats(root_folder, simrun_folder, common, lock):
     ocsvfp.write(('peakdiskspaceusedbytes, %d, Peak Disk Space Used in bytes\n' % (peak_disk)))
     ocsvfp.write(('peakramusedsimbytes, %d, Peak RAM Used (Simulation) in bytes\n' % (peak_sim_ram_usage)))
     ocsvfp.write(('peakramusedresultsbytes, %d, Peak RAM Used (Results Parsing) in bytes\n' % (peak_results_ram_usage)))
+    ocsvfp.write(('configfile, omnetpp.ini, Configuration file used in simulation\n'))
+    ocsvfp.write(('runconfig, ' + runconfig + ', Configuration section used for simulation\n'))
 
     # create the .pdf file
     results_path = os.path.join(simrun_folder, 'simrun-stats.pdf')
@@ -635,7 +639,7 @@ def create_sim_stats(root_folder, simrun_folder, common, lock):
 
 
 # create INFO file
-def create_info_file(root_folder, summarizing_precision, common, lock):
+def create_info_file(root_folder, summarizing_precision, runconfig, common, lock):
 
     # get things to show in info file
     with lock:
@@ -654,6 +658,7 @@ def create_info_file(root_folder, summarizing_precision, common, lock):
                                 + ('%s second intervals.\n' % ('{:,.2f}'.format(summarizing_precision))))
     oinfofp.write('* simrun      - The folder containing information about the simulation run (e.g., events generated).\n')
     oinfofp.write('* INFO.txt    - This file.\n\n')
+    oinfofp.write('The used configuration is ' + runconfig + '\n\n')
 
     # close info file
     oinfofp.close()

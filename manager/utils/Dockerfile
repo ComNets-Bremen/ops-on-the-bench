@@ -8,6 +8,7 @@ RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
 	  git autoconf automake libtool python3-matplotlib vim
 RUN apt-get install ccache -y
 RUN apt-get install zip unzip
+RUN apt-get install pv
 
 
 # set caching path
@@ -41,14 +42,17 @@ WORKDIR /opt/OPS/
 RUN ./bootstrap.sh
 RUN ./ops-makefile-setup.sh
 RUN make MODE=release -j$(nproc)
-WORKDIR /opt/OPS/simulations/
 RUN mkdir /opt/data
 ENV PATH /opt/OPS:$PATH
 ENV LD_LIBRARY_PATH /opt/omnetpp-5.6.1/lib:/opt/OPS/modules/KeetchiLib/lib/.libs:/opt/OPS/modules/inet/src:$LD_LIBRARY_PATH
 
+## Install default simulation traces
+# WORKDIR /opt/
+# RUN wget https://seafile.zfn.uni-bremen.de/f/291602b767e642d49827/?dl=1 -O ootb-traces.tar.gz --progress=dot:giga
+# RUN tar xf ootb-traces.tar.gz  && rm ootb-traces.tar.gz
 
 # copy scripts and other files
-COPY start-redis-client.sh /opt/OPS/simulations/
+COPY init-n-begin.sh /opt/OPS/simulations/
 RUN chmod +x /opt/OPS/simulations/*.sh
 COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
@@ -66,7 +70,9 @@ COPY stat-list.txt /opt/OPS/simulations/utils/
 COPY net-list.txt /opt/OPS/simulations/utils/
 RUN chmod +x /opt/OPS/simulations/utils/*.py
 
+# set current folder
+WORKDIR /opt/OPS/simulations/
 
-# start RQ worker 
-ENTRYPOINT ["/bin/bash", "-c", "/opt/OPS/simulations/start-redis-client.sh"]
+# perform initial work and start RQ (REDIS) worker 
+ENTRYPOINT ["/bin/bash", "-c", "/opt/OPS/simulations/init-n-begin.sh"]
 
