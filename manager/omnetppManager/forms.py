@@ -331,3 +331,11 @@ class ModelDetailSettingForm(forms.Form):
                 r[field] = self.cleaned_data[field]
         return r
 
+
+class RequestAccessForm(forms.Form):
+    name = forms.CharField(label='Your name', max_length=100, help_text="Your full name.")
+    mail = forms.EmailField(label='Your mail address', help_text="The mail address we will use to contact you.")
+    affiliation = forms.CharField(label='Your affiliation', max_length=100, help_text="For whom are you working?")
+    interest = forms.CharField(widget=forms.Textarea, label="Interest", max_length=4000, min_length=10, help_text="A brief description why this project is interesting for you and for what you would like to use it.")
+
+

@@ -18,8 +18,9 @@ urlpatterns = [
         path('job-kill/<int:pk>/', views.job_kill, name='job-kill'),
         path('newsim-detail/', login_required(DetailSimWizard.as_view()), name="omnetppManager_detail_sim"),
         path('get-server-config/', views.get_server_config, name="omnetppManager_get-server-config"),
+        path('request-access/', views.request_access, name="omnetppManager_request_access"),
+        path('request-access-thanks/', views.request_access_thanks, name="omnetppManager_request_access_thanks"),
         ]
-
 
 
 ## Currently used URLs

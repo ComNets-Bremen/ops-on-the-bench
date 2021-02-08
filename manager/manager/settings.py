@@ -153,6 +153,8 @@ DEFAULT_SIMULATION_TIMEOUT = "12h"
 # Sender mail address
 DEFAULT_SENDER_MAIL_ADDRESS = "server@comnets.uni-bremen.de"
 
+DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
+
 # Base title for the webpage
 DEFAULT_MAIN_TITLE = "OPS on the bench"
 

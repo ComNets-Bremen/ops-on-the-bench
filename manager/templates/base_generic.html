@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   {% block title %}<title>
       {{manager_general.base_title}}
       {% if title %}
@@ -29,10 +30,6 @@
           font-size: 3.5rem;
         }
       }
-
-    body {
-      padding-top: 5rem;
-    }
 
     .bg-sunday{
         background-color:#343a40 !important;
@@ -57,6 +54,45 @@
     .text-weekday{
         color: #000 !important;
     }
+
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 60px;
+      line-height: 60px; /* Vertically center the text there */
+      background-color: #f5f5f5;
+    }
+
+
+    /* Custom page CSS
+    -------------------------------------------------- */
+    /* Not required for template or sticky footer method. */
+
+    body > .container {
+      padding: 60px 15px 0;
+    }
+
+    .footer > .container {
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+
+    code {
+      font-size: 80%;
+    }
+
 
 
     </style>
@@ -113,6 +149,9 @@
           <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">Login</a>
           </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'omnetppManager_request_access' %}">Request Demo Access</a>
+          </li>
         {% endif %}
 
     </ul>
@@ -124,6 +163,17 @@
   <main role="main" class="container">
     {% block content %}<!-- default content text (typically empty) -->{% endblock %}
   </main><!-- /.container -->
+
+    <footer class="footer">
+      <div class="container">
+          <span class="text-muted">
+              This service is provided by <a href="https://comnets.uni-bremen.de" target="_blank">ComNets Bremen</a>&nbsp; &middot; &nbsp;
+              <a href="https://www.uni-bremen.de/impressum" target="_blank">Impressum</a>&nbsp; &middot; &nbsp;
+              <a href="https://twitter.com/ComNetsBremen" target="_blank"><i class="fa fa-twitter"></i></a>&nbsp; &middot; &nbsp;
+              <a href="https://www.youtube.com/ComNetsBremen" target="_blank"><i class="fa fa-youtube"></i></a>
+          </span>
+      </div>
+    </footer>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

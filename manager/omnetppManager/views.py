@@ -31,7 +31,7 @@ import os
 import datetime
 import pytz
 
-from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet
+from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm
 
 from utils.worker import run_simulation, SimulationRuntimes
 
@@ -42,10 +42,32 @@ def redirect_to_here(request):
     return HttpResponseRedirect(reverse("omnetppManager_index"))
 
 ## Index page
-@login_required
 def index(request):
-#    print(ConfigKeyValueStorage.config.get_value("TESTKEY"))
     return render(request, 'omnetppManager/index.html', {'title':"Overview"})
+
+def request_access(request):
+    if request.method == "POST":
+        form = RequestAccessForm(request.POST)
+        if form.is_valid():
+            msg = "Request for demo access\n\n"
+            for field in form.cleaned_data:
+                msg += field + ": " + str(form.cleaned_data[field]) + "\n\n"
+
+            send_mail(
+                'Demo Access Request',
+                msg,
+                str(form.cleaned_data["mail"]),
+                [ConfigKeyValueStorage.config.get_value("DEFAULT_RECEIVER_MAIL_ADDRESS"),],
+                fail_silently=False,
+            )
+            return HttpResponseRedirect(reverse('omnetppManager_request_access_thanks'))
+    else:
+        form = RequestAccessForm()
+
+    return render(request, 'omnetppManager/request_access.html', {'form': form, 'title': "Request demo access"})
+
+def request_access_thanks(request):
+    return render(request, 'omnetppManager/request_access_thanks.html', {'title': "Thanks for your request"})
 
 ## Show status of queues
 @login_required
