@@ -198,6 +198,9 @@ class NewSimWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
+        data_1 = self.get_cleaned_data_for_step("0")
+        if data_1 != None:
+            context.update({"simulation_title" : data_1["simulation_title"]})
         return context
 
     # Form is finished, process the data, start the job
