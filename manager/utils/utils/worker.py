@@ -39,7 +39,9 @@ def run_simulation(executable, arguments):
     if job: # in worker environment:
         print("Processing job", job.id)
         job.meta["handled_by"] = socket.gethostname()
+        job.meta["failed"] = False
         job.meta["exception"] = None
+        job.meta['errors'] = []
         job.save_meta()
 
     shared_link = ''
@@ -53,27 +55,30 @@ def run_simulation(executable, arguments):
 
         print("Arguments:")
         for arg in arguments:
-    #        print(arg, arguments[arg])
             print(arg)
-        # time.sleep(10)
+
         shared_link = opsrun.run_ops(job, arguments)
 
+        if job and job.meta["failed"]:
+            raise Exception(job.meta["exception"])
+
+        print("Job information after successful simulation:")
         print(job.id)
         print(job.meta)
-
-#        raise Exception("Fail!") # test failed job
 
         ### end simulation processing
     except:
         # Any exception caused? -> store it in the meta data so we can access
         # it later on to help the user to debug the parameters / simulation
         if job: # worker environment?
-            job.meta["exception"] = traceback.format_exc()
-            job.save_meta()
+            print("Job information after failed simulation:")
+            print(job.id)
+            print(job.meta)
+            
         raise # Throw exception again
 
     return {
-            "errors"  : [], # simulation errors?
+            "errors"  : job.meta['errors'] if job else ['ddd'], # simulation errors?
             "results" : [], # simulation results?
             "shared_link" : shared_link, # link to results
             }
@@ -84,8 +89,6 @@ if __name__ == '__main__':
     BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.insert(0, BASE_PATH)
 
-#    print(os.path.abspath(os.path.dirname(__file__)))
-#    run_simulation(SimulationRuntimes.OPS_EPIDEMIC, {"a" : "b"})
     with Connection():
         queue_name = sys.argv[1:] or ["default"]
         w = Worker(queue_name)

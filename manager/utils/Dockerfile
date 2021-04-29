@@ -7,8 +7,8 @@ RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
       build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget \
 	  git autoconf automake libtool python3-matplotlib vim
 RUN apt-get install ccache -y
-RUN apt-get install zip unzip
-RUN apt-get install pv
+RUN apt-get install zip unzip -y
+RUN apt-get install pv -y
 
 
 # set caching path
@@ -16,7 +16,10 @@ ENV PATH /usr/lib/ccache:$PATH
 
 
 # install Python modules
-RUN pip3 install --upgrade pip && pip3 install rq && pip3 install fpdf && pip3 install dropbox && pip3 install python-slugify
+RUN pip3 install fpdf
+RUN pip3 install dropbox
+RUN pip3 install python-slugify
+RUN pip3 install rq
 
 
 # These are necessary to make Click in rq happy.
