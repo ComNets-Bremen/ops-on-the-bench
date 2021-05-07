@@ -17,7 +17,8 @@ urlpatterns = [
         path('job-details/<int:pk>/', login_required(JobDetailView.as_view()), name='job-details'),
         path('job-kill/<int:pk>/', views.job_kill, name='job-kill'),
         path('newsim-detail/', login_required(DetailSimWizard.as_view()), name="omnetppManager_detail_sim"),
-        path('get-server-config/', views.get_server_config, name="omnetppManager_get-server-config"),
+        path('get-server-config/', views.get_server_config, name="omnetppManager_get_server_config"),
+        path('export-simulation-stats/', views.export_simulation_stats, name="omnetppManager_export_simulation_stats"),
         path('request-access/', views.request_access, name="omnetppManager_request_access"),
         path('request-access-thanks/', views.request_access_thanks, name="omnetppManager_request_access_thanks"),
         ]

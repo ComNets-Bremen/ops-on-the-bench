@@ -28,7 +28,7 @@ import json
 
 import os
 
-import datetime
+import datetime, time
 import pytz
 
 from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm
@@ -139,6 +139,29 @@ def manage_queues(request, output_format="json"):
             'omnetppManager/manage_queues.html',
             return_values
             )
+
+
+## Export all simulation data as a json object
+@login_required
+def export_simulation_stats(request):
+    results = {}
+    results["export_time"] = time.time()
+    results["export_server"] = request.META["REMOTE_ADDR"]
+    results["simulations"] = []
+    for sim in Simulation.objects.filter(status = Simulation.Status.FINISHED).order_by("-id"):
+        s = dict()
+        s["title"] = sim.title
+        s["omnetppini"] = sim.omnetppini
+        s["runconfig"] = sim.runconfig
+        s["exec_server"] = sim.handled_by
+        s["sim_start_time"] = sim.simulation_start_time
+        s["meta"] = sim.get_meta()
+        s["sim_id"] = sim.simulation_id
+        results["simulations"].append(s)
+
+    response = JsonResponse(results)
+    response["Content-Disposition"] = 'attachment; filename=simulation-meta.json'
+    return response
 
 ## Kill queues sims
 #
