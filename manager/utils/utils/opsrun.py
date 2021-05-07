@@ -43,12 +43,21 @@ def run_ops(job, arguments):
     lock = threading.Lock()
     common = {'job': job,
               'status': STATUSVALS.INITILIZING,
-              'start_time': time.time()
+              'start_time': time.time(),
+              'sim_returncode': 0
              }
+
+    # set initial job return values
+    init_job_values(common)
 
     # start monitor thread 
     monitor_thread = threading.Thread(target=monitor, args=(common, lock))
     monitor_thread.start()
+    
+    # setup to catch failures
+    ops_failed = False
+    ops_failure_msg = None
+    shared_link = None
     
     try:
 
@@ -148,27 +157,50 @@ def run_ops(job, arguments):
             job.meta['shared_link'] = shared_link
             job.save_meta()
 
-        # wait for monitor thread to finish
-        monitor_thread.join()
+    except Exception as err:
+        ops_failed = True
+        ops_failure_msg = str(err)
 
-        # return the created link's URL
-        return shared_link
+    # wait for monitor thread to finish
+    monitor_thread.join()
 
-    except:
-
+    if ops_failed:
+        
         # cleanup after a failure
         if 'root_folder' in common:
             cleanup_after_crash(common['root_folder'])
 
         # set time after file removal and status
-        with lock:
-            common['time_after_file_removal'] = time.time()
-            job.save_meta()
-
-        # wait for monitor thread to finish
-        monitor_thread.join()
+        common['time_after_file_removal'] = time.time()
         
-        raise
+        # set job failure details
+        job.meta['failed'] = True
+        job.meta["exception"] = ops_failure_msg
+
+    # update job
+    job.save_meta()
+
+    # return the created link's URL
+    return shared_link
+
+
+# set initial job return values
+def init_job_values(common):
+
+    print('setting initial return values in job ...')
+    
+    # set values
+    job = common['job']
+    job.meta['start_time_str'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(common['start_time']))
+    job.meta['peak_disk_usage'] = 0
+    job.meta['peak_sim_ram_usage'] = 0
+    job.meta['peak_results_ram_usage'] = 0
+    job.meta['sim_completed_perc'] = 0
+    job.meta['results_completed_perc'] = 0
+    job.meta['current_state'] = STATUSVALS.INITILIZING.name
+
+    # update job
+    job.save_meta()
 
 
 # make output folders
@@ -263,9 +295,32 @@ def run_sim(root_folder, runconfig, common, lock):
     
     # wait for simulation to end
     proc.wait()
+    
+    # get the return code of the simulation
+    with lock:
+        common['sim_returncode'] = proc.returncode
 
     # finish
     logfp.close()
+
+    # raise hell if simulation failed
+    with lock:
+        if common['sim_returncode'] != 0:
+            # get errors from log?
+            errstr = str(common['sim_returncode'])
+            common['job'].meta['errors'].append(str(common['sim_returncode']))
+            with open(logpath, 'r') as logfp:
+                for line in logfp:
+                    if 'Segmentation' in line and 'fault' in line:
+                        common['job'].meta['errors'].append('Segmentation fault')
+                        errstr += ' : Segmentation fault'
+                    elif 'Error:' in line:
+                        common['job'].meta['errors'].append(line)
+                        errstr += (' : ' + line)
+            common['job'].meta['current_state'] = STATUSVALS.CRASHED.name
+
+            # raise exception with the error string
+            raise Exception(errstr)
 
 
 # create stat graphs
@@ -597,7 +652,7 @@ def create_sim_stats(root_folder, simrun_folder, runconfig, common, lock):
 
     # write .pdf with sim details
     pdf.set_font('Arial', '', 9)
-    pdf.cell(40, 10, ('Start Wall Clock Time - ' + time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(start_time))), 0, 1)
+    pdf.cell(40, 10, ('Start Wall Clock Time - ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))), 0, 1)
     pdf.cell(40, 10, ('Simulation Run Wall Clock Time - {:,} seconds'.format(clock_time_sec)), 0, 1)
     pdf.cell(40, 10, ('Simulated Time - {:,} seconds'.format(sim_time_sec)), 0, 1)
     pdf.cell(40, 10, ('Total Events - {:,} events'.format(total_events)), 0, 1)
@@ -651,7 +706,7 @@ def create_info_file(root_folder, summarizing_precision, runconfig, common, lock
             
     # write info
     oinfofp.write('This zip archive contains the following files and folders of the simulation run on ' \
-                    + time.strftime('%d %B %Y at %H:%M:%S.\n\n', time.gmtime(start_time)))
+                    + time.strftime('%d %B %Y at %H:%M:%S.\n\n', time.localtime(start_time)))
     oinfofp.write('* omnetpp.ini - The configuration file used by the simulation.\n')
     oinfofp.write('* pdf         - The folder containing all the scalar and vector results as graphs.\n')
     oinfofp.write('* csv         - The folder containing scalar and vector results summarized in ' \
@@ -739,11 +794,16 @@ def monitor(common, lock):
         
         # wait for some time
         time.sleep(MONITOR_INTERVAL_SEC)
-
+        
         # check what state the simulation job is in 
         # and collect progress information
         with lock:
             
+            # after waking up, has someone raised hell
+            # then stop everying, and run for cover
+            if common['sim_returncode'] != 0:
+                break
+
             # check current status and call the computation functions
             if common['status'] == STATUSVALS.INITILIZING:
                 pass
@@ -768,7 +828,7 @@ def monitor(common, lock):
 
             # update job with status data
             job = common['job']
-            job.meta['start_time_str'] = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(common['start_time']))
+            job.meta['start_time_str'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(common['start_time']))
             job.meta['peak_disk_usage'] = common['peak_disk_usage'] if 'peak_disk_usage' in common else 0
             job.meta['peak_sim_ram_usage'] = common['peak_sim_ram_usage'] if 'peak_sim_ram_usage' in common else 0
             job.meta['peak_results_ram_usage'] = common['peak_results_ram_usage'] if 'peak_results_ram_usage' in common else 0
