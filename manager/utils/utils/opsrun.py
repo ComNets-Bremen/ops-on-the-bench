@@ -44,8 +44,10 @@ def run_ops(job, arguments):
     common = {'job': job,
               'status': STATUSVALS.INITILIZING,
               'start_time': time.time(),
-              'sim_returncode': 0
+              'sim_returncode': 0,
+              'sim_times' : {},
              }
+    common["sim_times"][common["status"].name] = time.time()
 
     # set initial job return values
     init_job_values(common)
@@ -81,6 +83,7 @@ def run_ops(job, arguments):
         with lock:
             common['time_after_setup'] = time.time()
             common['status'] = STATUSVALS.SIMULATING
+            common["sim_times"][common["status"].name] = time.time()
 
         # run simulations
         run_sim(root_folder, arguments['runconfig'], common, lock)
@@ -90,6 +93,7 @@ def run_ops(job, arguments):
             update_sim_progress(common)
             common['time_after_sim'] = time.time()
             common['status'] = STATUSVALS.PARSING
+            common["sim_times"][common["status"].name] = time.time()
 
         # create graphs from vectors 
         create_graphs(root_folder, graphs_folder, temp_folder, arguments['runconfig'], common, lock)
@@ -126,6 +130,7 @@ def run_ops(job, arguments):
         # set status
         with lock:
             common['status'] = STATUSVALS.ARCHIVING
+            common["sim_times"][common["status"].name] = time.time()
 
         # create an archive file of results to return
         archive_path = create_archive(root_folder, ARCHIVE_FILE, ARCHIVE_LIST)
@@ -134,6 +139,7 @@ def run_ops(job, arguments):
         with lock:
             common['time_after_arch'] = time.time()
             common['status'] = STATUSVALS.UPLOADING
+            common["sim_times"][common["status"].name] = time.time()
 
         # handle archive file as requested
         shared_link = upload_archive(archive_path, arguments['storage_backend_id'], arguments['storage_backend_token'], title=arguments['title'], keep_days=ARCHIVE_LIFETIME_DAYS)
@@ -143,6 +149,7 @@ def run_ops(job, arguments):
             common['time_after_arch_upload'] = time.time()
             common['shared_link'] = shared_link
             common['status'] = STATUSVALS.TERMINATING
+            common["sim_times"][common["status"].name] = time.time()
 
         # remove all folders and files created
         remove_files(root_folder)
@@ -151,6 +158,7 @@ def run_ops(job, arguments):
         with lock:
             common['time_after_file_removal'] = time.time()
             common['status'] = STATUSVALS.COMPLETED
+            common["sim_times"][common["status"].name] = time.time()
 
         # update whatever final values before returning
         with lock:
@@ -318,6 +326,7 @@ def run_sim(root_folder, runconfig, common, lock):
                         common['job'].meta['errors'].append(line)
                         errstr += (' : ' + line)
             common['job'].meta['current_state'] = STATUSVALS.CRASHED.name
+            common["sim_times"][common["status"].name] = time.time()
 
             # raise exception with the error string
             raise Exception(errstr)
@@ -835,6 +844,7 @@ def monitor(common, lock):
             job.meta['sim_completed_perc'] = common['sim_completed_perc'] if 'sim_completed_perc' in common else 0
             job.meta['results_completed_perc'] = common['results_completed_perc'] if 'results_completed_perc' in common else 0
             job.meta['current_state'] = common['status'].name
+            job.meta['sim_times'] = common['sim_times']
             job.save_meta()
 
             # if completed or crashed, then stop thread
