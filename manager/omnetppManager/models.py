@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 
 from django.core.validators import RegexValidator
 
+from django.core.serializers.json import DjangoJSONEncoder
+
 import uuid
 import json
 
@@ -107,6 +109,10 @@ class Simulation(models.Model):
 
     simulation_start_time = models.DateTimeField(null=True, default=None)
 
+    simulation_last_update_time = models.DateTimeField(null=True, default=None)
+
+    simulation_state_times = models.TextField(default=None, blank=True, null=True)
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
@@ -177,6 +183,29 @@ class Simulation(models.Model):
     ## Return formatted timeout
     def get_simulation_timeout_formatted(self):
         return str(datetime.timedelta(seconds=self.simulation_timeout))
+
+    ## Return the times when a state changed
+    def get_state_times(self):
+        times = self.simulation_state_times
+        if times:
+            return json.loads(self.simulation_state_times)
+        else:
+            return {}
+
+    ## Add new state change event
+    def add_state_times(self, state, time):
+        times = self.simulation_state_times
+        newTimes = {}
+        if times:
+            newTimes = json.loads(times)
+
+        newTimes[str(state)] = time
+        self.simulation_state_times = json.dumps(newTimes, cls=DjangoJSONEncoder)
+        self.save()
+
+
+
+
 
 
 # Type of config (mobility, node etc.)

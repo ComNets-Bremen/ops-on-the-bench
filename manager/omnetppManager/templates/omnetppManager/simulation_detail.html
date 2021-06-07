@@ -15,6 +15,8 @@
     <li>Timeout: {{ object.get_simulation_timeout_formatted }}</li>
     <li>Will timeout: {{ object.get_timeout }} (UTC)</li>
     {% if object.send_notify_mail%}
+    <li>Last status change: {{object.simulation_last_update_time}}</li>
+    <li>All status changes: <code>{{object.get_state_times}}</code></li>
     <li>Notifications to {{object.notification_mail_address}}</li>
     {% else %}
     <li>No notifications enabled</li>

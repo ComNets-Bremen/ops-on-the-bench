@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.utils.html import strip_tags
+from django.utils import timezone
 from django.views.generic.detail import DetailView
 
 from django.forms import formset_factory
@@ -155,6 +156,8 @@ def export_simulation_stats(request):
         s["runconfig"] = sim.runconfig
         s["exec_server"] = sim.handled_by
         s["sim_start_time"] = sim.simulation_start_time
+        s["sim_last_update"] = sim.simulation_last_update_time
+        s["sim_state_times"] = sim.simulation_state_times
         s["meta"] = sim.get_meta()
         s["sim_id"] = sim.simulation_id
         results["simulations"].append(s)
@@ -434,7 +437,10 @@ def update_sim_status(simulation_id, new_status):
         sim = Simulation.objects.get(simulation_id=simulation_id)
         if sim.status != new_status:
             sim.status = new_status
+            state_time = timezone.now()
+            sim.simulation_last_update_time = state_time
             sim.save()
+            sim.add_state_times(sim.get_status_display(), state_time)
             if sim.send_notify_mail():
                 # Send status update mail
                 userMessage = "The status of your simulation with the id " + str(simulation_id) + " has changed. New status: " + str(sim.get_status_display())
