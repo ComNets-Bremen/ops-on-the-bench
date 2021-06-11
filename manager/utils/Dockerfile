@@ -1,8 +1,12 @@
 # Base Ubuntu version is 16.04
-FROM ubuntu:16.04
+# FROM ubuntu:16.04
+
+# Base Ubuntu version is 18.04
+FROM ubuntu:18.04
 
 
 # Install all the Ubuntu packages required
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
       build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget \
 	  git autoconf automake libtool python3-matplotlib vim
