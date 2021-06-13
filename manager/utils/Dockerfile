@@ -1,7 +1,8 @@
 # Base Ubuntu version is 18.04
 FROM ubuntu:18.04
 
-ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/Berlin"
+ENV TZ="Europe/Berlin"
+ARG DEBIAN_FRONTEND="noninteractive"
 
 # Install all the Ubuntu packages required
 RUN apt-get update -y
