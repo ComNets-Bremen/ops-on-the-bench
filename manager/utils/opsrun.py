@@ -11,6 +11,7 @@ matplotlib.use('Agg')
 matplotlib.rcParams['agg.path.chunksize'] = 100000
 import matplotlib.pyplot as plt
 import csv
+import json
 import subprocess
 import os
 import glob
@@ -44,24 +45,24 @@ def run_ops(job, arguments):
     common = {'job': job,
               'status': STATUSVALS.INITILIZING,
               'start_time': time.time(),
-              'sim_returncode': 0
+              'sim_returncode': 0,
              }
 
     # set initial job return values
     init_job_values(common)
 
-    # start monitor thread 
+    # start monitor thread
     monitor_thread = threading.Thread(target=monitor, args=(common, lock))
     monitor_thread.start()
-    
+
     # setup to catch failures
     ops_failed = False
     ops_failure_msg = None
     shared_link = None
-    
+
     try:
 
-        # get the job idenifier (used to uniquely identify all 
+        # get the job idenifier (used to uniquely identify all
         # output)
         with lock:
             job_id = str(common['job'].get_id())
@@ -84,14 +85,14 @@ def run_ops(job, arguments):
 
         # run simulations
         run_sim(root_folder, arguments['runconfig'], common, lock)
-    
+
         # update final percentage, set time after simulation and status
         with lock:
             update_sim_progress(common)
             common['time_after_sim'] = time.time()
             common['status'] = STATUSVALS.PARSING
 
-        # create graphs from vectors 
+        # create graphs from vectors
         create_graphs(root_folder, graphs_folder, temp_folder, arguments['runconfig'], common, lock)
 
         # set time after creating graphs
@@ -99,9 +100,13 @@ def run_ops(job, arguments):
             common['time_after_graphs'] = time.time()
 
         # create scalar stats
-        create_stats(root_folder, graphs_folder, csv_folder, temp_folder, arguments['runconfig'])
+        scalar_stats = create_stats(root_folder, graphs_folder, csv_folder, temp_folder, arguments['runconfig'])
 
-        # set time after creating scalar stats 
+        with lock:
+            job.meta["scalar_stats"] = scalar_stats
+            job.save_meta()
+
+        # set time after creating scalar stats
         with lock:
             common['time_after_scalar_stats'] = time.time()
 
@@ -113,13 +118,17 @@ def run_ops(job, arguments):
             common['time_after_summary_data'] = time.time()
 
         # create simulator performance stats
-        create_sim_stats(root_folder, simrun_folder, arguments['runconfig'], common, lock)
+        sim_stats = create_sim_stats(root_folder, simrun_folder, arguments['runconfig'], common, lock)
+
+        with lock:
+            job.meta["sim_runtime_stats"] = sim_stats
+            job.save_meta()
 
         # update final percentage and set time after creating simulator performance stats
         with lock:
             update_results_progress(common)
             common['time_after_sim_stats'] = time.time()
-    
+
         # create INFO file
         create_info_file(root_folder, arguments['summarizing_precision'], arguments['runconfig'], common, lock)
 
@@ -165,14 +174,14 @@ def run_ops(job, arguments):
     monitor_thread.join()
 
     if ops_failed:
-        
+
         # cleanup after a failure
         if 'root_folder' in common:
             cleanup_after_crash(common['root_folder'])
 
         # set time after file removal and status
         common['time_after_file_removal'] = time.time()
-        
+
         # set job failure details
         job.meta['failed'] = True
         job.meta["exception"] = ops_failure_msg
@@ -188,7 +197,7 @@ def run_ops(job, arguments):
 def init_job_values(common):
 
     print('setting initial return values in job ...')
-    
+
     # set values
     job = common['job']
     job.meta['start_time_str'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(common['start_time']))
@@ -223,7 +232,7 @@ def create_folders(job_id):
     # make simulation run details folder
     simrun_folder = os.path.join(root_folder, 'simrun')
     os.mkdir(simrun_folder)
-    
+
     # make CSV folder
     temp_folder = os.path.join(root_folder, 'temp')
     os.mkdir(temp_folder)
@@ -242,7 +251,7 @@ def sanitize_ini(root_folder, omnetppini):
     # place the omnetpp.ini in simulations folder
     inipath = './omnetpp.ini'
     inifp = open(inipath, 'w')
-    
+
     # place a copy of the omnetpp.ini in the job folder
     inicopypath = os.path.join(root_folder, 'omnetpp.ini')
     inicfp = open(inicopypath, 'w')
@@ -275,27 +284,27 @@ def run_sim(root_folder, runconfig, common, lock):
     # create the simulation activity log
     logpath = os.path.join(root_folder, 'ops.log')
     logfp = open(logpath, 'w')
- 
+
     # create results location option
     results_dir = '--result-dir=' + root_folder
- 
+
     # run simulation
     proc = subprocess.Popen(['ops-simu', '-r', '0', '-m', '-u', 'Cmdenv', '-c', runconfig,
                     '-n', '.:../src:../modules/inet/src:../modules/KeetchiLib/src',
                     '--image-path=../modules/inet/images',
                     results_dir,
-                    '-l', 'INET', '-l', 'keetchi', 
-                    inipath], 
+                    '-l', 'INET', '-l', 'keetchi',
+                    inipath],
                     stdout=logfp, stderr=subprocess.STDOUT)
 
     # update info for simulation monitoring
     with lock:
         common['sim_proc_id'] = proc.pid
-        common['sim_log_file'] = logpath        
-    
+        common['sim_log_file'] = logpath
+
     # wait for simulation to end
     proc.wait()
-    
+
     # get the return code of the simulation
     with lock:
         common['sim_returncode'] = proc.returncode
@@ -331,7 +340,7 @@ def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lo
     # prepare runconfig string
     runconfig = runconfig.split(' ')[1].strip() if len(runconfig.split(' ')) > 1 else runconfig.strip()
 
-    # create graphs in a loop for every stat 
+    # create graphs in a loop for every stat
     with open(STAT_LIST,'r') as listfp:
         lines = csv.reader(listfp, delimiter=',')
         for row in lines:
@@ -388,7 +397,7 @@ def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lo
 
             # close log file
             logfp.close()
-            
+
             # create x, y arrays to plot from the created CSV
             x = []
             y = []
@@ -440,8 +449,8 @@ def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig)
 
     # build path and open scalar stat CSV file
     scalar_csv = os.path.join(csv_folder, 'scalar-stats.csv')
-    ocsvfp = open(scalar_csv,'w')
-            
+    ocsvfp = open(scalar_csv,'w+')
+
     # write heading lines
     ocsvfp.write('# stat, type, value\n')
 
@@ -523,13 +532,26 @@ def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig)
     results_path = os.path.join(graphs_folder, 'scalar-stats.pdf')
     pdf.output(results_path, 'F')
 
+    ocsvfp.seek(0)
+    all_text_stats = []
+    try:
+        for line in ocsvfp.readlines():
+            if line.startswith("#"):
+                continue
+            all_text_stats.append([ convert_number(a.strip()) for a in line.replace("\n", "").split(',')])
+    except Exception  as e:
+        all_text_stats = str(e)
+
+
     # close scalar stat .csv
     ocsvfp.close()
+
+    return all_text_stats
 
 
 # create resolution changed CSV
 def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
-    
+
     print('creating CSV files ...')
 
     with open(STAT_LIST,'r') as listfp:
@@ -553,7 +575,7 @@ def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
             # build path and open summarized CSV file
             new_csv = os.path.join(csv_folder, (stat_var + '.csv'))
             ocsvfp = open(new_csv,'w')
-            
+
             # write heading lines
             wline = '# ' + stat_name + '\n# simtime, ' + stat_var + '\n'
             ocsvfp.write(wline)
@@ -593,7 +615,7 @@ def create_csv(root_folder, csv_folder, temp_folder, summarizing_precision):
 
             else:
                 pass
-            
+
             ocsvfp.close()
 
 
@@ -608,11 +630,11 @@ def create_sim_stats(root_folder, simrun_folder, runconfig, common, lock):
 
     # build path and open scalar stat CSV file
     scalar_csv = os.path.join(simrun_folder, 'simrun-stats.csv')
-    ocsvfp = open(scalar_csv,'w')
-            
+    ocsvfp = open(scalar_csv,'w+')
+
     # write heading lines
     ocsvfp.write('# stat, value, description\n')
-    
+
     # get details of simulation (events, duration, etc.)
     sim_time_sec = 0.0
     clock_time_sec = 0.0
@@ -689,8 +711,20 @@ def create_sim_stats(root_folder, simrun_folder, runconfig, common, lock):
     results_path = os.path.join(simrun_folder, 'simrun-stats.pdf')
     pdf.output(results_path, 'F')
 
+    return_value = []
+    ocsvfp.seek(0)
+    try:
+        for line in ocsvfp.readlines():
+            if line.startswith("#"):
+                continue
+            return_value.append([convert_number(a.strip()) for a in line.replace("\n", "").split(",")])
+    except Exception as e:
+        return_value = str(e)
+
     # close scalar stat .csv
     ocsvfp.close()
+
+    return return_value
 
 
 # create INFO file
@@ -703,7 +737,7 @@ def create_info_file(root_folder, summarizing_precision, runconfig, common, lock
     # build path and open info file
     info_file = os.path.join(root_folder, 'INFO.txt')
     oinfofp = open(info_file,'w')
-            
+
     # write info
     oinfofp.write('This zip archive contains the following files and folders of the simulation run on ' \
                     + time.strftime('%d %B %Y at %H:%M:%S.\n\n', time.localtime(start_time)))
@@ -773,11 +807,11 @@ def remove_files(root_folder):
 def cleanup_after_crash(root_folder):
 
     # do clean up activities
-    
+
     # if job folder exists, remove
     if not os.path.isdir(root_folder):
         return
-        
+
     # build command
     cmd = ['rm', '-rf', root_folder]
 
@@ -789,16 +823,16 @@ def cleanup_after_crash(root_folder):
 def monitor(common, lock):
 
     print('starting monitor thread ...')
-    
+
     while True:
-        
+
         # wait for some time
         time.sleep(MONITOR_INTERVAL_SEC)
-        
-        # check what state the simulation job is in 
+
+        # check what state the simulation job is in
         # and collect progress information
         with lock:
-            
+
             # after waking up, has someone raised hell
             # then stop everying, and run for cover
             if common['sim_returncode'] != 0:
@@ -883,7 +917,7 @@ def update_peak_disk_usage(common):
 
 # find peak RAM use for given process
 def update_peak_ram(common, proc_type):
-    
+
     # get peak RAM for the simulation process
     if 'sim' in proc_type and 'sim_proc_id' in common:
         pid_path = '/proc/' + str(common['sim_proc_id']) + '/status'
@@ -891,7 +925,7 @@ def update_peak_ram(common, proc_type):
             result = subprocess.check_output(['grep', 'VmPeak', pid_path], stderr=subprocess.STDOUT)
         except:
             peak_sim_ram_usage = common['peak_sim_ram_usage'] if 'peak_sim_ram_usage' in common else 0
-            common['peak_sim_ram_usage'] = peak_sim_ram_usage      
+            common['peak_sim_ram_usage'] = peak_sim_ram_usage
             return
 
         vals = result.split()
@@ -900,7 +934,7 @@ def update_peak_ram(common, proc_type):
 
         peak_sim_ram_usage = common['peak_sim_ram_usage'] if 'peak_sim_ram_usage' in common else 0
         current_ram_peak = int(vals[1]) * 1024
-        common['peak_sim_ram_usage'] = current_ram_peak if peak_sim_ram_usage < current_ram_peak else peak_sim_ram_usage        
+        common['peak_sim_ram_usage'] = current_ram_peak if peak_sim_ram_usage < current_ram_peak else peak_sim_ram_usage
 
     # get peak RAM for the results parsing process
     elif 'results' in proc_type and 'results_proc_id' in common:
@@ -989,3 +1023,17 @@ def update_results_progress(common):
     current_results_size = total_size - vec_size
     results_completed_perc = round(current_results_size / estimated_total_results_size * 100.0)
     common['results_completed_perc'] = results_completed_perc if results_completed_perc <= 100 else 100
+
+
+# Convert a string number to int or float (if possible
+def convert_number(number):
+    ret = number
+    try:
+        ret = float(number)
+        if ret.is_integer():
+            ret = int(ret)
+    except ValueError:
+        pass
+    return ret
+
+
