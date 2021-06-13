@@ -1,11 +1,18 @@
-# Base Ubuntu version is 16.04
-FROM ubuntu:16.04
+# Base Ubuntu version is 18.04
+FROM ubuntu:18.04
 
+ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/Berlin"
 
 # Install all the Ubuntu packages required
-RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
-      build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget \
-	  git autoconf automake libtool python3-matplotlib vim
+RUN apt-get update -y
+RUN apt-get install -y apt-utils
+
+# rm python asasp (required for INET 4)
+RUN apt-get install -y python-minimal
+
+RUN apt-get install -y python3-minimal python3-pip \
+      build-essential bison flex libxml2-dev zlib1g-dev wget \
+      git autoconf automake libtool python3-matplotlib vim
 RUN apt-get install ccache -y
 RUN apt-get install zip unzip -y
 RUN apt-get install pv -y
