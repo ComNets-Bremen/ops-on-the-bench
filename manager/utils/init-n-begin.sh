@@ -7,7 +7,7 @@
 
 # Download and expand traces
 OPT_FOLDER="/opt"
-TRACES_FOLDER="/opt/traces"
+TRACES_FOLDER="/opt/data/traces"
 TRACES_ARCHIVE="ootb-traces.tar.gz"
 TRACES_LINK="https://seafile.zfn.uni-bremen.de/f/291602b767e642d49827/?dl=1"
 if [ ! -d "$TRACES_FOLDER" ]; then
