@@ -244,7 +244,7 @@ def rerun_simulation(request, pk):
     if not form:
 
         form = RerunSimForm(initial={
-            "simulation_title" : simulation.title,
+            "simulation_title" : simulation.title+"_rerun",
             })
 
     return render(request, 'omnetppManager/rerun_simulation.html', {'form': form, 'title': "Rerun Simulation", 'pk':pk})

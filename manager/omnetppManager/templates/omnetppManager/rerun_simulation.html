@@ -27,6 +27,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <input type="submit" value="Submit" class="btn btn-primary">
+    <input type="submit" value="Run again" class="btn btn-primary">
+    <a href="{% url 'omnetppManager_job_status' %}">Return to overview</a>
 </form>
 {% endblock %}
