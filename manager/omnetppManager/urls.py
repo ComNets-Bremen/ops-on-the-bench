@@ -21,6 +21,7 @@ urlpatterns = [
         path('export-simulation-stats/', views.export_simulation_stats, name="omnetppManager_export_simulation_stats"),
         path('request-access/', views.request_access, name="omnetppManager_request_access"),
         path('request-access-thanks/', views.request_access_thanks, name="omnetppManager_request_access_thanks"),
+        path('rerun-sim/<int:pk>', views.rerun_simulation, name="omnetppManager_rerun_sim"),
         ]
 
 

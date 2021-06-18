@@ -339,3 +339,8 @@ class RequestAccessForm(forms.Form):
     interest = forms.CharField(widget=forms.Textarea, label="Interest", max_length=4000, min_length=10, help_text="A brief description why this project is interesting for you and for what you would like to use it.")
 
 
+
+class RerunSimForm(forms.Form):
+    simulation_title = forms.CharField(max_length=50)
+    simulation_title.widget.attrs.update({"class":"form-control"})
+

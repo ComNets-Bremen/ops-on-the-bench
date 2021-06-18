@@ -32,7 +32,7 @@ import os
 import datetime, time
 import pytz
 
-from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm
+from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm, RerunSimForm
 
 from utils.worker import run_simulation, SimulationRuntimes
 
@@ -47,6 +47,7 @@ def index(request):
     return render(request, 'omnetppManager/index.html', {'title':"Overview"})
 
 def request_access(request):
+    form = None
     if request.method == "POST":
         form = RequestAccessForm(request.POST)
         if form.is_valid():
@@ -62,7 +63,8 @@ def request_access(request):
                 fail_silently=False,
             )
             return HttpResponseRedirect(reverse('omnetppManager_request_access_thanks'))
-    else:
+
+    if not form:
         form = RequestAccessForm()
 
     return render(request, 'omnetppManager/request_access.html', {'form': form, 'title': "Request demo access"})
@@ -171,6 +173,7 @@ def export_simulation_stats(request):
 # Tries to kill a simulation. Currently only kills queued sims
 # TODO: Extend, kill all kind of simulations
 # TODO: Ask if it is okay to kill the sim
+# TODO: Ensure the user has the right permissions
 @login_required
 @require_http_methods(["POST",])
 def job_kill(request, pk):
@@ -187,6 +190,69 @@ def job_kill(request, pk):
         update_sim_status(simulation.simulation_id, Simulation.Status.ABORTED)
 
     return HttpResponseRedirect(reverse("omnetppManager_job_status"))
+
+
+@login_required
+def rerun_simulation(request, pk):
+    form = None
+
+    simulation = get_object_or_404(
+            Simulation,
+            pk=pk
+            )
+
+
+    if request.method == "POST":
+        form = RerunSimForm(request.POST)
+        if form.is_valid():
+            # Start new sim derived from old config
+            simulation.pk = None # store as new object
+            args = {
+                    "user" : str(request.user),
+                    "title" : str(form.cleaned_data["simulation_title"]),
+                    "omnetpp.ini" : str(simulation.omnetppini),
+                    "runconfig" : str(simulation.runconfig),
+                    "summarizing_precision" : float(simulation.summarizing_precision),
+                    "storage_backend" : str(simulation.storage_backend.backend_name),
+                    "storage_backend_id" : str(simulation.storage_backend.backend_identifier),
+                    "storage_backend_token" : str(simulation.storage_backend.backend_token),
+                    "storage_backend_keep_days" : str(simulation.storage_backend.backend_keep_days),
+                    }
+
+
+            print("Simulation arguments:", args)
+            q = Queue(connection=get_redis_conn())
+            # Start job
+            job = q.enqueue(
+                    run_simulation,
+                    SimulationRuntimes.OPS_KEETCHI,
+                    args,
+                    job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
+                    )
+            print("Job with id", job.id, "started")
+
+            simulation.user = request.user
+            simulation.title = form.cleaned_data["simulation_title"]
+            simulation.simulation_id = job.id
+            simulation.simulation_timeout = job.timeout
+
+            simulation.save()
+            sync_simulations()
+
+            return redirect(simulation.get_absolute_url())
+
+    if not form:
+
+        form = RerunSimForm(initial={
+            "simulation_title" : simulation.title,
+            })
+
+    return render(request, 'omnetppManager/rerun_simulation.html', {'form': form, 'title': "Rerun Simulation", 'pk':pk})
+
+
+
+
+
 
 
 
