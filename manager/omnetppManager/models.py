@@ -143,6 +143,38 @@ class Simulation(models.Model):
                     pass
         return None
 
+
+    # Access the scalar stats
+    def get_scalar_stats(self, statname):
+        meta = self.get_meta()
+        if not "scalar_stats" in meta:
+            return None
+
+        for s in meta["scalar_stats"]:
+            if statname == s[0]:
+                return s[-1]
+
+        print("key not found")
+        return None
+
+    # Access the simulation runtime stats
+    def get_sim_runtime_stats(self, statname):
+        meta = self.get_meta()
+
+        if not "sim_runtime_stats" in meta:
+            return None
+        for s in meta["sim_runtime_stats"]:
+            print(s)
+            if statname == s[0]:
+                print(s, s[1])
+                return s[1]
+        return None
+
+    # Access to the total number of events for the template
+    def get_total_events(self):
+        return self.get_sim_runtime_stats("totevents")
+
+
     ## Notify user on sim state change
     def send_notify_mail(self):
         return self.notification_mail_address not in ["", None]

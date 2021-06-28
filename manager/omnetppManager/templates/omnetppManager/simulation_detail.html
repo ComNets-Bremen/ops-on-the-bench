@@ -56,6 +56,9 @@
             <li>Simulation: Peak RAM usage: {{ object.get_meta.peak_sim_ram_usage|filesizeformat }}</li>
             <li>Results: Peak RAM usage: {{ object.get_meta.peak_results_ram_usage|filesizeformat }}</li>
             <li>Peak disk usage: {{ object.get_meta.peak_disk_usage|filesizeformat }}</li>
+            {% if object.get_total_events %}
+                <li>Total number of events: {{object.get_total_events}}</li>
+            {% endif %}
         </ul>
     </li>
 
