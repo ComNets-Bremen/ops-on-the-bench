@@ -32,7 +32,12 @@ class OmnetppiniFileUploadField(forms.FileField):
         omnetppini = value.read().decode("utf-8")
         value.seek(0)
         config = configparser.ConfigParser()
-        config.read_string(omnetppini)
+        try:
+            config.read_string(omnetppini)
+        except configparser.DuplicateSectionError:
+            raise ValidationError(
+                    _('This omnetpp.ini contains duplicate sections.'),
+                    )
         if len(config.sections()) < 1:
             raise ValidationError(
                     _('No run configurations found in omnetpp.ini'),
