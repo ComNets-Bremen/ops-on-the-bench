@@ -113,6 +113,12 @@ class Simulation(models.Model):
 
     simulation_state_times = models.TextField(default=None, blank=True, null=True)
 
+    simulation_is_debug_sim = models.BooleanField(
+            default=False,
+            help_text="Is this a debug simulation? If yes -> ignore for comparison.",
+            )
+
+
     # String representation, mainly for debugging and admin model
     def __str__(self):
         return "Simulation " + str(self.simulation_id) + " started by user " + str(self.user)
