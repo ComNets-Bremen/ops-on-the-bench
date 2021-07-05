@@ -75,6 +75,15 @@ class Simulation(models.Model):
         UNKNOWN     = 7, _("unknown")
         ABORTED     = 8, _("aborted")
 
+    class TerminateReason(models.IntegerChoices):
+        NOT_TERMINATED      = 1, _("Simulation not terminated")
+        TERMINATED_USER     = 2, _("Terminated by user")
+        TERMINATED_EVENTS   = 3, _("Terminated by system: Exceeded events.")
+        TERMINATED_CPU      = 4, _("Terminated by system: Exceeded CPU.")
+        TERMINATED_RAM      = 5, _("Terminated by system: Exceeded RAM.")
+        TERMINATED_DISK     = 6, _("Terminated by system: Exceeded Disk space.")
+
+
     user = models.ForeignKey(
             settings.AUTH_USER_MODEL,
             on_delete=models.CASCADE,
@@ -88,6 +97,8 @@ class Simulation(models.Model):
             default = uuid.uuid4
             )
     status = models.IntegerField(choices=Status.choices, default=Status.UNKNOWN)
+
+    terminated = models.IntegerField(choices = TerminateReason.choices, default = TerminateReason.NOT_TERMINATED)
 
     simulation_error = models.TextField(default=None, blank=True, null=True)
 

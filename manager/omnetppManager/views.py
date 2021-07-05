@@ -187,7 +187,13 @@ def job_kill(request, pk):
 
     if q.remove(str(simulation.simulation_id)) > 0:
         # We removed one job. update status:
-        update_sim_status(simulation.simulation_id, Simulation.Status.ABORTED)
+        update_sim_status(
+                simulation.simulation_id,
+                Simulation.Status.ABORTED,
+                Simulation.TerminateReason.TERMINATED_USER
+                )
+    else:
+        print("Not able to remove simulation from queue", len(q))
 
     return HttpResponseRedirect(reverse("omnetppManager_job_status"))
 
@@ -499,7 +505,12 @@ class DetailSimWizard(SessionWizardView):
 ## Update the status in the simulation db.
 #
 # Returns true, if something was updated
-def update_sim_status(simulation_id, new_status):
+def update_sim_status(simulation_id, new_status, terminate_reason=Simulation.TerminateReason.NOT_TERMINATED):
+    if new_status == Simulation.Status.ABORTED and terminate_reason==Simulation.TerminateReason.NOT_TERMINATED:
+        raise ValueError("If you abort a simulation, you have to give a terminate reason.")
+    if new_status != Simulation.Status.ABORTED and terminate_reason != Simulation.TerminateReason.NOT_TERMINATED:
+        raise ValueError("If a simulation is aborted, a terminate reason has to be given.")
+
     sim = None
     try:
         sim = Simulation.objects.get(simulation_id=simulation_id)
@@ -507,6 +518,7 @@ def update_sim_status(simulation_id, new_status):
             sim.status = new_status
             state_time = timezone.now()
             sim.simulation_last_update_time = state_time
+            sim.terminated = terminate_reason
             sim.save()
             sim.add_state_times(sim.get_status_display(), state_time)
             if sim.send_notify_mail():
