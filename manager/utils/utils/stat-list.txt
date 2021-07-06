@@ -1,0 +1,65 @@
+# list of network wide stats
+# there are 51 stats below 
+#
+# Application Layer Stats
+#
+#   Statistic Name                                      Proto        Unit     Data   Way used      Scalar        Statistic Variable
+#                                                       Layer                 Type  same/avg/sum    Stat
+#   --------------                                      -----        ----     ----  ------------   ------        ------------------
+Liked Data Bytes Received,                             App Layer,    bytes,    int,    same,        last,     appLikedDataBytesReceived
+Non-liked Data Bytes Received,                         App Layer,    bytes,    int,    same,        last,     appNonLikedDataBytesReceived
+Duplicate Data Bytes Received,                         App Layer,    bytes,    int,    same,        last,     appDuplicateDataBytesReceived
+Total Data Bytes Received,                             App Layer,    bytes,    int,    same,        last,     appTotalDataBytesReceived
+Liked Data Count Received,                             App Layer,    count,    int,    same,        last,     appLikedDataCountReceived
+Non-liked Data Count Receive,                          App Layer,    count,    int,    same,        last,     appNonLikedDataCountReceived
+Duplicate Data Count Receive,                          App Layer,    count,    int,    same,        last,     appDuplicateDataCountReceived
+Total Data Count Receive,                              App Layer,    count,    int,    same,        last,     appTotalDataCountReceived
+Liked Data Bytes Max Receivable,                       App Layer,    bytes,    int,    same,        last,     appLikedDataBytesMaxReceivable
+Non-liked Data Bytes Max Receivable,                   App Layer,    bytes,    int,    same,        last,     appNonLikedDataBytesMaxReceivable
+Total Data Bytes Max Receivable,                       App Layer,    bytes,    int,    same,        last,     appTotalDataBytesMaxReceivable
+Liked Data Count Max Receivable,                       App Layer,    count,    int,    same,        last,     appLikedDataCountMaxReceivable
+Non-liked Data Count Max Receivable,                   App Layer,    count,    int,    same,        last,     appNonLikedDataCountMaxReceivable
+Total Data Count Max Receivable,                       App Layer,    count,    int,    same,        last,     appTotalDataCountMaxReceivable        
+Liked Data Received Average Delay,                     App Layer,    seconds,  float,  same,        last,     appLikedDataReceivedAvgDelay          
+Non-liked Data Received Average Delay,                 App Layer,    seconds,  float,  same,        last,     appNonLikedDataReceivedAvgDelay       
+Total Data Received Average Delay,                     App Layer,    seconds,  float,  same,        last,     appTotalDataReceivedAvgDelay          
+Liked Data Delivery Ratio,                             App Layer,    ratio,    float,  same,        last,     appLikedDataDeliveryRatio             
+Non-liked Data Delivery Ratio,                         App Layer,    ratio,    float,  same,        last,     appNonLikedDataDeliveryRatio          
+Total Data Delivery Ratio,                             App Layer,    ratio,    float,  same,        last,     appTotalDataDeliveryRatio             
+Liked Data Average Hop Count,                          App Layer,    hops,     float,  same,        last,     appLikedDataAvgHopCount               
+Non-liked Data Average Hop Count,                      App Layer,    hops,     float,  same,        last,     appNonLikedDataAvgHopCount            
+Total Data Average Hop Count,                          App Layer,    hops,     float,  same,        last,     appTotalDataAvgHopCount               
+Liked Data Received Delay (v2),                        App Layer,    seconds,  float,  same,        mean,     appLikedDataReceivedDelay2            
+Non-liked Data Received Delay (v2),                    App Layer,    seconds,  float,  same,        mean,     appNonLikedDataReceivedDelay2         
+Total Data Received Delay (v2),                        App Layer,    seconds,  float,  same,        mean,     appTotalDataReceivedDelay2            
+Total Data Bytes Received (v2),                        App Layer,    bytes,    int,    same,        last,     appTotalDataBytesReceived2            
+Total Data Count Received (v2),                        App Layer,    count,    int,    same,        last,     appTotalDataCountReceived2
+#
+# Forwarding Layer Stats
+#
+Data Bytes Received,                                   Fwd Layer,    bytes,    int,    same,        last,     fwdDataBytesReceived                       
+Summary Vector Bytes Received,                         Fwd Layer,    bytes,    int,    same,        last,     fwdSumVecBytesReceived          
+Data Request Bytes Received,                           Fwd Layer,    bytes,    int,    same,        last,     fwdDataReqBytesReceived         
+DP Table Request Bytes Received,                       Fwd Layer,    bytes,    int,    same,        last,     fwdDPTableRequestBytesReceived  
+DP Table Data Bytes Received,                          Fwd Layer,    bytes,    int,    same,        last,     fwdDPTableDataBytesReceived     
+Total Bytes Received,                                  Fwd Layer,    bytes,    int,    same,        last,     fwdTotalBytesReceived           
+Average Hops Travelled,                                Fwd Layer,    hops,     float,  same,        last,     fwdAvgHopsTravelled             
+Cache Bytes Removed,                                   Fwd Layer,    bytes,    int,    same,        last,     fwdCacheBytesRemoved            
+Cache Bytes Added,                                     Fwd Layer,    bytes,    int,    same,        last,     fwdCacheBytesAdded              
+Cache Bytes Updated,                                   Fwd Layer,    bytes,    int,    same,        last,     fwdCacheBytesUpdated            
+Current Cache Size Bytes Average,                      Fwd Layer,    bytes,    float,  same,        last,     fwdCurrentCacheSizeBytesAvg     
+Current Cache Size Bytes Periodic Average,             Fwd Layer,    bytes,    float,  same,        mean,     fwdCurrentCacheSizeBytesPeriodicAvg       
+Current Cache Size Bytes Average (v2),                 Fwd Layer,    bytes,    float,  same,        last,     fwdCurrentCacheSizeBytesAvg2              
+Data Bytes Sent,                                       Fwd Layer,    bytes,    int,    same,        last,     fwdDataBytesSent              
+Summary Vector Bytes Sent,                             Fwd Layer,    bytes,    int,    same,        last,     fwdSumVecBytesSent            
+Data Request Bytes Sent,                               Fwd Layer,    bytes,    int,    same,        last,     fwdDataReqBytesSent           
+DP Table Request Bytes Sent,                           Fwd Layer,    bytes,    int,    same,        last,     fwdDPTableRequestBytesSent    
+DP Table Data Bytes Sent,                              Fwd Layer,    bytes,    int,    same,        last,     fwdDPTableDataBytesSent       
+Total Bytes Sent,                                      Fwd Layer,    bytes,    int,    same,        last,     fwdTotalBytesSent             
+#
+# Link Layer Stats
+#
+Average Neighbourhood Size,                            Link Layer,   count,    float,  same,        last,     linkAvgNeighbourSize          
+Average Contact Duration,                              Link Layer,   seconds,  float,  same,        last,     linkAvgContactDuration        
+Total Contact Count,                                   Link Layer,   count,    int,    same,        last,     linkContactCount              
+Simple Neighbour Size,                                 Link Layer,   count,    float,  same,        mean,     linkSimpleNeighbourSize
