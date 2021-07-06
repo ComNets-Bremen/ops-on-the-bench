@@ -115,7 +115,17 @@ removed
   - `sim_completed_perc` - percentage completion of the simulation itself
   - `results_completed_perc` - percentage completion of results parsing (this only an estimation)
   - `shared_link` - link to the Dropbox zip file containing the job output
-  
+
+
+- To test workers independent from the Django front-end, follow the following procedure
+  - setip a local Redis instance (127.0.0.1, with password)
+  - create an `omnetpp.ini` file to run
+  - update the parameters in the file config file `queue-sim-config.cfg`
+  - run command 
+    ```bash
+    ./queue-sim.py -c queue-sim-config.cfg
+    ```
+
 
 Storage backend
 ===============
