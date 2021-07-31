@@ -159,9 +159,9 @@ DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
 DEFAULT_MAIN_TITLE = "OPS on the bench"
 
 # Redis connection setup
-REDIS_DB_HOST       = "localhost"
-REDIS_DB_PORT       = 6379
-REDIS_DB_PASSWORD   = None
+REDIS_DB_HOST       ='10.10.160.37'
+REDIS_DB_PORT       = '6379'
+REDIS_DB_PASSWORD   = None#'719cfee1aaf9df026ea1af0a571c1d2c'
 
 
 # Overwrite settings by local ones (if available)

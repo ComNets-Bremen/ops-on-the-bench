@@ -9,6 +9,7 @@ from django.core.validators import RegexValidator
 
 from django.core.serializers.json import DjangoJSONEncoder
 
+
 import uuid
 import json
 
@@ -411,3 +412,137 @@ class ServerConfigValue(models.Model):
     def __str__(self):
         return self.server.server_name + ": " + self.key + "=" + self.value
 
+
+
+# Benchmark models
+# Omnetpp Benchmark sections
+class OmnetppBenchmarkSection(models.Model):
+
+    class Meta:
+        ordering = ("order", "-pk",) # Allow manual ordering
+
+    name = models.CharField(
+            max_length=100,
+            help_text="Sections available on the omnetppbenchmark ini file",
+            validators=[alphanumeric,], unique=True,
+            )
+    label = models.CharField(
+            default="<undefined>",
+            max_length=100,unique=True,
+            help_text="has it is in the Omnetpp Benchmark ini file without the square brackets",
+            )
+    order = models.IntegerField(default=10, unique=True, help_text="Order the fields manually. Lower number = higher priority")
+
+    def __str__(self):
+        return self.name
+
+# OmnetppBenchmark ini file Subsections 
+class OmnetppBenchmarkSubsection(models.Model):
+
+    class Meta:
+        ordering = ("order", "-pk",) # Allow manual ordering
+
+    name = models.CharField(
+            max_length=100,
+            help_text="Subsections available on the omnetppbenchmark ini file, layers, mobility etc",
+            validators=[alphanumeric,], unique=True,
+            )
+    label = models.CharField(
+            default="<undefined>",
+            max_length=100, unique=True,
+            )
+    user_selection_enabled = models.BooleanField(
+            default=False,
+            help_text="does this config type allow user select instances of their choice? ",
+            )
+    order = models.IntegerField(default=10, unique=True, help_text="Order the fields manually. Lower number = higher priority")
+
+    def __str__(self):
+        return self.name
+
+## Main configs of OmnetppBenchmark ini sections
+class OmnetppBenchmarkSectionConfig(models.Model):
+    class Meta:
+        ordering = ("section__order","-section__pk", "pk") # Order according to higher level model
+
+    name = models.CharField(max_length=100, unique=True,)
+
+    section = models.ForeignKey(
+            "OmnetppBenchmarkSection",
+            related_name = "section_name",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        params = OmnetppBenchmarkSectionParameters.objects.filter(config=self).count()
+        if params > 1:
+            return self.name + " with " + str(params) + " parameters"
+        else:
+            return self.name + " with one parameter"
+
+## Parameters of OmnetppBenchmark ini Section configs
+class OmnetppBenchmarkSectionParameters(models.Model):
+    class Meta:
+        ordering = ("pk",) # Just for clarification
+
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.CharField(max_length=100)
+    param_unit = models.CharField(max_length=10, default="", blank=True)
+    user_editable = models.BooleanField(default=False)
+
+    param_description = models.CharField(default="", max_length=400, blank=True)
+
+    config = models.ForeignKey(
+            "OmnetppBenchmarkSectionConfig",
+            related_name="SectionParameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)
+
+
+
+## Configs of OmnetppBenchmark ini Subsections
+class OmnetppBenchmarkSubsectionConfig(models.Model):
+    class Meta:
+        ordering = ("subsection__order","-subsection__pk", "pk") # Order according to higher level model
+
+    name = models.CharField(max_length=100,unique=True,)
+
+    subsection = models.ForeignKey(
+            "OmnetppBenchmarkSubsection",
+            related_name = "subsection_name",
+            on_delete=models.CASCADE
+            )
+    enabled_sections = models.ManyToManyField(
+            OmnetppBenchmarkSection
+            )
+
+    def __str__(self):
+        params = OmnetppBenchmarkSubsectionParameters.objects.filter(config=self).count()
+        if params > 1:
+            return self.name + " with " + str(params) + " parameters"
+        else:
+            return self.name + " with one parameter"
+
+## Parameters for the OmnetppBenchmark ini Subsections config
+class OmnetppBenchmarkSubsectionParameters(models.Model):
+    class Meta:
+        ordering = ("pk",) # Just for clarification
+
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.CharField(max_length=100)
+    param_unit = models.CharField(max_length=10, default="", blank=True)
+    user_editable = models.BooleanField(default=False)
+
+    param_description = models.CharField(default="", max_length=400, blank=True)
+
+    config = models.ForeignKey(
+            "OmnetppBenchmarkSubsectionConfig",
+            related_name="SubsectionParameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)

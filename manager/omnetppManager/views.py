@@ -16,7 +16,9 @@ from django.core.mail import send_mail
 
 from formtools.wizard.views import SessionWizardView
 
-from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerConfig, ServerConfigValue
+from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerConfig, ServerConfigValue,\
+    OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters
+
 
 from rq import Queue
 from redis import Redis
@@ -372,6 +374,140 @@ class NewSimWizard(SessionWizardView):
 
         # Redirect to detail view for simulation
         return redirect(simulation.get_absolute_url())
+
+
+
+## Start a new simulation using the form wizard module
+#
+# view is created directly in the urls.py
+class BenchSimWizard(SessionWizardView):
+
+    template_name = 'omnetppManager/bench_simulation.html'
+
+    # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
+    # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
+    def get_form_initial(self, step):
+        returnDict = {}
+
+        if self.request.user.email and self.request.user.email != "":
+            returnDict["notification_mail_address"] = self.request.user.email
+
+
+        if step == "1":
+            section_name = self.get_cleaned_data_for_step("0")["simulation_name"]
+            returnDict["section_name"] = section_name
+
+        if step == "2":
+            forwarder = self.get_cleaned_data_for_step("1")["forwarding_layer"]
+            returnDict["forwarder"] = forwarder
+
+        return self.initial_dict.get(step, returnDict)
+
+    # Add additional template information like the title
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
+        data_1 = self.get_cleaned_data_for_step("0")
+        if data_1 != None:
+            print (data_1)
+            context.update({"simulation_title" : data_1["simulation_title"]})
+            context.update({"simulation_name" : data_1["simulation_name"]})
+        if self.steps.current == '2':
+            print(context["simulation_name"])
+            data_2 = self.get_cleaned_data_for_step("1")
+            context.update({"forwarding_layer" : data_2["forwarding_layer"]})
+        
+        return context
+        
+
+    # Form is finished, process the data, start the job
+    def done(self, form_list, **kwargs):
+        cleaned_data = self.get_all_cleaned_data()
+        ini_file='hello \n'
+        section_name=cleaned_data['simulation_name']
+        # print(section_name)
+        section_object=OmnetppBenchmarkSectionConfig.objects.all()
+        # print(section_object)
+        for sec in section_object:
+            # print(sec.name)
+            # compiling General config section
+            if str(sec.name) == 'General Parameters':   
+                first_section='General'
+                section_label=OmnetppBenchmarkSection.objects.filter(name=first_section).values('label')
+                # print(section_label)
+                ini_file += section_label[0]['label'] + '\n'
+                params = OmnetppBenchmarkSectionParameters.objects.filter(config=sec)
+                # print(params)
+                for param in params:
+                    ini_file += param.param_name + ' = ' + param.param_default_value + param.param_unit + ' ' + param.param_description + '\n'
+
+        print(ini_file)
+        q = Queue(connection=get_redis_conn())
+#        print(cleaned_data)
+#        print("User", self.request.user)
+#        print("Simulation title", cleaned_data["simulation_title"])
+        # omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
+
+        notification_mail_address = None
+        if cleaned_data["notification_mail_address"] not in ["", None]:
+            notification_mail_address = cleaned_data["notification_mail_address"]
+
+        # Handle backend
+        storage_backend_id = int(cleaned_data["storage_backend"])
+
+        # TODO: Do further checks on backend id?
+        storage_backend_object = get_object_or_404(
+                StorageBackend.objects.filter(backend_active=True),
+                pk=storage_backend_id
+                )
+
+        args = {
+                "user" : str(self.request.user),
+                "title" : str(cleaned_data["simulation_title"]),
+                # "omnetpp.ini" : str(omnetppini),
+                "runconfig" : str(cleaned_data["simulation_name"]),
+                "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
+                "storage_backend" : str(storage_backend_object.backend_name),
+                "storage_backend_id" : str(storage_backend_object.backend_identifier),
+                "storage_backend_token" : str(storage_backend_object.backend_token),
+                "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                }
+
+
+        print("Simulation arguments:", args)
+
+
+        # Start job
+        job = q.enqueue(
+                run_simulation,
+                SimulationRuntimes.OPS_KEETCHI,
+                args,
+                job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
+                )
+        print("Job with id", job.id, "started")
+
+        # Store simulation including the job id for later
+        simulation = Simulation(
+                user = self.request.user,
+                title = str(cleaned_data["simulation_title"]),
+                omnetppini = str(omnetppini),
+                runconfig = str(cleaned_data["simulation_name"]),
+                simulation_id = job.id,
+                summarizing_precision = float(cleaned_data["summarizing_precision"]),
+                notification_mail_address = notification_mail_address,
+                storage_backend = storage_backend_object,
+                simulation_timeout = job.timeout,
+                )
+
+        simulation.save()
+
+        # Make sure the simulation status in the db is up to date
+        sync_simulations()
+
+        # Redirect to detail view for simulation
+        return redirect(simulation.get_absolute_url())
+
+
 
 
 ## Generic view: Show job information
