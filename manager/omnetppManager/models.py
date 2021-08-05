@@ -483,7 +483,7 @@ class OmnetppBenchmarkSectionConfig(models.Model):
 ## Parameters of OmnetppBenchmark ini Section configs
 class OmnetppBenchmarkSectionParameters(models.Model):
     class Meta:
-        ordering = ("pk",) # Just for clarification
+        ordering = ("pk",) 
 
     param_name = models.CharField(max_length=100)
     param_default_value = models.CharField(max_length=100)
@@ -529,7 +529,7 @@ class OmnetppBenchmarkSubsectionConfig(models.Model):
 ## Parameters for the OmnetppBenchmark ini Subsections config
 class OmnetppBenchmarkSubsectionParameters(models.Model):
     class Meta:
-        ordering = ("pk",) # Just for clarification
+        ordering = ("pk",) 
 
     param_name = models.CharField(max_length=100)
     param_default_value = models.CharField(max_length=100)
@@ -541,6 +541,93 @@ class OmnetppBenchmarkSubsectionParameters(models.Model):
     config = models.ForeignKey(
             "OmnetppBenchmarkSubsectionConfig",
             related_name="SubsectionParameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)
+
+# Benchmark Models
+class OmnetppBenchmarkConfig(models.Model):
+
+    class Meta:
+        ordering = ("order", "-pk",) # Allow manual ordering
+
+    name = models.CharField(
+            max_length=100,
+            help_text="Sections available on the omnetppbenchmark ini file",
+            validators=[alphanumeric,], unique=True,
+            )
+    label = models.CharField(
+            default="<undefined>",
+            max_length=100,unique=True,
+            help_text="has it is in the Omnetpp Benchmark ini file with the square brackets",
+            )
+    order = models.IntegerField(default=10, unique=True, help_text="Order the fields manually. Lower number = higher priority")
+
+    def __str__(self):
+        return self.name
+
+class OmnetppBenchmarkParameters(models.Model):
+    class Meta:
+        ordering = ("pk",) 
+
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.TextField(max_length=4000,
+            help_text="has it is in the Omnetpp Benchmark ini file ( without user editable parameters eg RNG and Forwarding layer)",
+            )
+    config = models.ForeignKey(
+            "OmnetppBenchmarkConfig",
+            related_name="BenchmarkParameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)
+
+class OmnetppBenchmarkEditableParameters(models.Model):
+    class Meta:
+        ordering = ("pk",) 
+
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.CharField(max_length=100)
+    param_unit = models.CharField(max_length=10, default="", blank=True)
+    user_editable = models.BooleanField(default=False)
+
+    param_description = models.CharField(default="", max_length=400, blank=True)
+
+    config = models.ForeignKey(
+            "OmnetppBenchmarkConfig",
+            related_name="e_BenchmarkParameters",
+            on_delete=models.CASCADE
+            )
+
+    def __str__(self):
+        return self.param_name + "=" + str(self.param_default_value)
+
+## Configs of OmnetppBenchmark ini Subsections
+class OmnetppBenchmarkForwarderConfig(models.Model):
+
+    name = models.CharField(max_length=100,unique=True,)
+
+    def __str__(self):
+        return self.name
+
+## Parameters for the OmnetppBenchmark ini Subsections config
+class OmnetppBenchmarkForwarderParameters(models.Model):
+    class Meta:
+        ordering = ("pk",) 
+
+    param_name = models.CharField(max_length=100)
+    param_default_value = models.CharField(max_length=100)
+    param_unit = models.CharField(max_length=10, default="", blank=True)
+    user_editable = models.BooleanField(default=False)
+
+    param_description = models.CharField(default="", max_length=400, blank=True)
+
+    config = models.ForeignKey(
+            "OmnetppBenchmarkForwarderConfig",
+            related_name="ForwarderParameters",
             on_delete=models.CASCADE
             )
 

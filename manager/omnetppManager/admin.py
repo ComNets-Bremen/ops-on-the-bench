@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import Q
 
 from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType, ServerConfig, ServerConfigValue,\
-OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters
-
+OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters,\
+OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
 # Register your models here.
 
 
@@ -51,6 +51,11 @@ class OmnetppBenchmarkSectionAdmin(admin.ModelAdmin):
     inlines = [
             OmnetppBenchmarkSectionParametersInline,
             ]
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 class OmnetppBenchmarkSubsectionParametersInline(admin.TabularInline):
     model = OmnetppBenchmarkSubsectionParameters
@@ -62,6 +67,42 @@ class OmnetppBenchmarkSubsectionAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple, 'queryset' : OmnetppBenchmarkSection.objects.filter(~Q(name='General')) },
     }
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
+# Hiding a model from the admin index site
+class OmnetppBenchmarkSectAdmin(admin.ModelAdmin):
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
+class OmnetppBenchmarkParametersInline(admin.TabularInline):
+    model = OmnetppBenchmarkParameters
+    extra = 0
+
+class OmnetppBenchmarkEditableParametersInline(admin.TabularInline):
+    model = OmnetppBenchmarkEditableParameters
+    extra = 0
+
+class OmnetppBenchmarkParametersAdmin(admin.ModelAdmin):
+    inlines = [
+            OmnetppBenchmarkParametersInline,
+            OmnetppBenchmarkEditableParametersInline
+            ]
+            
+class OmnetppBenchmarkForwarderParametersInline(admin.TabularInline):
+    model = OmnetppBenchmarkForwarderParameters
+    extra = 0
+
+class OmnetppBenchmarkForwarderParametersAdmin(admin.ModelAdmin):
+    inlines = [
+            OmnetppBenchmarkForwarderParametersInline,
+            ]
     
 admin.site.register(Simulation, SimulationAdmin)
 
@@ -77,11 +118,14 @@ admin.site.register(OmnetppConfigType)
 
 admin.site.register(ServerConfig, ServerConfigAdmin)
 
-admin.site.register(OmnetppBenchmarkSection)
+admin.site.register(OmnetppBenchmarkSection,OmnetppBenchmarkSectAdmin)
 
-admin.site.register(OmnetppBenchmarkSubsection)
+admin.site.register(OmnetppBenchmarkSubsection,OmnetppBenchmarkSectAdmin)
 
 admin.site.register(OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionAdmin)
 
 admin.site.register(OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionAdmin)
 
+admin.site.register(OmnetppBenchmarkConfig, OmnetppBenchmarkParametersAdmin)
+
+admin.site.register(OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParametersAdmin)
