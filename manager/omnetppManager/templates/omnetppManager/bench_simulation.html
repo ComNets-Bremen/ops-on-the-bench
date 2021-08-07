@@ -3,9 +3,10 @@
 {% block content %}
 
 <h2 class="display-3">Start a new benchmark simulation</h2>
-<h4> Step {{ wizard.steps.step1 }} of {{wizard.steps.count}} of simulation <code>{{ simulation_title }}</code></h4><br>
+<h5> Step {{ wizard.steps.step1 }} of {{wizard.steps.count}} of simulation <code>{{ simulation_title }}</code></h5><br>
 {% if wizard.steps.step1 == 3%}
-  <h3>You have selected  {{simulation_name}}  and {{forwarding_layer}} layer</h3><br><br>
+  <h3>You have selected  {{simulation_name}}  and {{forwarding_layer}} layer</h3><br>
+  <h4>Edit RNG and Forwarding layer below !</h4><br><br>
 {% endif %}
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -18,10 +19,33 @@
             {{ form }}
           {% endfor %}
         {% else %}
-          {{ wizard.form }}
+          {% if wizard.steps.step1 == 3%}
+          <div class="row rngs">
+          {% for field in form %}
+          {% if 'form-control rng' in field.field.widget.attrs.class %}
+          <div class="col-lg-4 col-md-4 col-xs-12 form-inline rng">
+            {{ field.errors }}
+            <label class="rng_label" for="{{ field.auto_id }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.help_text }}
+          </div>
+          {% else %}
+          <div class="container">
+          <div class="col-lg-7 col-md-7 col-xs-12 ">
+            {{ field.errors }}
+            <label class="rng_label" for="{{ field.auto_id }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.help_text }}
+            <br><br>
+          </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+          {% endif %}
         {% endif %}
 
-    </table>
+    </table><br>
     <input type="submit" value="next""/>
 </form>
 
