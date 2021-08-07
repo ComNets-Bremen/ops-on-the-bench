@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 from . import views
 
-from .forms import getOmnetppiniForm, selectSimulationForm,getOmnetppBenchmarkSection,selectForwarderForm, BenchmarkGeneralSettingForm
+from .forms import getOmnetppiniForm, selectSimulationForm,getOmnetppBenchmarkSection,selectForwarderForm, BenchmarkGeneralSettingForm,UserEditorForm
 
 from .views import NewSimWizard, JobDetailView, DetailSimWizard, BenchSimWizard
 
@@ -22,7 +22,7 @@ urlpatterns = [
         path('request-access/', views.request_access, name="omnetppManager_request_access"),
         path('request-access-thanks/', views.request_access_thanks, name="omnetppManager_request_access_thanks"),
         path('rerun-sim/<int:pk>', views.rerun_simulation, name="omnetppManager_rerun_sim"),
-        path('benchmark-simulation/', login_required(BenchSimWizard.as_view([getOmnetppBenchmarkSection, selectForwarderForm,BenchmarkGeneralSettingForm,])), name="omnetppManager_benchmark-simulation"),
+        path('benchmark-simulation/', login_required(BenchSimWizard.as_view([getOmnetppBenchmarkSection, selectForwarderForm,UserEditorForm,BenchmarkGeneralSettingForm,])), name="omnetppManager_benchmark-simulation"),
         ]
 
 

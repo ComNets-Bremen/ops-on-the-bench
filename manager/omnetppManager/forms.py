@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -10,7 +11,9 @@ from django.forms import BaseFormSet
 import configparser
 
 from .models import StorageBackend, OmnetppConfigType, OmnetppConfig, OmnetppConfigParameter,\
-    OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters
+    OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters,\
+    OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+
 
 
 ## Special field for uploading omnetpp.ini files.
@@ -99,10 +102,83 @@ class selectSimulationForm(forms.Form):
 # Omnetpp Benchmark forms 
 
 # simulatiion title and simulation name form
+# class getOmnetppBenchmarkSection(forms.Form):
+#     simulation_title = forms.CharField(max_length=50)
+   
+#     sections = OmnetppBenchmarkSection.objects.filter(~Q(name='General'))
+#     simulation_name = \
+#             forms.CharField(
+#                 label="Select simulation",
+#                 widget=forms.Select(choices=[(sec, sec) for sec in sections]),
+#                 help_text="simulation name from omnetpp-ops-benchmark.ini"
+#                 )
+#     simulation_name.widget.attrs.update({"class" : "form-control"})
+    
+
+
+# # forwarding layer selection form 
+# class selectForwarderForm(forms.Form):
+    
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         init_args = kwargs.get("initial", None)
+#         if init_args and "section_name" in init_args:
+#             e_layers = OmnetppBenchmarkSubsection.objects.filter(user_selection_enabled=True)
+#             for layers in e_layers:
+#                 if str(layers) == 'Forwarding layer':
+#                     options=OmnetppBenchmarkSubsectionConfig.objects.filter(subsection=layers).values('name')
+#                     self.fields["forwarding_layer"] = \
+#                             forms.CharField(
+#                                     label="Forwarding Layer",
+#                                     widget=forms.Select(choices=[(sec['name'], sec['name']) for sec in options]),
+#                                     help_text=f'Select a Forwarding layer foryour selected simulation: { init_args["section_name"]}'
+#                                     )
+#                     self.fields["forwarding_layer"].widget.attrs.update({"class" : "form-control"})
+
+# # Benchmark General detail settings form
+# class BenchmarkGeneralSettingForm(forms.Form):
+
+#     notification_mail_address = forms.EmailField(label="notify simulation state changes (optional)", required=False, help_text="A mail address or leave it empty to disable notification")
+#     notification_mail_address.widget.attrs.update({"class":"form-control"})
+
+#     summarizing_precision = forms.FloatField(label="precision", initial=100.0, help_text="Average values every N seconds")
+#     summarizing_precision.widget.attrs.update({"class" : "form-control"})
+
+#     advanced_settings = forms.BooleanField(label="Advanced settings", help_text="Show advanced settings", required=False)
+#     advanced_settings.widget.attrs.update({"class" : "form-control"})
+
+
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+
+#         storage_names = []
+
+#         for item in StorageBackend.objects.filter(backend_active=True).values("pk", "backend_name"):
+#             storage_names.append((item["pk"], item["backend_name"]))
+
+#         self.fields["storage_backend"] = forms.CharField(
+#                 label="Select storage backend",
+#                 widget=forms.Select(
+#                     choices=storage_names,
+#                     attrs = {
+#                         "class" : "form-control",
+#                         },
+#                     ),
+#                 help_text="Storage backend for the simulation output"
+#                 )
+
+
+
+
+    # def get_fields(self):
+    #     return self.cleaned_data
+        
+# simulatiion title and simulation name form
 class getOmnetppBenchmarkSection(forms.Form):
     simulation_title = forms.CharField(max_length=50)
    
-    sections = OmnetppBenchmarkSection.objects.filter(~Q(name='General'))
+    sections = OmnetppBenchmarkConfig.objects.filter(~Q(name='General'))
     simulation_name = \
             forms.CharField(
                 label="Select simulation",
@@ -120,19 +196,56 @@ class selectForwarderForm(forms.Form):
         super().__init__(*args, **kwargs)
         init_args = kwargs.get("initial", None)
         if init_args and "section_name" in init_args:
-            e_layers = OmnetppBenchmarkSubsection.objects.filter(user_selection_enabled=True)
-            for layers in e_layers:
-                if str(layers) == 'Forwarding layer':
-                    options=OmnetppBenchmarkSubsectionConfig.objects.filter(subsection=layers).values('name')
-                    self.fields["forwarding_layer"] = \
-                            forms.CharField(
-                                    label="Forwarding Layer",
-                                    widget=forms.Select(choices=[(sec['name'], sec['name']) for sec in options]),
-                                    help_text=f'Select a Forwarding layer foryour selected simulation: { init_args["section_name"]}'
-                                    )
-                    self.fields["forwarding_layer"].widget.attrs.update({"class" : "form-control"})
+            f_layers = OmnetppBenchmarkForwarderConfig.objects.all()
+            self.fields["forwarding_layer"] = \
+                    forms.CharField(
+                            label="Forwarding Layer",
+                            widget=forms.Select(choices=[(sec, sec) for sec in f_layers]),
+                            help_text=f'Select a Forwarding layer for your selected simulation: { init_args["section_name"]}'
+                            )
+            self.fields["forwarding_layer"].widget.attrs.update({"class" : "form-control"})
 
-# Benchmark General detail settings form
+class UserEditorForm(forms.Form):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        init_args = kwargs.get("initial", None)
+        if init_args and "forwarder" in init_args:
+            f_layer = OmnetppBenchmarkForwarderConfig.objects.filter(name=init_args["forwarder"])
+            # print(f_layer)
+            params=OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0],user_editable=True).all()
+            
+            for p in params:
+                # print(p.param_default_value)
+                self.fields[p] = \
+                        forms.CharField(
+                                label=p,
+                                initial=p.param_default_value,
+                                widget=forms.TextInput(attrs={
+                                "class" : "form-control",
+                                "placeholder":"Enter  here",
+                                }),
+                                help_text=f'unit: { p.param_unit:}' if p.param_unit else '',
+                                )
+                        
+                self.fields[p].widget.attrs.update({"class" : "form-control"})
+            g_section= OmnetppBenchmarkConfig.objects.filter(Q(name='General'))
+            print(g_section)
+            rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0])
+            print(rngs, len(rngs))
+            for rng in range(1,len(rngs)):
+                self.fields[rngs[rng]] = \
+                        forms.CharField(
+                                label=rngs[rng],
+                                initial=rngs[rng].param_default_value,
+                                widget=forms.TextInput(attrs={
+                                "class" : "form-control rng",
+                                "placeholder":"Enter value here",
+                                }),
+                                # help_text=f'unit: { p.param_unit:}' if p.param_unit else '',
+                                )
+                self.fields[rngs[rng]].widget.attrs.update({"class" : "form-control rng"})
+#Benchmark General detail settings form
 class BenchmarkGeneralSettingForm(forms.Form):
 
     notification_mail_address = forms.EmailField(label="notify simulation state changes (optional)", required=False, help_text="A mail address or leave it empty to disable notification")

@@ -603,7 +603,7 @@ class OmnetppBenchmarkEditableParameters(models.Model):
             )
 
     def __str__(self):
-        return self.param_name + "=" + str(self.param_default_value)
+        return self.param_name
 
 ## Configs of OmnetppBenchmark ini Subsections
 class OmnetppBenchmarkForwarderConfig(models.Model):
@@ -632,4 +632,4 @@ class OmnetppBenchmarkForwarderParameters(models.Model):
             )
 
     def __str__(self):
-        return self.param_name + "=" + str(self.param_default_value)
+        return self.param_name
