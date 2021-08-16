@@ -17,8 +17,9 @@ from django.core.mail import send_mail
 from formtools.wizard.views import SessionWizardView
 
 from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerConfig, ServerConfigValue,\
-    OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters
+     OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
 
+from .forms import getOmnetppiniForm, selectSimulationForm,getOmnetppBenchmarkSection,selectForwarderForm, BenchmarkGeneralSettingForm,UserEditorForm
 
 from rq import Queue
 from redis import Redis
@@ -30,6 +31,7 @@ import io
 import json
 
 import os
+from django.core.exceptions import SuspiciousOperation
 
 import datetime, time
 import pytz
@@ -394,28 +396,34 @@ class BenchSimWizard(SessionWizardView):
 
 
         if step == "1":
+            # datax=self.storage.get_step_data('2')
+            # print(datax)
             section_name = self.get_cleaned_data_for_step("0")["simulation_name"]
             returnDict["section_name"] = section_name
 
         if step == "2":
+            # self.storage.set_step_data('2',{})
             forwarder = self.get_cleaned_data_for_step("1")["forwarding_layer"]
             returnDict["forwarder"] = forwarder
-
+        if step == "3":
+            dataz=self.storage.get_step_data('2')
+            # print(step)
         return self.initial_dict.get(step, returnDict)
-
+  
     # Add additional template information like the title
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
         data_1 = self.get_cleaned_data_for_step("0")
         if data_1 != None:
-            print (data_1)
+            # print (data_1)
             context.update({"simulation_title" : data_1["simulation_title"]})
             context.update({"simulation_name" : data_1["simulation_name"]})
         if self.steps.current == '2':
-            print(context["simulation_name"])
+            # print(context["simulation_name"])
             data_2 = self.get_cleaned_data_for_step("1")
             context.update({"forwarding_layer" : data_2["forwarding_layer"]})
+            # stay_step = self.request.POST.get('wizard_stay_step', None)
         
         return context
         
@@ -423,25 +431,49 @@ class BenchSimWizard(SessionWizardView):
     # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
+        print(cleaned_data)
         ini_file='hello \n'
-        section_name=cleaned_data['simulation_name']
+        config_name=cleaned_data['simulation_name']
+        forwarder_name=cleaned_data['forwarding_layer']
         # print(section_name)
-        section_object=OmnetppBenchmarkSectionConfig.objects.all()
-        # print(section_object)
-        for sec in section_object:
+        config_objects=OmnetppBenchmarkConfig.objects.all()
+        # print(config_objects)
+        for sec in config_objects:
             # print(sec.name)
             # compiling General config section
-            if str(sec.name) == 'General Parameters':   
-                first_section='General'
-                section_label=OmnetppBenchmarkSection.objects.filter(name=first_section).values('label')
-                # print(section_label)
-                ini_file += section_label[0]['label'] + '\n'
-                params = OmnetppBenchmarkSectionParameters.objects.filter(config=sec)
-                # print(params)
-                for param in params:
-                    ini_file += param.param_name + ' = ' + param.param_default_value + param.param_unit + ' ' + param.param_description + '\n'
+            if str(sec.name) == 'General':   
+                config_param=OmnetppBenchmarkParameters.objects.filter(config=sec)
+                # print(config_param)
+                ini_file += config_param[0].param_default_value + '\n'
+                edit_params = OmnetppBenchmarkEditableParameters.objects.filter(config=sec)
+                # # print(params)
+                for param in edit_params:
+                    ini_file += param.param_name + ' = ' 
+                    if param.user_editable == True:
+                        # print(cleaned_data[param] )
+                        ini_file += f'{cleaned_data[param]}'  + param.param_unit + '   #' + param.param_description + '\n'
+                    else:
+                        ini_file += param.param_default_value + param.param_unit + '   #' + param.param_description + '\n'
 
-        print(ini_file)
+            if str(sec.name) == config_name:   
+                config_param=OmnetppBenchmarkParameters.objects.filter(config=sec)
+                # print(config_param)
+                ini_file += '\n'+ config_param[0].param_default_value + '\n'
+        forward_obj=OmnetppBenchmarkForwarderConfig.objects.all()
+        ini_file += '\n\n#forwarding layer parameters \n'
+        ini_file += '#Epidemic forwarding  \n'
+        for fwd in forward_obj:
+            if str(fwd) == forwarder_name:
+                fwd_params=OmnetppBenchmarkForwarderParameters.objects.filter(config=fwd)
+                for fwd_param in fwd_params:
+                    ini_file += fwd_param.param_name + ' = ' 
+                    if fwd_param.user_editable == True:
+                        ini_file += f'{cleaned_data[fwd_param]}' + fwd_param.param_unit + '   #' + fwd_param.param_description + '\n'
+                    else:
+                        ini_file += fwd_param.param_default_value + fwd_param.param_unit + '   #' + fwd_param.param_description + '\n'
+
+
+        # print(ini_file)
         q = Queue(connection=get_redis_conn())
 #        print(cleaned_data)
 #        print("User", self.request.user)
@@ -464,7 +496,7 @@ class BenchSimWizard(SessionWizardView):
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
-                # "omnetpp.ini" : str(omnetppini),
+                "omnetpp.ini" : str(ini_file),
                 "runconfig" : str(cleaned_data["simulation_name"]),
                 "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
                 "storage_backend" : str(storage_backend_object.backend_name),
@@ -484,13 +516,13 @@ class BenchSimWizard(SessionWizardView):
                 args,
                 job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
                 )
-        print("Job with id", job.id, "started")
+        # print("Job with id", job.id, "started")
 
         # Store simulation including the job id for later
         simulation = Simulation(
                 user = self.request.user,
                 title = str(cleaned_data["simulation_title"]),
-                omnetppini = str(omnetppini),
+                omnetppini = str(ini_file),
                 runconfig = str(cleaned_data["simulation_name"]),
                 simulation_id = job.id,
                 summarizing_precision = float(cleaned_data["summarizing_precision"]),
@@ -506,7 +538,6 @@ class BenchSimWizard(SessionWizardView):
 
         # Redirect to detail view for simulation
         return redirect(simulation.get_absolute_url())
-
 
 
 
