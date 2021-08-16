@@ -4,8 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType, ServerConfig, ServerConfigValue,\
-OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters,\
-OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+    OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
 # Register your models here.
 
 
@@ -44,42 +43,13 @@ class ServerConfigAdmin(admin.ModelAdmin):
             ServerConfigValueInline,
             ]
 
-class OmnetppBenchmarkSectionParametersInline(admin.TabularInline):
-    model = OmnetppBenchmarkSectionParameters
-
-class OmnetppBenchmarkSectionAdmin(admin.ModelAdmin):
-    inlines = [
-            OmnetppBenchmarkSectionParametersInline,
-            ]
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
-
-class OmnetppBenchmarkSubsectionParametersInline(admin.TabularInline):
-    model = OmnetppBenchmarkSubsectionParameters
-
-class OmnetppBenchmarkSubsectionAdmin(admin.ModelAdmin):
-    inlines = [
-            OmnetppBenchmarkSubsectionParametersInline,
-            ]
-    formfield_overrides = {
-        models.ManyToManyField: {'widget': CheckboxSelectMultiple, 'queryset' : OmnetppBenchmarkSection.objects.filter(~Q(name='General')) },
-    }
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
-
 # Hiding a model from the admin index site
-class OmnetppBenchmarkSectAdmin(admin.ModelAdmin):
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
+# class OmnetppBenchmarkSectAdmin(admin.ModelAdmin):
+#     def get_model_perms(self, request):
+#         """
+#         Return empty perms dict thus hiding the model from admin index.
+#         """
+#         return {}
 
 class OmnetppBenchmarkParametersInline(admin.TabularInline):
     model = OmnetppBenchmarkParameters
@@ -117,14 +87,6 @@ admin.site.register(SimOmnetppTemplate)
 admin.site.register(OmnetppConfigType)
 
 admin.site.register(ServerConfig, ServerConfigAdmin)
-
-admin.site.register(OmnetppBenchmarkSection,OmnetppBenchmarkSectAdmin)
-
-admin.site.register(OmnetppBenchmarkSubsection,OmnetppBenchmarkSectAdmin)
-
-admin.site.register(OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionAdmin)
-
-admin.site.register(OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionAdmin)
 
 admin.site.register(OmnetppBenchmarkConfig, OmnetppBenchmarkParametersAdmin)
 
