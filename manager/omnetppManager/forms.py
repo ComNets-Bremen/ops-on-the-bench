@@ -11,8 +11,7 @@ from django.forms import BaseFormSet
 import configparser
 
 from .models import StorageBackend, OmnetppConfigType, OmnetppConfig, OmnetppConfigParameter,\
-    OmnetppBenchmarkSection, OmnetppBenchmarkSubsection, OmnetppBenchmarkSectionConfig, OmnetppBenchmarkSectionParameters , OmnetppBenchmarkSubsectionConfig, OmnetppBenchmarkSubsectionParameters,\
-    OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+     OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
 
 
 
@@ -210,41 +209,94 @@ class UserEditorForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         init_args = kwargs.get("initial", None)
-        if init_args and "forwarder" in init_args:
+        if (init_args and "forwarder" in init_args):
+            
+            # RNG Section
+            g_section= OmnetppBenchmarkConfig.objects.filter(Q(name='General'))
+            # print(g_section)
+            rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0])
+            # print(rngs, len(rngs))
+            for rng in range(1,len(rngs)):
+                self.fields[rngs[rng]] = \
+                        forms.IntegerField(
+                                label=rngs[rng],
+                                initial=rngs[rng].param_default_value,
+                                max_value=10000,
+                                min_value=0,
+                                widget=forms.TextInput(attrs={
+                                "class" : "form-control rng",
+                                "placeholder":"Enter value here",
+                                }),
+                                help_text=f'{ rngs[rng].param_description:}' if rngs[rng].param_description else '',
+                                )
+                self.fields[rngs[rng]].widget.attrs.update({"class" : "form-control rng"})
+
+            # Forwarding layer section
             f_layer = OmnetppBenchmarkForwarderConfig.objects.filter(name=init_args["forwarder"])
-            # print(f_layer)
             params=OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0],user_editable=True).all()
             
             for p in params:
-                # print(p.param_default_value)
                 self.fields[p] = \
                         forms.CharField(
                                 label=p,
                                 initial=p.param_default_value,
                                 widget=forms.TextInput(attrs={
                                 "class" : "form-control",
-                                "placeholder":"Enter  here",
+                                "placeholder":p.param_default_value,
                                 }),
                                 help_text=f'unit: { p.param_unit:}' if p.param_unit else '',
                                 )
-                        
                 self.fields[p].widget.attrs.update({"class" : "form-control"})
-            g_section= OmnetppBenchmarkConfig.objects.filter(Q(name='General'))
-            print(g_section)
-            rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0])
-            print(rngs, len(rngs))
-            for rng in range(1,len(rngs)):
-                self.fields[rngs[rng]] = \
-                        forms.CharField(
-                                label=rngs[rng],
-                                initial=rngs[rng].param_default_value,
-                                widget=forms.TextInput(attrs={
-                                "class" : "form-control rng",
-                                "placeholder":"Enter value here",
-                                }),
-                                # help_text=f'unit: { p.param_unit:}' if p.param_unit else '',
-                                )
-                self.fields[rngs[rng]].widget.attrs.update({"class" : "form-control rng"})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # cc_myself = cleaned_data.get("cc_myself")
+        # print(cleaned_data)
+        # print(self.fields)
+        # print(self.data)
+        for field in self.fields:
+            strfield=str(field)
+            if not self[field].html_name in self.data:
+                return self.data
+            # check if inout is numeric
+            if strfield in ['**.forwarding.maximumCacheSize','**.forwarding.agingInterval','**.forwarding.coolOffDuration',\
+                '**.forwarding.sendFrequencyWhenNotOnNeighFrequency','**.forwarding.neighbourhoodChangeSignificanceThreshold', '**.forwarding.learningConst',\
+                    '**.forwarding.backoffTimerIncrementFactor','**.forwarding.antiEntropyInterval','**.forwarding.maximumHopCount']:
+                if cleaned_data.get(field).replace('.','',1).isdigit() == False:
+                    raise forms.ValidationError({field : "This field must be a valid number"})
+            if strfield != '':
+                # print(cleaned_data.get(field))
+                if strfield == '**.forwarding.maximumCacheSize':
+                    if int(cleaned_data.get(field)) < 10000000 or int(cleaned_data.get(field)) > 1000000000 :
+                        raise forms.ValidationError({field :"cache size should be between 10000000 and 1000000000 bytes." })
+                if strfield in ['**.forwarding.broadcastRRS', '**.forwarding.sendOnNeighReportingFrequency']:
+                    if cleaned_data.get(field) not in ['false','true']:
+                        raise forms.ValidationError({field : "this field must be either false or true"})
+                if strfield == '**.forwarding.sendFrequencyWhenNotOnNeighFrequency':
+                    if int(cleaned_data.get(field)) < 1 or int(cleaned_data.get(field)) > 60:
+                        raise forms.ValidationError({field : "frequency should be between 1 and 60 seconds"})
+                if strfield in ['**.forwarding.agingInterval','**.forwarding.coolOffDuration']:
+                    if int(cleaned_data.get(field)) < 60 or int(cleaned_data.get(field)) > 1800:
+                        raise forms.ValidationError({field : "duration should be between 60 and 1800 seconds"})
+                if strfield in ['**.forwarding.neighbourhoodChangeSignificanceThreshold', '**.forwarding.learningConst']:
+                    if float(cleaned_data.get(field)) < 0 or float(cleaned_data.get(field)) > 1:
+                        raise forms.ValidationError({field : "value should be between 0 and 1"})
+                if strfield == '**.forwarding.backoffTimerIncrementFactor':
+                    if float(cleaned_data.get(field)) < 0 or float(cleaned_data.get(field)) > 3:
+                        raise forms.ValidationError({field : "threshold should be between 0 and 3"})
+                if strfield == '**.forwarding.antiEntropyInterval':
+                    if int(cleaned_data.get(field)) < 100 or int(cleaned_data.get(field)) > 500:
+                        raise forms.ValidationError({field : "interval should be between 100 and 500"})
+                if strfield == '**.forwarding.maximumHopCount':
+                    if int(cleaned_data.get(field)) <20 or int(cleaned_data.get(field)) > 30:
+                        raise forms.ValidationError({field : "value should be between 20 and 30"})
+       
+        return cleaned_data
+    
+    
+    def get_fields(self):
+        return self.cleaned_data
+
 #Benchmark General detail settings form
 class BenchmarkGeneralSettingForm(forms.Form):
 
