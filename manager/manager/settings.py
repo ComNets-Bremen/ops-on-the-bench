@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%u=!8^4b2kkj(&%#%7)3+il456u2zqkaw(6an7$px%_7e&-=-6'
+SECRET_KEY = None
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,7 +35,6 @@ DEBUG = True
 ALLOWED_HOSTS = [
         "127.0.0.1",
         "::1",
-        "134.102.188.104",
         "localhost"
         ]
 
@@ -159,9 +158,9 @@ DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
 DEFAULT_MAIN_TITLE = "OPS on the bench"
 
 # Redis connection setup
-REDIS_DB_HOST       ='10.10.160.37'
-REDIS_DB_PORT       = '6379'
-REDIS_DB_PASSWORD   = None#'719cfee1aaf9df026ea1af0a571c1d2c'
+REDIS_DB_HOST       = None
+REDIS_DB_PORT       = None
+REDIS_DB_PASSWORD   = None
 
 
 # Overwrite settings by local ones (if available)
