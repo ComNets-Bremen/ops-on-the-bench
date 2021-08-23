@@ -416,7 +416,6 @@ class BenchSimWizard(SessionWizardView):
         context.update({"title" : "Create a new simulation: Step " + str(self.steps.step1)})
         data_1 = self.get_cleaned_data_for_step("0")
         if data_1 != None:
-            # print (data_1)
             context.update({"simulation_title" : data_1["simulation_title"]})
             context.update({"simulation_name" : data_1["simulation_name"]})
         if self.steps.current == '2':
@@ -431,15 +430,14 @@ class BenchSimWizard(SessionWizardView):
     # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
-        print(cleaned_data)
-        ini_file='hello \n'
+        # print(cleaned_data)
+        ini_file='\n'
         config_name=cleaned_data['simulation_name']
         forwarder_name=cleaned_data['forwarding_layer']
         # print(section_name)
         config_objects=OmnetppBenchmarkConfig.objects.all()
         # print(config_objects)
         for sec in config_objects:
-            # print(sec.name)
             # compiling General config section
             if str(sec.name) == 'General':   
                 config_param=OmnetppBenchmarkParameters.objects.filter(config=sec)
@@ -457,11 +455,12 @@ class BenchSimWizard(SessionWizardView):
 
             if str(sec.name) == config_name:   
                 config_param=OmnetppBenchmarkParameters.objects.filter(config=sec)
+                config_simname= config_param[0].param_name
                 # print(config_param)
                 ini_file += '\n'+ config_param[0].param_default_value + '\n'
         forward_obj=OmnetppBenchmarkForwarderConfig.objects.all()
         ini_file += '\n\n#forwarding layer parameters \n'
-        ini_file += '#Epidemic forwarding  \n'
+        ini_file += f'#{forwarder_name}  \n'
         for fwd in forward_obj:
             if str(fwd) == forwarder_name:
                 fwd_params=OmnetppBenchmarkForwarderParameters.objects.filter(config=fwd)
@@ -475,10 +474,6 @@ class BenchSimWizard(SessionWizardView):
 
         # print(ini_file)
         q = Queue(connection=get_redis_conn())
-#        print(cleaned_data)
-#        print("User", self.request.user)
-#        print("Simulation title", cleaned_data["simulation_title"])
-        # omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
 
         notification_mail_address = None
         if cleaned_data["notification_mail_address"] not in ["", None]:
@@ -498,7 +493,7 @@ class BenchSimWizard(SessionWizardView):
                 "title" : str(cleaned_data["simulation_title"]),
                 "is_debug_sim" : str(cleaned_data["is_debug_sim"]),
                 "omnetpp.ini" : str(ini_file),
-                "runconfig" : str(cleaned_data["simulation_name"]),
+                "runconfig" : str(config_param[0].param_name),
                 "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
                 "storage_backend" : str(storage_backend_object.backend_name),
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
@@ -507,7 +502,7 @@ class BenchSimWizard(SessionWizardView):
                 }
 
 
-        print("Simulation arguments:", args)
+        # print("Simulation arguments:", args)
 
 
         # Start job
@@ -525,7 +520,7 @@ class BenchSimWizard(SessionWizardView):
                 title = str(cleaned_data["simulation_title"]),
                 simulation_is_debug_sim = cleaned_data["is_debug_sim"],
                 omnetppini = str(ini_file),
-                runconfig = str(cleaned_data["simulation_name"]),
+                runconfig = str(config_param[0].param_name),
                 simulation_id = job.id,
                 summarizing_precision = float(cleaned_data["summarizing_precision"]),
                 notification_mail_address = notification_mail_address,
