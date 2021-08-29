@@ -99,7 +99,7 @@ class selectSimulationForm(forms.Form):
 
 
 # Omnetpp Benchmark forms 
-        
+#      
 # simulatiion title and simulation name form
 class getOmnetppBenchmarkSection(forms.Form):
     simulation_title = forms.CharField(max_length=50)
@@ -112,8 +112,6 @@ class getOmnetppBenchmarkSection(forms.Form):
                 help_text="simulation name from omnetpp-ops-benchmark.ini"
                 )
     simulation_name.widget.attrs.update({"class" : "form-control"})
-    is_debug_sim     = forms.BooleanField(label="Debug simulation", help_text="This simulation is for debugging. Do not count for statistics.", required=False)
-
     
 
 
@@ -167,7 +165,7 @@ class UserEditorForm(forms.Form):
             for p in params:
                 self.fields[p] = \
                         forms.CharField(
-                                label=p,
+                                label=p.param_display_name,
                                 initial=p.param_default_value,
                                 widget=forms.TextInput(attrs={
                                 "class" : "form-control",
@@ -235,10 +233,6 @@ class BenchmarkGeneralSettingForm(forms.Form):
     summarizing_precision = forms.FloatField(label="precision", initial=100.0, help_text="Average values every N seconds")
     summarizing_precision.widget.attrs.update({"class" : "form-control"})
 
-    advanced_settings = forms.BooleanField(label="Advanced settings", help_text="Show advanced settings", required=False)
-    advanced_settings.widget.attrs.update({"class" : "form-control"})
-
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -264,7 +258,8 @@ class BenchmarkGeneralSettingForm(forms.Form):
 
     def get_fields(self):
         return self.cleaned_data
-
+#
+# end of benchmark forms
 
 
 # Guest user omnetpp config forms

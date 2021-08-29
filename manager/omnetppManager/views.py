@@ -491,7 +491,6 @@ class BenchSimWizard(SessionWizardView):
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
-                "is_debug_sim" : str(cleaned_data["is_debug_sim"]),
                 "omnetpp.ini" : str(ini_file),
                 "runconfig" : str(config_param[0].param_name),
                 "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
@@ -518,7 +517,6 @@ class BenchSimWizard(SessionWizardView):
         simulation = Simulation(
                 user = self.request.user,
                 title = str(cleaned_data["simulation_title"]),
-                simulation_is_debug_sim = cleaned_data["is_debug_sim"],
                 omnetppini = str(ini_file),
                 runconfig = str(config_param[0].param_name),
                 simulation_id = job.id,
