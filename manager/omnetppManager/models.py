@@ -488,6 +488,7 @@ class OmnetppBenchmarkForwarderParameters(models.Model):
         ordering = ("pk",) 
 
     param_name = models.CharField(max_length=100)
+    param_display_name = models.CharField(max_length=100,default='')
     param_default_value = models.CharField(max_length=100)
     param_unit = models.CharField(max_length=10, default="", blank=True)
     user_editable = models.BooleanField(default=False)
