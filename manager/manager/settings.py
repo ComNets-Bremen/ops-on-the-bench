@@ -158,7 +158,7 @@ DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
 DEFAULT_MAIN_TITLE = "OPS on the bench"
 
 # Redis connection setup
-REDIS_DB_HOST       = None
+REDIS_DB_HOST       = None 
 REDIS_DB_PORT       = None
 REDIS_DB_PASSWORD   = None
 
