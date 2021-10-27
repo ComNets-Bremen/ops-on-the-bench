@@ -1,0 +1,967 @@
+[
+{
+    "model": "omnetppManager.storagebackend",
+    "pk": 1,
+    "fields": {
+        "backend_name": "Dropbox paid",
+        "backend_description": "Paid account, 2TB",
+        "backend_identifier": "dropbox",
+        "backend_token": "68xuOnr4c-AAAAAAAAAAIG1w-UhkxyhddCb9Hu011bedIpjsDwaO0Iujk4XPtcx_",
+        "backend_active": true,
+        "backend_keep_days": 7
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 2,
+    "fields": {
+        "name": "General",
+        "label": "[General]",
+        "order": 10
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 3,
+    "fields": {
+        "name": "Config Benchmark 01 Taxi Scenario",
+        "label": "[Config Benchmark-01-Taxi-Scenario]",
+        "order": 20
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 4,
+    "fields": {
+        "name": "Config Benchmark 02 Typhoon Disaster Scenario",
+        "label": "[Config Benchmark-02-Typhoon-Disaster-Scenario]",
+        "order": 30
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 5,
+    "fields": {
+        "name": "Config Benchmark 04 Conference Scenario",
+        "label": "[Config Benchmark-04-Conference-Scenario]",
+        "order": 50
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 6,
+    "fields": {
+        "name": "Config Benchmark 05 University Scenario",
+        "label": "[Config Benchmark-05-University-Scenario]",
+        "order": 60
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 7,
+    "fields": {
+        "name": "Config Benchmark 06 Roller Skate Scenario",
+        "label": "[Config Benchmark-06-Roller-Skate-Scenario]",
+        "order": 70
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 8,
+    "fields": {
+        "name": "Config Benchmark 07 Office Scenario",
+        "label": "[Config Benchmark-07-Office-Scenario]",
+        "order": 80
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "General",
+        "param_default_value": "[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "Config Benchmark-01-Taxi-Scenario",
+        "param_default_value": "[Config Benchmark-01-Taxi-Scenario]\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 500\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-01-taxi/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-01-taxi/Trace/all_traces.gpx.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "Config Benchmark-02-Typhoon-Disaster-Scenario",
+        "param_default_value": "[Config Benchmark-02-Typhoon-Disaster-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 200000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 3600\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"trace\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-02-typhoon/Scenario\" \r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-02-typhoon/Trace/halong.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "Config Benchmark-04-Conference-Scenario",
+        "param_default_value": "[Config Benchmark-04-Conference-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 250000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 98\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-04-conference/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-04-conference/Trace\"",
+        "config": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "Config Benchmark-05-University-Scenario",
+        "param_default_value": "[Config Benchmark-05-University-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 54\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-05-university/Scenario\" \r\n\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-05-university/Trace\"",
+        "config": 6
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "Config Benchmark-06-Roller-Skate-Scenario",
+        "param_default_value": "[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"",
+        "config": 7
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "Config Benchmark-07-Office-Scenario",
+        "param_default_value": "[Config Benchmark-07-Office-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 49\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s # every 1/4 of an hour - we simulate for 7 days\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-07-office/Scenario\"\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-07-office/Trace\"",
+        "config": 8
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "num-rngs",
+        "param_default_value": "6",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "seed-0-mt",
+        "param_default_value": "1000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "left specifically unused for \"unknown\" RNG uses",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "seed-1-mt",
+        "param_default_value": "2000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "application",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "seed-2-mt",
+        "param_default_value": "3000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "user behaviour model RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "seed-3-mt",
+        "param_default_value": "4000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "forwarding RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "seed-4-mt",
+        "param_default_value": "5000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "link layer RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "seed-5-mt",
+        "param_default_value": "6000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "mobility RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 1,
+    "fields": {
+        "name": "Epidemic forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 2,
+    "fields": {
+        "name": "Keetchi forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 3,
+    "fields": {
+        "name": "Optimum forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 4,
+    "fields": {
+        "name": "RRS forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 1,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KEpidemicRoutingLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "**.forwarding.antiEntropyInterval",
+        "param_display_name": "Anti-Entropy Interval",
+        "param_default_value": "300",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "300, 600",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "**.forwarding.maximumHopCount",
+        "param_display_name": "Maximum Hop Count",
+        "param_default_value": "25",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "10, 100",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KKeetchiLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "**.forwarding.agingInterval",
+        "param_display_name": "Aging Interval",
+        "param_default_value": "600",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "60, 3600",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 9,
+    "fields": {
+        "param_name": "**.forwarding.neighbourhoodChangeSignificanceThreshold",
+        "param_display_name": "Neighbourhood Change Significance Threshold",
+        "param_default_value": "0.25",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "0, 1",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 10,
+    "fields": {
+        "param_name": "**.forwarding.coolOffDuration",
+        "param_display_name": ".Cool Off Duration",
+        "param_default_value": "300",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "60, 600",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 11,
+    "fields": {
+        "param_name": "**.forwarding.learningConst",
+        "param_display_name": "Learning Const",
+        "param_default_value": "0.5",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "0, 1",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 12,
+    "fields": {
+        "param_name": "**.forwarding.backoffTimerIncrementFactor",
+        "param_display_name": "Backoff Timer Increment Factor",
+        "param_default_value": "1.5",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "1, 5",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 13,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 14,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KOptimumDelayRoutingLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 15,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KRRSLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 16,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 17,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 18,
+    "fields": {
+        "param_name": "**.forwarding.broadcastRRS",
+        "param_display_name": "Broadcast RRS",
+        "param_default_value": "false",
+        "param_unit": "",
+        "param_type": 3,
+        "param_user_option": "false, true",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 19,
+    "fields": {
+        "param_name": "**.forwarding.sendOnNeighReportingFrequency",
+        "param_display_name": "Send On Neigh Reporting Frequency",
+        "param_default_value": "false",
+        "param_unit": "",
+        "param_type": 3,
+        "param_user_option": "false, true",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 20,
+    "fields": {
+        "param_name": "**.forwarding.sendFrequencyWhenNotOnNeighFrequency",
+        "param_display_name": "Send Frequency When Not On Neigh Frequency",
+        "param_default_value": "4",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "0, 10",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark 06 Roller Skate Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "ab1b1ab9-88d6-4531-b4a6-22f5c629bc87",
+        "status": 3,
+        "terminated": 1,
+        "simulation_error": "1 : <!> Error: No such config: Benchmark\n",
+        "job_error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.6/dist-packages/rq/worker.py\", line 1013, in perform_job\n    rv = job.perform()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 709, in perform\n    self._result = self._execute()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 732, in _execute\n    result = self.func(*self.args, **self.kwargs)\n  File \"./utils/worker.py\", line 63, in run_simulation\n    raise Exception(job.meta[\"exception\"])\nException: 1 : <!> Error: No such config: Benchmark\n\n",
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": true, \"exception\": \"1 : <!> Error: No such config: Benchmark\\n\", \"errors\": [\"1\", \"<!> Error: No such config: Benchmark\\n\"], \"start_time_str\": \"2021-08-23 17:43:11\", \"peak_disk_usage\": 0, \"peak_sim_ram_usage\": 0, \"peak_results_ram_usage\": 0, \"sim_completed_perc\": 0, \"results_completed_perc\": 0, \"current_state\": \"CRASHED\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T15:43:11.127Z",
+        "simulation_start_time": "2021-08-23T15:43:11.731Z",
+        "simulation_last_update_time": "2021-08-23T15:45:19.500Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T15:43:11.141Z\", \"failed\": \"2021-08-23T15:45:19.500Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test_rerun",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark 06 Roller Skate Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "a59d2be8-d5a2-4ffe-92b2-88b04ede6931",
+        "status": 3,
+        "terminated": 1,
+        "simulation_error": "1 : <!> Error: No such config: Benchmark\n",
+        "job_error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.6/dist-packages/rq/worker.py\", line 1013, in perform_job\n    rv = job.perform()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 709, in perform\n    self._result = self._execute()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 732, in _execute\n    result = self.func(*self.args, **self.kwargs)\n  File \"./utils/worker.py\", line 63, in run_simulation\n    raise Exception(job.meta[\"exception\"])\nException: 1 : <!> Error: No such config: Benchmark\n\n",
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": true, \"exception\": \"1 : <!> Error: No such config: Benchmark\\n\", \"errors\": [\"1\", \"<!> Error: No such config: Benchmark\\n\"], \"start_time_str\": \"2021-08-23 17:45:20\", \"peak_disk_usage\": 0, \"peak_sim_ram_usage\": 0, \"peak_results_ram_usage\": 0, \"sim_completed_perc\": 0, \"results_completed_perc\": 0, \"current_state\": \"CRASHED\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T15:45:19.478Z",
+        "simulation_start_time": "2021-08-23T15:45:20.051Z",
+        "simulation_last_update_time": "2021-08-23T16:06:57.042Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T15:43:11.141Z\", \"failed\": \"2021-08-23T16:06:57.042Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Keetchi forwarding  \n**.forwardingLayer = \"KKeetchiLayer\"   #\n**.forwarding.agingInterval = 600s   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25   #\n**.forwarding.coolOffDuration = 300s   #\n**.forwarding.learningConst = 0.5   #\n**.forwarding.backoffTimerIncrementFactor = 1.5   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark 06 Roller Skate Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "d66db6bb-652b-467e-9c2b-54976e067997",
+        "status": 3,
+        "terminated": 1,
+        "simulation_error": "1 : <!> Error: No such config: Benchmark\n",
+        "job_error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.6/dist-packages/rq/worker.py\", line 1013, in perform_job\n    rv = job.perform()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 709, in perform\n    self._result = self._execute()\n  File \"/usr/local/lib/python3.6/dist-packages/rq/job.py\", line 732, in _execute\n    result = self.func(*self.args, **self.kwargs)\n  File \"./utils/worker.py\", line 63, in run_simulation\n    raise Exception(job.meta[\"exception\"])\nException: 1 : <!> Error: No such config: Benchmark\n\n",
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": true, \"exception\": \"1 : <!> Error: No such config: Benchmark\\n\", \"errors\": [\"1\", \"<!> Error: No such config: Benchmark\\n\"], \"start_time_str\": \"2021-08-23 18:06:57\", \"peak_disk_usage\": 0, \"peak_sim_ram_usage\": 0, \"peak_results_ram_usage\": 0, \"sim_completed_perc\": 0, \"results_completed_perc\": 0, \"current_state\": \"CRASHED\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:06:57.025Z",
+        "simulation_start_time": "2021-08-23T16:06:57.589Z",
+        "simulation_last_update_time": "2021-08-23T16:14:55.973Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:06:57.094Z\", \"failed\": \"2021-08-23T16:14:55.973Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# RNG initialization\r\nnum-rngs = 6\r\nseed-0-mt = 1000   # left specifically unused for \"unknown\" RNG uses\r\nseed-1-mt = 2000   # application\r\nseed-2-mt = 3000   # user behaviour model RNG\r\nseed-3-mt = 4000   # forwarding RNG\r\nseed-4-mt = 5000   # link layer RNG\r\nseed-5-mt = 6000   # mobility RNG\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n[Config Benchmark-01-Taxi-Scenario]\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 500\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-01-taxi/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-01-taxi/Trace/all_traces.gpx.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"\r\n\r\n\r\n\r\n[Config Benchmark-02-Typhoon-Disaster-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 200000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 3600\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"trace\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-02-typhoon/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 5000000byte # 5 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 5000000byte # 5 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-02-typhoon/Trace/halong.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"\r\n\r\n\r\n\r\n## \r\n## [Config Benchmark-03-Thunderstorm-Disaster-Scenario]\r\n##\r\n## Benchmark not setup as the time and resources consumed for \r\n## simulations is too large.\r\n##\r\n\r\n\r\n\r\n[Config Benchmark-04-Conference-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 250000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 98\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-04-conference/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-04-conference/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-05-University-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 54\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-05-university/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-05-university/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-07-Office-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 49\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s # every 1/4 of an hour - we simulate for 7 days\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-07-office/Scenario\"\r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-07-office/Trace\"\r\n\r\n\r\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "47928f47-eb1b-4148-9f72-c969fd9bb208",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": null,
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": null,
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:14:55.949Z",
+        "simulation_start_time": "2021-08-23T16:14:56.158Z",
+        "simulation_last_update_time": "2021-08-23T16:14:56.026Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:14:56.026Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "2bf0797d-f086-42e1-afa3-9109f933161c",
+        "status": 2,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "https://www.dropbox.com/s/7o1012n23icfdqd/ootb-test_47411699-6d48-4b7a-a1b3-3ac09a0ad187_results.zip?dl=0",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-23 18:34:45\", \"peak_disk_usage\": 310442988, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 101543936, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"COMPLETED\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]], \"sim_runtime_stats\": [[\"startclocktimeepochsec\", 1629736485.096946, \"Start Wall Clock Time in Epoch seconds\"], [\"simrunclocktimesec\", 14.0176, \"Simulation Run Wall Clock Time in seconds\"], [\"simtimesec\", 10800, \"Simulated Time in seconds\"], [\"totevents\", 2288421, \"Total Events\"], [\"evperclocktime\", 147617, \"Events per Wall Clock Second\"], [\"simsecperclocktime\", 878.457, \"Simulation Seconds per Wall Clock Second\"], [\"evpersimtime\", 168.041, \"Events per Simulation Second\"], [\"totmsgs\", 1390424, \"Total Messages Created\"], [\"resultsparsingclocktimesec\", 31.636634, \"Results Parsing Wall Clock Time in seconds\"], [\"totaljobclocktimesec\", 45.654234, \"Total Wall Clock Time in seconds\"], [\"peakdiskspaceusedbytes\", 310442988, \"Peak Disk Space Used in bytes\"], [\"peakramusedsimbytes\", 3196325888, \"Peak RAM Used (Simulation) in bytes\"], [\"peakramusedresultsbytes\", 101543936, \"Peak RAM Used (Results Parsing) in bytes\"], [\"configfile\", \"omnetpp.ini\", \"Configuration file used in simulation\"], [\"runconfig\", \"Config Benchmark-06-Roller-Skate-Scenario\", \"Configuration section used for simulation\"]], \"shared_link\": \"https://www.dropbox.com/s/7o1012n23icfdqd/ootb-test_47411699-6d48-4b7a-a1b3-3ac09a0ad187_results.zip?dl=0\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:34:44.536Z",
+        "simulation_start_time": "2021-08-23T16:34:45.096Z",
+        "simulation_last_update_time": "2021-08-23T16:43:31.478Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:34:44.553Z\", \"finished\": \"2021-08-23T16:43:31.478Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 6,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test_rerun",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "2f82f0ab-9f3a-45d7-bdf5-cd4add244b5f",
+        "status": 2,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "https://www.dropbox.com/s/75ddwbgl5qiv2ao/ootb-test-rerun_b4c008ba-7423-46c3-9154-7c84ca49476c_results.zip?dl=0",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-23 18:43:32\", \"peak_disk_usage\": 310449629, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 101543936, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"COMPLETED\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]], \"sim_runtime_stats\": [[\"startclocktimeepochsec\", 1629737012.032612, \"Start Wall Clock Time in Epoch seconds\"], [\"simrunclocktimesec\", 13.8454, \"Simulation Run Wall Clock Time in seconds\"], [\"simtimesec\", 10800, \"Simulated Time in seconds\"], [\"totevents\", 2288421, \"Total Events\"], [\"evperclocktime\", 147994, \"Events per Wall Clock Second\"], [\"simsecperclocktime\", 888.5, \"Simulation Seconds per Wall Clock Second\"], [\"evpersimtime\", 166.567, \"Events per Simulation Second\"], [\"totmsgs\", 1390424, \"Total Messages Created\"], [\"resultsparsingclocktimesec\", 30.744234, \"Results Parsing Wall Clock Time in seconds\"], [\"totaljobclocktimesec\", 44.589634, \"Total Wall Clock Time in seconds\"], [\"peakdiskspaceusedbytes\", 310449629, \"Peak Disk Space Used in bytes\"], [\"peakramusedsimbytes\", 3196325888, \"Peak RAM Used (Simulation) in bytes\"], [\"peakramusedresultsbytes\", 101543936, \"Peak RAM Used (Results Parsing) in bytes\"], [\"configfile\", \"omnetpp.ini\", \"Configuration file used in simulation\"], [\"runconfig\", \"Config Benchmark-06-Roller-Skate-Scenario\", \"Configuration section used for simulation\"]], \"shared_link\": \"https://www.dropbox.com/s/75ddwbgl5qiv2ao/ootb-test-rerun_b4c008ba-7423-46c3-9154-7c84ca49476c_results.zip?dl=0\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:43:31.454Z",
+        "simulation_start_time": "2021-08-23T16:43:32.032Z",
+        "simulation_last_update_time": "2021-08-23T16:45:51.205Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:34:44.553Z\", \"finished\": \"2021-08-23T16:45:51.205Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 7,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test_rerun",
+        "omnetppini": "[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# RNG initialization\r\nnum-rngs = 6\r\nseed-0-mt = 1000   # left specifically unused for \"unknown\" RNG uses\r\nseed-1-mt = 2000   # application\r\nseed-2-mt = 3000   # user behaviour model RNG\r\nseed-3-mt = 4000   # forwarding RNG\r\nseed-4-mt = 5000   # link layer RNG\r\nseed-5-mt = 6000   # mobility RNG\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n[Config Benchmark-01-Taxi-Scenario]\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 500\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-01-taxi/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-01-taxi/Trace/all_traces.gpx.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"\r\n\r\n\r\n\r\n[Config Benchmark-02-Typhoon-Disaster-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 200000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 3600\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"trace\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-02-typhoon/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 5000000byte # 5 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 5000000byte # 5 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-02-typhoon/Trace/halong.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"\r\n\r\n\r\n\r\n## \r\n## [Config Benchmark-03-Thunderstorm-Disaster-Scenario]\r\n##\r\n## Benchmark not setup as the time and resources consumed for \r\n## simulations is too large.\r\n##\r\n\r\n\r\n\r\n[Config Benchmark-04-Conference-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 250000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 98\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-04-conference/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-04-conference/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-05-University-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 54\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-05-university/Scenario\" \r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-05-university/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\r\n\r\n\r\n\r\n[Config Benchmark-07-Office-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 49\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s # every 1/4 of an hour - we simulate for 7 days\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-07-office/Scenario\"\r\n\r\n\r\n\r\n###--- Below are the possible forwarding layers ---###\r\n\r\n# forwarding layer parameters\r\n# Epidemic forwarding\r\n**.forwardingLayer = \"KEpidemicRoutingLayer\"\r\n**.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n**.forwarding.antiEntropyInterval = 300s\r\n**.forwarding.maximumHopCount = 25\r\n**.forwarding.usedRNG = 3\r\n\r\n# Keetchi forwarding\r\n# **.forwardingLayer = \"KKeetchiLayer\"\r\n# **.forwarding.agingInterval = 600s\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.neighbourhoodChangeSignificanceThreshold = 0.25\r\n# **.forwarding.coolOffDuration = 300s\r\n# **.forwarding.learningConst = 0.5\r\n# **.forwarding.backoffTimerIncrementFactor = 1.5\r\n# **.forwarding.usedRNG = 3\r\n\r\n# Optimum forwarding\r\n# **.forwardingLayer = \"KOptimumDelayRoutingLayer\"\r\n\r\n# RRS forwarding\r\n# **.forwardingLayer = \"KRRSLayer\"\r\n# **.forwarding.maximumCacheSize = 100000000byte # 100 MB cache\r\n# **.forwarding.usedRNG = 3\r\n# **.forwarding.broadcastRRS = false\r\n# **.forwarding.sendOnNeighReportingFrequency = false\r\n# **.forwarding.sendFrequencyWhenNotOnNeighFrequency = 4s\r\n\r\n###--- Above are the possible forwarding layers ---###\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-07-office/Trace\"\r\n\r\n\r\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "7a3f60be-c427-469e-915e-a0d727c8eda9",
+        "status": 2,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "https://www.dropbox.com/s/1av5t3ks8ieue1u/ootb-test-rerun_7d25812a-fce0-4438-9e92-04465b4ba7e5_results.zip?dl=0",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-23 18:43:47\", \"peak_disk_usage\": 310465793, \"peak_sim_ram_usage\": 3196346368, \"peak_results_ram_usage\": 101552128, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"COMPLETED\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]], \"sim_runtime_stats\": [[\"startclocktimeepochsec\", 1629737027.650449, \"Start Wall Clock Time in Epoch seconds\"], [\"simrunclocktimesec\", 13.5731, \"Simulation Run Wall Clock Time in seconds\"], [\"simtimesec\", 10800, \"Simulated Time in seconds\"], [\"totevents\", 2288421, \"Total Events\"], [\"evperclocktime\", 148375, \"Events per Wall Clock Second\"], [\"simsecperclocktime\", 984.753, \"Simulation Seconds per Wall Clock Second\"], [\"evpersimtime\", 150.673, \"Events per Simulation Second\"], [\"totmsgs\", 1390424, \"Total Messages Created\"], [\"resultsparsingclocktimesec\", 32.050437, \"Results Parsing Wall Clock Time in seconds\"], [\"totaljobclocktimesec\", 45.623537, \"Total Wall Clock Time in seconds\"], [\"peakdiskspaceusedbytes\", 310465793, \"Peak Disk Space Used in bytes\"], [\"peakramusedsimbytes\", 3196346368, \"Peak RAM Used (Simulation) in bytes\"], [\"peakramusedresultsbytes\", 101552128, \"Peak RAM Used (Results Parsing) in bytes\"], [\"configfile\", \"omnetpp.ini\", \"Configuration file used in simulation\"], [\"runconfig\", \"Config Benchmark-06-Roller-Skate-Scenario\", \"Configuration section used for simulation\"]], \"shared_link\": \"https://www.dropbox.com/s/1av5t3ks8ieue1u/ootb-test-rerun_7d25812a-fce0-4438-9e92-04465b4ba7e5_results.zip?dl=0\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:43:47.091Z",
+        "simulation_start_time": "2021-08-23T16:43:47.649Z",
+        "simulation_last_update_time": "2021-08-23T16:45:51.290Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:14:56.026Z\", \"finished\": \"2021-08-23T16:45:51.290Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 8,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test_rerun_rerun",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "f27823d9-202c-496c-baab-a28ef5f10569",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-23 18:43:32\", \"peak_disk_usage\": 229817167, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 0, \"sim_completed_perc\": 100, \"results_completed_perc\": 10, \"current_state\": \"PARSING\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-23T16:45:51.177Z",
+        "simulation_start_time": "2021-08-23T16:45:51.384Z",
+        "simulation_last_update_time": "2021-08-23T16:34:44.553Z",
+        "simulation_state_times": "{\"started\": \"2021-08-23T16:34:44.553Z\"}",
+        "simulation_is_debug_sim": true
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 9,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "3f4b8c55-2050-4466-9e8a-289a579b9a12",
+        "status": 2,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "https://www.dropbox.com/s/fkgdgdrias1p1zl/ootb-test_71c16958-11a7-4467-9402-f5ba34d883c9_results.zip?dl=0",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-27 16:13:47\", \"peak_disk_usage\": 310431276, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 101543936, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"COMPLETED\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]], \"sim_runtime_stats\": [[\"startclocktimeepochsec\", 1630073627.628805, \"Start Wall Clock Time in Epoch seconds\"], [\"simrunclocktimesec\", 14.0733, \"Simulation Run Wall Clock Time in seconds\"], [\"simtimesec\", 10800, \"Simulated Time in seconds\"], [\"totevents\", 2288421, \"Total Events\"], [\"evperclocktime\", 145807, \"Events per Wall Clock Second\"], [\"simsecperclocktime\", 865.375, \"Simulation Seconds per Wall Clock Second\"], [\"evpersimtime\", 168.49, \"Events per Simulation Second\"], [\"totmsgs\", 1390424, \"Total Messages Created\"], [\"resultsparsingclocktimesec\", 31.754959, \"Results Parsing Wall Clock Time in seconds\"], [\"totaljobclocktimesec\", 45.828259, \"Total Wall Clock Time in seconds\"], [\"peakdiskspaceusedbytes\", 310431276, \"Peak Disk Space Used in bytes\"], [\"peakramusedsimbytes\", 3196325888, \"Peak RAM Used (Simulation) in bytes\"], [\"peakramusedresultsbytes\", 101543936, \"Peak RAM Used (Results Parsing) in bytes\"], [\"configfile\", \"omnetpp.ini\", \"Configuration file used in simulation\"], [\"runconfig\", \"Config Benchmark-06-Roller-Skate-Scenario\", \"Configuration section used for simulation\"]], \"shared_link\": \"https://www.dropbox.com/s/fkgdgdrias1p1zl/ootb-test_71c16958-11a7-4467-9402-f5ba34d883c9_results.zip?dl=0\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-27T14:13:47.031Z",
+        "simulation_start_time": "2021-08-27T14:13:47.628Z",
+        "simulation_last_update_time": "2021-08-27T14:19:31.860Z",
+        "simulation_state_times": "{\"started\": \"2021-08-27T14:13:47.047Z\", \"finished\": \"2021-08-27T14:19:31.860Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 10,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "sample",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "799733bb-20ad-4c8b-9075-c9d505ae5af5",
+        "status": 2,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "https://www.dropbox.com/s/69b0byxxyyq6il0/ootb-sample_e0818ce3-60ea-4d9a-b383-773125ea0557_results.zip?dl=0",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-27 16:19:32\", \"peak_disk_usage\": 310429095, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 101543936, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"COMPLETED\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]], \"sim_runtime_stats\": [[\"startclocktimeepochsec\", 1630073972.443639, \"Start Wall Clock Time in Epoch seconds\"], [\"simrunclocktimesec\", 14.1136, \"Simulation Run Wall Clock Time in seconds\"], [\"simtimesec\", 10800, \"Simulated Time in seconds\"], [\"totevents\", 2288421, \"Total Events\"], [\"evperclocktime\", 145889, \"Events per Wall Clock Second\"], [\"simsecperclocktime\", 862.159, \"Simulation Seconds per Wall Clock Second\"], [\"evpersimtime\", 169.213, \"Events per Simulation Second\"], [\"totmsgs\", 1390424, \"Total Messages Created\"], [\"resultsparsingclocktimesec\", 31.834149, \"Results Parsing Wall Clock Time in seconds\"], [\"totaljobclocktimesec\", 45.947749, \"Total Wall Clock Time in seconds\"], [\"peakdiskspaceusedbytes\", 310429095, \"Peak Disk Space Used in bytes\"], [\"peakramusedsimbytes\", 3196325888, \"Peak RAM Used (Simulation) in bytes\"], [\"peakramusedresultsbytes\", 101543936, \"Peak RAM Used (Results Parsing) in bytes\"], [\"configfile\", \"omnetpp.ini\", \"Configuration file used in simulation\"], [\"runconfig\", \"Config Benchmark-06-Roller-Skate-Scenario\", \"Configuration section used for simulation\"]], \"shared_link\": \"https://www.dropbox.com/s/69b0byxxyyq6il0/ootb-sample_e0818ce3-60ea-4d9a-b383-773125ea0557_results.zip?dl=0\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-27T14:19:31.839Z",
+        "simulation_start_time": "2021-08-27T14:19:32.443Z",
+        "simulation_last_update_time": "2021-08-27T14:22:28.021Z",
+        "simulation_state_times": "{\"started\": \"2021-08-27T14:19:31.927Z\", \"finished\": \"2021-08-27T14:22:28.021Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 11,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "sample2",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "1df33137-7185-41a6-a430-ea7d39c12c79",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": null,
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": null,
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-27T14:22:27.990Z",
+        "simulation_start_time": "2021-08-27T14:22:28.234Z",
+        "simulation_last_update_time": "2021-08-27T14:22:28.060Z",
+        "simulation_state_times": "{\"started\": \"2021-08-27T14:22:28.060Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 12,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "samp 3",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-01-Taxi-Scenario]\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 500\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-01-taxi/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-01-taxi/Trace/all_traces.gpx.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-01-Taxi-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "75a24a47-5228-4a3a-8c70-6e77fa2f441f",
+        "status": 3,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": "Work-horse was terminated unexpectedly (waitpid returned None)",
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-27 16:44:46\", \"peak_disk_usage\": 47739658235, \"peak_sim_ram_usage\": 98039459840, \"peak_results_ram_usage\": 0, \"sim_completed_perc\": 31, \"results_completed_perc\": 0, \"current_state\": \"SIMULATING\"}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-27T14:44:45.581Z",
+        "simulation_start_time": "2021-08-27T14:44:45.821Z",
+        "simulation_last_update_time": "2021-08-29T13:08:48.662Z",
+        "simulation_state_times": "{\"started\": \"2021-08-27T14:44:45.595Z\", \"failed\": \"2021-08-29T13:08:48.662Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 13,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "ade91a5d-ae3a-4ac7-b75d-2f1bf9b0ca58",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": "eris",
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": "{\"handled_by\": \"eris\", \"failed\": false, \"exception\": null, \"errors\": [], \"start_time_str\": \"2021-08-29 15:08:49\", \"peak_disk_usage\": 310304403, \"peak_sim_ram_usage\": 3196325888, \"peak_results_ram_usage\": 101543936, \"sim_completed_perc\": 100, \"results_completed_perc\": 100, \"current_state\": \"PARSING\", \"scalar_stats\": [[\"appLikedDataBytesReceived\", \"last\", 193874460], [\"appNonLikedDataBytesReceived\", \"last\", 565855333], [\"appDuplicateDataBytesReceived\", \"last\", 27487966], [\"appTotalDataBytesReceived\", \"last\", 787217759], [\"appLikedDataCountReceived\", \"last\", 7007], [\"appNonLikedDataCountReceived\", \"last\", 22183], [\"appDuplicateDataCountReceived\", \"last\", 1060], [\"appTotalDataCountReceived\", \"last\", 30250], [\"appLikedDataBytesMaxReceivable\", \"last\", 588911141], [\"appNonLikedDataBytesMaxReceivable\", \"last\", 1778778910], [\"appTotalDataBytesMaxReceivable\", \"last\", 2367690051], [\"appLikedDataCountMaxReceivable\", \"last\", 22753], [\"appNonLikedDataCountMaxReceivable\", \"last\", 69662], [\"appTotalDataCountMaxReceivable\", \"last\", 92415], [\"appLikedDataReceivedAvgDelay\", \"last\", 3919.350461], [\"appNonLikedDataReceivedAvgDelay\", \"last\", 3771.501566], [\"appTotalDataReceivedAvgDelay\", \"last\", 3806.992392], [\"appLikedDataDeliveryRatio\", \"last\", 0.307959], [\"appNonLikedDataDeliveryRatio\", \"last\", 0.318438], [\"appTotalDataDeliveryRatio\", \"last\", 0.315858], [\"appLikedDataAvgHopCount\", \"last\", 2.385329], [\"appNonLikedDataAvgHopCount\", \"last\", 2.378488], [\"appTotalDataAvgHopCount\", \"last\", 2.38013], [\"appLikedDataReceivedDelay2\", \"mean\", 3919.350461], [\"appNonLikedDataReceivedDelay2\", \"mean\", 3771.501566], [\"appTotalDataReceivedDelay2\", \"mean\", 3806.992392], [\"appTotalDataBytesReceived2\", \"last\", 759729793], [\"appTotalDataCountReceived2\", \"last\", 29190], [\"fwdDataBytesReceived\", \"last\", 787974009], [\"fwdSumVecBytesReceived\", \"last\", 6588288], [\"fwdDataReqBytesReceived\", \"last\", 712216], [\"fwdDPTableRequestBytesReceived\", \"last\", 0], [\"fwdDPTableDataBytesReceived\", \"last\", 0], [\"fwdTotalBytesReceived\", \"last\", 795274513], [\"fwdAvgHopsTravelled\", \"last\", 2.407306], [\"fwdCacheBytesRemoved\", \"last\", 0], [\"fwdCacheBytesAdded\", \"last\", 798544384], [\"fwdCacheBytesUpdated\", \"last\", 27487966], [\"fwdCurrentCacheSizeBytesAvg\", \"last\", 6620047.254557], [\"fwdCurrentCacheSizeBytesPeriodicAvg\", \"mean\", 6425814.519863], [\"fwdCurrentCacheSizeBytesAvg2\", \"last\", 6620047.254557], [\"fwdDataBytesSent\", \"last\", 4462463207], [\"fwdSumVecBytesSent\", \"last\", 15103688], [\"fwdDataReqBytesSent\", \"last\", 1723532], [\"fwdDPTableRequestBytesSent\", \"last\", 0], [\"fwdDPTableDataBytesSent\", \"last\", 0], [\"fwdTotalBytesSent\", \"last\", 4479290427], [\"linkAvgNeighbourSize\", \"last\", 1.206192], [\"linkAvgContactDuration\", \"last\", 18.591264], [\"linkContactCount\", \"last\", 21153], [\"linkSimpleNeighbourSize\", \"mean\", 1.206192]]}",
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-29T13:08:48.638Z",
+        "simulation_start_time": "2021-08-29T13:08:48.900Z",
+        "simulation_last_update_time": "2021-08-29T13:08:48.712Z",
+        "simulation_state_times": "{\"started\": \"2021-08-29T13:08:48.712Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 14,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "test2",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "d517ae66-68fd-47bd-8fce-ee8e04b2dbc1",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": null,
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": null,
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-29T13:09:33.096Z",
+        "simulation_start_time": "2021-08-29T13:09:33.357Z",
+        "simulation_last_update_time": "2021-08-29T13:09:33.114Z",
+        "simulation_state_times": "{\"started\": \"2021-08-29T13:09:33.114Z\"}",
+        "simulation_is_debug_sim": false
+    }
+},
+{
+    "model": "omnetppManager.simulation",
+    "pk": 15,
+    "fields": {
+        "user": [
+            "david"
+        ],
+        "title": "samp",
+        "omnetppini": "\n[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization\nnum-rngs = 6   #\nseed-0-mt = 1000   #left specifically unused for \"unknown\" RNG uses\nseed-1-mt = 2000   #application\nseed-2-mt = 3000   #user behaviour model RNG\nseed-3-mt = 4000   #forwarding RNG\nseed-4-mt = 5000   #link layer RNG\nseed-5-mt = 6000   #mobility RNG\n\n[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"\n\n\n#forwarding layer parameters \n#Epidemic forwarding  \n**.forwardingLayer = \"KEpidemicRoutingLayer\"   #\n**.forwarding.maximumCacheSize = 100000000byte   #100 MB cache\n**.forwarding.antiEntropyInterval = 300s   #\n**.forwarding.maximumHopCount = 25   #\n**.forwarding.usedRNG = 3   #\n",
+        "runconfig": "Config Benchmark-06-Roller-Skate-Scenario",
+        "summarizing_precision": 100.0,
+        "simulation_id": "62cee261-7da7-499a-8c8d-522133741947",
+        "status": 4,
+        "terminated": 1,
+        "simulation_error": null,
+        "job_error": null,
+        "handled_by": null,
+        "notification_mail_address": "odedereoluwapelumi@outlook.com",
+        "storage_backend": 1,
+        "shared_link": "",
+        "meta_full": null,
+        "simulation_timeout": 43200,
+        "simulation_enqueue_time": "2021-08-29T13:27:26.136Z",
+        "simulation_start_time": "2021-08-29T13:27:26.398Z",
+        "simulation_last_update_time": "2021-08-29T13:27:26.151Z",
+        "simulation_state_times": "{\"started\": \"2021-08-29T13:27:26.151Z\"}",
+        "simulation_is_debug_sim": false
+    }
+}
+]
