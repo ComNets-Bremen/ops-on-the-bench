@@ -137,13 +137,15 @@ class UserEditorForm(forms.Form):
         super().__init__(*args, **kwargs)
         init_args = kwargs.get("initial", None)
         if (init_args and "forwarder" in init_args):
+            global forward_var
+            forward_var= init_args["forwarder"]
             
             # RNG Section
             g_section= OmnetppBenchmarkConfig.objects.filter(Q(name='General'))
             # print(g_section)
-            rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0])
+            rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0],user_editable=True)
             # print(rngs, len(rngs))
-            for rng in range(1,len(rngs)):
+            for rng in range(0,len(rngs)):
                 self.fields[rngs[rng]] = \
                         forms.IntegerField(
                                 label=rngs[rng],
@@ -160,7 +162,7 @@ class UserEditorForm(forms.Form):
 
             # Forwarding layer section
             f_layer = OmnetppBenchmarkForwarderConfig.objects.filter(name=init_args["forwarder"])
-            params=OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0],user_editable=True).all()
+            params=OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0]).exclude(param_type=1).all()
             
             for p in params:
                 self.fields[p] = \
@@ -181,42 +183,34 @@ class UserEditorForm(forms.Form):
         # print(cleaned_data)
         # print(self.fields)
         # print(self.data)
+
+        # g_section= OmnetppBenchmarkConfig.objects.filter(Q(name='General'))
+        # rngs=OmnetppBenchmarkEditableParameters.objects.filter(config=g_section[0],user_editable=True).values_list('param_name',flat=True)
+        f_layer = OmnetppBenchmarkForwarderConfig.objects.filter(name=forward_var)
+        params=OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0]).exclude(param_type=1).all()
+        params_range= OmnetppBenchmarkForwarderParameters.objects.filter(config =f_layer[0],param_type=2).values_list('param_name',flat=True)
+        # print(rngs)
         for field in self.fields:
             strfield=str(field)
             if not self[field].html_name in self.data:
                 return self.data
             # check if inout is numeric
-            if strfield in ['**.forwarding.maximumCacheSize','**.forwarding.agingInterval','**.forwarding.coolOffDuration',\
-                '**.forwarding.sendFrequencyWhenNotOnNeighFrequency','**.forwarding.neighbourhoodChangeSignificanceThreshold', '**.forwarding.learningConst',\
-                    '**.forwarding.backoffTimerIncrementFactor','**.forwarding.antiEntropyInterval','**.forwarding.maximumHopCount']:
+            if strfield in params_range:#
                 if cleaned_data.get(field).replace('.','',1).isdigit() == False:
                     raise forms.ValidationError({field : "This field must be a valid number"})
             if strfield != '':
-                # print(cleaned_data.get(field))
-                if strfield == '**.forwarding.maximumCacheSize':
-                    if int(cleaned_data.get(field)) < 10000000 or int(cleaned_data.get(field)) > 1000000000 :
-                        raise forms.ValidationError({field :"cache size should be between 10000000 and 1000000000 bytes." })
-                if strfield in ['**.forwarding.broadcastRRS', '**.forwarding.sendOnNeighReportingFrequency']:
-                    if cleaned_data.get(field) not in ['false','true']:
-                        raise forms.ValidationError({field : "this field must be either false or true"})
-                if strfield == '**.forwarding.sendFrequencyWhenNotOnNeighFrequency':
-                    if int(cleaned_data.get(field)) < 1 or int(cleaned_data.get(field)) > 60:
-                        raise forms.ValidationError({field : "frequency should be between 1 and 60 seconds"})
-                if strfield in ['**.forwarding.agingInterval','**.forwarding.coolOffDuration']:
-                    if int(cleaned_data.get(field)) < 60 or int(cleaned_data.get(field)) > 1800:
-                        raise forms.ValidationError({field : "duration should be between 60 and 1800 seconds"})
-                if strfield in ['**.forwarding.neighbourhoodChangeSignificanceThreshold', '**.forwarding.learningConst']:
-                    if float(cleaned_data.get(field)) < 0 or float(cleaned_data.get(field)) > 1:
-                        raise forms.ValidationError({field : "value should be between 0 and 1"})
-                if strfield == '**.forwarding.backoffTimerIncrementFactor':
-                    if float(cleaned_data.get(field)) < 0 or float(cleaned_data.get(field)) > 3:
-                        raise forms.ValidationError({field : "threshold should be between 0 and 3"})
-                if strfield == '**.forwarding.antiEntropyInterval':
-                    if int(cleaned_data.get(field)) < 100 or int(cleaned_data.get(field)) > 500:
-                        raise forms.ValidationError({field : "interval should be between 100 and 500"})
-                if strfield == '**.forwarding.maximumHopCount':
-                    if int(cleaned_data.get(field)) <20 or int(cleaned_data.get(field)) > 30:
-                        raise forms.ValidationError({field : "value should be between 20 and 30"})
+                for display_name in params:
+                    if field == display_name:
+                        # clean data for ser editable range
+                        if display_name.param_type == 2:
+                            if int(cleaned_data.get(field)) < int(display_name.param_user_option.split(',')[0]) or int(cleaned_data.get(field)) > int(display_name.param_user_option.split(',')[1]):
+                                raise forms.ValidationError({field :f"{display_name.param_display_name} should be between {display_name.param_user_option.split(',')[0]} and {display_name.param_user_option.split(',')[1]}" })
+
+                        # clean data for user editable options
+                        if display_name.param_type == 3:
+                            if cleaned_data.get(field) not in  display_name.param_user_option.replace(" ", "").split(','):
+                                raise forms.ValidationError({field :f"{display_name.param_display_name} should be one of the following: {', '.join([x for x in display_name.param_user_option.split(',')])} " })
+
        
         return cleaned_data
     

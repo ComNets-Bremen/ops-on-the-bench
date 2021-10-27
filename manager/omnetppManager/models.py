@@ -486,12 +486,19 @@ class OmnetppBenchmarkForwarderConfig(models.Model):
 class OmnetppBenchmarkForwarderParameters(models.Model):
     class Meta:
         ordering = ("pk",) 
+    
+    class Param_type(models.IntegerChoices):
+        Fixed      = 1, "FIXED"  #non editable by users
+        Range    = 2, "RANGE"  #editable by users: within arange of numbers
+        Options    = 3, "OPTIONS"   #editable by users: to choose from given option
 
     param_name = models.CharField(max_length=100)
     param_display_name = models.CharField(max_length=100,default='')
     param_default_value = models.CharField(max_length=100)
     param_unit = models.CharField(max_length=10, default="", blank=True)
-    user_editable = models.BooleanField(default=False)
+    param_type=models.IntegerField(choices=Param_type.choices,default=Param_type.Fixed)
+    param_user_option=models.CharField(max_length=100,
+            default='None', help_text="users allowed options if not fixed, entered as a list")
 
     param_description = models.CharField(default="", max_length=400, blank=True)
 
