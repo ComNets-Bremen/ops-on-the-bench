@@ -147,3 +147,6 @@ manager/uploads
 
 # ignore local settings
 manager/manager/settings_local.py
+
+# ignore local CRON settings
+cron
