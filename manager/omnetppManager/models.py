@@ -9,6 +9,7 @@ from django.core.validators import RegexValidator
 
 from django.core.serializers.json import DjangoJSONEncoder
 
+from django.db.utils import OperationalError
 
 import uuid
 import json
@@ -348,6 +349,8 @@ class ConfigKeyValueStorageManager(models.Manager):
             # Get key from settings.py
             if hasattr(settings, key):
                 o = getattr(settings, key)
+        except OperationalError:
+            pass # when db doesn't exist yet
         return o
 
 ## Simple key value storage management for config (besides settings.py)

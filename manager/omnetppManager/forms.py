@@ -10,6 +10,8 @@ from django.forms import BaseFormSet
 
 import configparser
 
+from django.db.utils import OperationalError
+
 from .models import StorageBackend, OmnetppConfigType, OmnetppConfig, OmnetppConfigParameter,\
      OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
 
@@ -103,16 +105,17 @@ class selectSimulationForm(forms.Form):
 # simulatiion title and simulation name form
 class getOmnetppBenchmarkSection(forms.Form):
     simulation_title = forms.CharField(max_length=50)
-   
-    sections = OmnetppBenchmarkConfig.objects.filter(~Q(name='General'))
-    simulation_name = \
-            forms.CharField(
-                label="Select simulation",
-                widget=forms.Select(choices=[(sec, sec) for sec in sections]),
-                help_text="simulation name from omnetpp-ops-benchmark.ini"
-                )
-    simulation_name.widget.attrs.update({"class" : "form-control"})
-    
+    try:
+        sections = OmnetppBenchmarkConfig.objects.filter(~Q(name='General'))
+        simulation_name = \
+                forms.CharField(
+                    label="Select simulation",
+                    widget=forms.Select(choices=[(sec, sec) for sec in sections]),
+                    help_text="simulation name from omnetpp-ops-benchmark.ini"
+                    )
+        simulation_name.widget.attrs.update({"class" : "form-control"})
+    except OperationalError:
+        pass # when db doesn't exist yet
 
 
 # forwarding layer selection form 
