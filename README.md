@@ -145,7 +145,7 @@ data:
 Loading Data
 ===============
 
-To Load omnetpp models data into empty DB.
+To Load OOTB definitions/models data into empty DB.
 
 The dumped data is saved as `db.json` and it contains all omnetpp configurations inputted.
 Process is automated by running bash script: `dump.sh`
@@ -154,8 +154,7 @@ To use the script, cd to the project directory and run the following command:
 `./dumb.sh`
 The script runs: makemigrations, migration and loaddata commands.
 
-To load the data manually:
-- cd to the project directory
+The script carries out the following steps:
 - make migrations: `python manage.py makemigrations`
 - migrate on the emoty DB: `python manage.py migrate`
 - load the dumped data: `python manage.py loaddata db.json`
