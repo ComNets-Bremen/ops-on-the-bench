@@ -150,7 +150,7 @@ To Load OOTB definitions/models data into empty DB.
 The dumped data is saved as `db.json` and it contains all omnetpp configurations inputted.
 Process is automated by running bash script: `dump.sh`
 
-To use the script, cd to the project directory and run the following command:
+To use the script, cd to the project directory "/manager" and run the following command:
 `./dump.sh`
 The script runs: makemigrations, migration and loaddata commands.
 
@@ -162,6 +162,24 @@ The script carries out the following steps:
 The script is currently saved with Unix EOL, when using a different OS (Windows, Mac) ensure the EOL is changed 
 (it can easily be changed in your notepad).
 
+Running Django server after loading data
+------------------------------------------
+Before running the Django server, the following steps should be carried out:
+
+Steps:
+------
+- Add Server address to allowed host section in settings.py file
+- Generate and insert Secret Key in the secret key section in settings.py file. 
+  To generate secret key, run  python3 -c 'import secrets; print(secrets.token_hex(100))'  in your terminal.
+  Then use the output as the secret key in settings.py file
+- Add your Redis connection details (HOST, PORT, PASSWORD) to the Redis connection section in setting.py file
+  This step is very important if you have crontab already running
+- Create a superuser in order to create an admin account:
+  cd to the project directory "/manager" and run python manage.py createsuperuser
+  Follow the prompt and fill in the account creation requests
+- Run django server using the command in the project directory "/manager": python manage.py runserver <server address>
+
+*** For a real productive deployment, follow other instructions in this README file
 
 Misc
 ====
