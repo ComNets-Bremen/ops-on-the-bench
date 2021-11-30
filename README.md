@@ -178,6 +178,7 @@ Steps:
   cd to the project directory "/manager" and run python manage.py createsuperuser
   Follow the prompt and fill in the account creation requests
 - Run django server using the command in the project directory "/manager": python manage.py runserver <server address>
+- Follow the URL and login in with the created admin account details.
 
 *** For a real productive deployment, follow other instructions in this README file
 
