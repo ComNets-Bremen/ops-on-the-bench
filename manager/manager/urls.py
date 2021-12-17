@@ -20,7 +20,7 @@ from omnetppManager import views as omnetppManager_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),
     path('omnetppManager/', include("omnetppManager.urls")),
     path('', omnetppManager_views.redirect_to_here),
 
