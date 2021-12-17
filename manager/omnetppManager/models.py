@@ -15,6 +15,8 @@ import uuid
 import json
 
 import datetime
+from django.contrib.auth.models import Group, User
+
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
 
@@ -513,3 +515,34 @@ class OmnetppBenchmarkForwarderParameters(models.Model):
 
     def __str__(self):
         return self.param_name
+
+
+
+## make user email unique
+User._meta.get_field('email')._unique = True
+
+## create omnetppmanager user profiles
+class UserProfile(models.Model):
+    group = models.OneToOneField(Group, on_delete=models.CASCADE, null=True, blank=True)
+    server = models.ForeignKey(
+            "ServerConfig",
+            on_delete=models.CASCADE,
+            )
+
+    def __str__(self):
+        return self.group.name
+
+
+class UserProfileParameters(models.Model):
+    profile = models.ForeignKey(
+            "UserProfile",
+            on_delete=models.CASCADE,
+            )
+    key = models.CharField(
+            max_length=30,
+            help_text="The key for the value",
+            )
+    value = models.CharField(
+            max_length=30,
+            help_text="The value for the key",
+            )
