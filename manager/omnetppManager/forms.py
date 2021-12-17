@@ -4,7 +4,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, fields
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 from django.forms import BaseFormSet
 
@@ -14,6 +16,29 @@ from django.db.utils import OperationalError
 
 from .models import StorageBackend, OmnetppConfigType, OmnetppConfig, OmnetppConfigParameter,\
      OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+
+
+
+## User Registration form
+class CreateUsers(UserCreationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.Meta.required:
+            self.fields[field].required = True
+            
+    password1 = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password'}))
+    password2 = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}))
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+        }
+        required = ('username', 'email', 'password1', 'password2',)
 
 
 
