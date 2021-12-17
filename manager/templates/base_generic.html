@@ -15,6 +15,9 @@
     <!-- CSS file-->
     <link rel="stylesheet" href="{% static 'css/omnetppManager.css' %}">
 
+    <!-- Font Awesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
     {% block title %}<title>
       {{manager_general.base_title}}
       {% if title %}
@@ -140,9 +143,9 @@
 
                 </div>
          </li>
-
+         
           <li class="nav-item">
-              <a class="nav-link" href="{% url 'password_change' %}">Change password</a>
+              <a class="nav-link" href="{% url 'omnetppManager_change_password' %}">Change password</a>
           </li>
 
         {% if user.is_superuser %}
@@ -152,12 +155,12 @@
         {% endif %}
 
           <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">logout user {{ user }}</a>
+                <a class="nav-link" href="{% url 'omnetppManager_logout' %}">logout user {{ user }}</a>
           </li>
 
         {% else %}
           <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
+              <a class="nav-link" href="{% url 'omnetppManager_login' %}">Login</a>
           </li>
           <li class="nav-item">
               <a class="nav-link" href="{% url 'omnetppManager_request_access' %}">Request Demo Access</a>
