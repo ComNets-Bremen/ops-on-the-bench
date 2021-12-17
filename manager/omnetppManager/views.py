@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -9,8 +9,15 @@ from django.core.paginator import Paginator
 from django.utils.html import strip_tags
 from django.utils import timezone
 from django.views.generic.detail import DetailView
-
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.models import Group
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from .decorators import already_authenticated, auth_required
 from django.forms import formset_factory
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.mail import send_mail
 
@@ -36,7 +43,8 @@ from django.core.exceptions import SuspiciousOperation
 import datetime, time
 import pytz
 
-from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm, RerunSimForm
+from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm, RerunSimForm,\
+    CreateUsers
 
 from utils.worker import run_simulation, SimulationRuntimes
 
@@ -75,6 +83,75 @@ def request_access(request):
 
 def request_access_thanks(request):
     return render(request, 'omnetppManager/request_access_thanks.html', {'title': "Thanks for your request"})
+
+## User registration
+@already_authenticated
+def register_users(request):
+    form = CreateUsers()
+    
+    if request.method == 'POST':
+        form = CreateUsers(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            group = Group.objects.get(name='Simple User')
+            user.groups.add(group)
+            messages.success(request, 'Account successfully created for ' + username)
+            return redirect('omnetppManager_login')
+    context= {'form': form}
+    return render(request,'registration/register_users.html', context)
+
+
+## User login
+@already_authenticated
+def login_users(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username = username, password = password)
+
+        if user != None:
+            login(request, user)
+            return redirect('omnetppManager_index')
+        else:
+            messages.info(request,'username or password is incorrect, try again!')
+    return render(request, 'registration/login.html')
+
+
+## User logout
+def logout_users(request):
+    logout(request)
+    return redirect('omnetppManager_login')
+
+## change password view
+@auth_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('omnetppManager_change_password')
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    context= {'form': form}
+    return render(request, 'registration/change_password.html', context)
+
+## reset password
+class ResetPassword(SuccessMessageMixin, PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    success_message = "We have emailed you instructions for setting your password, " \
+                      "if an account exists with the email you entered. You should receive them shortly." \
+                      " If you do not receive an email, " \
+                      "please make sure you have entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('omnetppManager_index')
 
 ## Show status of queues
 @login_required
