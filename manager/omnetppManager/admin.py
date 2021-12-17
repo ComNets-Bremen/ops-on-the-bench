@@ -4,7 +4,9 @@ from django.db import models
 from django.db.models import Q
 
 from .models import Simulation, StorageBackend, ConfigKeyValueStorage, SimOmnetppTemplate, OmnetppConfig, OmnetppConfigParameter, OmnetppConfigType, ServerConfig, ServerConfigValue,\
-    OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+    OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters,\
+        UserProfile, UserProfileParameters
+
 # Register your models here.
 
 
@@ -73,6 +75,15 @@ class OmnetppBenchmarkForwarderParametersAdmin(admin.ModelAdmin):
     inlines = [
             OmnetppBenchmarkForwarderParametersInline,
             ]
+            
+class UserProfileParametersInline(admin.TabularInline):
+    model = UserProfileParameters
+    extra = 0
+
+class UserProfileParametersAdmin(admin.ModelAdmin):
+    inlines = [
+            UserProfileParametersInline,
+            ]
     
 admin.site.register(Simulation, SimulationAdmin)
 
@@ -91,3 +102,5 @@ admin.site.register(ServerConfig, ServerConfigAdmin)
 admin.site.register(OmnetppBenchmarkConfig, OmnetppBenchmarkParametersAdmin)
 
 admin.site.register(OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParametersAdmin)
+
+admin.site.register(UserProfile, UserProfileParametersAdmin)
