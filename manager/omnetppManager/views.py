@@ -1,3 +1,4 @@
+from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, JsonResponse
@@ -11,7 +12,7 @@ from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from .decorators import already_authenticated, auth_required
@@ -24,7 +25,8 @@ from django.core.mail import send_mail
 from formtools.wizard.views import SessionWizardView
 
 from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerConfig, ServerConfigValue,\
-     OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters
+     OmnetppBenchmarkConfig, OmnetppBenchmarkParameters, OmnetppBenchmarkEditableParameters, OmnetppBenchmarkForwarderConfig, OmnetppBenchmarkForwarderParameters,\
+         UserProfile, UserProfileParameters
 
 from .forms import getOmnetppiniForm, selectSimulationForm,getOmnetppBenchmarkSection,selectForwarderForm, BenchmarkGeneralSettingForm,UserEditorForm
 
@@ -112,6 +114,15 @@ def login_users(request):
         user = authenticate(request, username = username, password = password)
 
         if user != None:
+            # add groups to already exiting users without user profiles
+            group_simple = Group.objects.get(name='Simple User')
+            group_staff = Group.objects.get(name='Staff User')
+            if len(Group.objects.filter(user = user)) == 0:
+                if user.is_staff:
+                    user.groups.add(group_staff)
+                else:
+                    user.groups.add(group_simple)
+
             login(request, user)
             return redirect('omnetppManager_index')
         else:
@@ -127,6 +138,8 @@ def logout_users(request):
 ## change password view
 @auth_required
 def change_password(request):
+    user= request.user
+    print(user)
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -921,7 +934,7 @@ def get_server_config(request):
     # Check for the headers
     server = ServerConfig.objects.filter(server_token=server_token, server_id=server_id)
     if len(server) == 1:
-        print("HERE")
+        # print(server)
         config = ServerConfigValue.objects.filter(server=server[0]).values("key", "value")
         json_response[server.first().server_id] = list(config)
 
@@ -930,6 +943,51 @@ def get_server_config(request):
         for server in ServerConfig.objects.all():
             config = ServerConfigValue.objects.filter(server=server).values("key", "value")
             json_response[server.server_id] = list(config)
+
+    # If nothing fits: empty json object
+    return JsonResponse(json_response)
+
+## User Profile Parameters access
+def get_profile_parameters(request):
+    server_token = request.headers.get("HTTP-X-HEADER-TOKEN")
+    server_id = request.headers.get("HTTP-X-HEADER-SERVER-ID")
+    username = request.headers.get("HTTP-X-HEADER-USER")
+    # profile_name = request.headers.get("HTTP-X-HEADER-PROFILE-NAME")
+
+    json_response = {}
+
+    # Check for the headers
+    user = User.objects.filter(username=username)
+    if len(user) > 0:
+        profile_name = Group.objects.filter(user = user[0])
+
+        try:
+            server = ServerConfig.objects.filter(server_token=server_token, server_id=server_id)
+        except:
+            return HttpResponseBadRequest('Check server token or id again')
+
+        try:
+            profile = UserProfile.objects.filter(group=profile_name[0], server=server[0])
+        except:
+            return HttpResponseBadRequest('User has no group')
+
+        if len(profile) == 1:
+            parameters = UserProfileParameters.objects.filter(profile=profile[0]).values("key", "value")
+            json_response[str(profile[0])] = list(parameters)
+
+    # No auth headers -> is user logged in?
+    elif request.user.is_authenticated and request.user.is_staff:
+        for profile in UserProfile.objects.all():
+            parameters = UserProfileParameters.objects.filter(profile=profile).values("key", "value")
+            json_response[str(profile)]  = list(parameters)
+    
+    elif request.user.is_authenticated and not request.user.is_staff:
+        return redirect('omnetppManager_index')
+        # return HttpResponse('redirected')
+    
+    elif len(user) == 0 and user:
+        return HttpResponseBadRequest('user does not exist')
+
 
     # If nothing fits: empty json object
     return JsonResponse(json_response)
