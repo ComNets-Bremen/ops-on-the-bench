@@ -34,6 +34,7 @@ urlpatterns = [
                 name='omnetppManager_password_reset_complete'),
         path('rerun-sim/<int:pk>', views.rerun_simulation, name="omnetppManager_rerun_sim"),
         path('benchmark-simulation/', auth_required(BenchSimWizard.as_view([getOmnetppBenchmarkSection, selectForwarderForm,UserEditorForm,BenchmarkGeneralSettingForm,])), name="omnetppManager_benchmark-simulation"),
+        path('get-profile-parameter/', views.get_profile_parameters, name="omnetppManager_get_profile_parameters"),
         ]
 
 
