@@ -132,6 +132,7 @@ class Simulation(models.Model):
             default=False,
             help_text="Is this a debug simulation? If yes -> ignore for comparison.",
             )
+    sim_server = models.CharField(max_length=250, default="")
 
 
     # String representation, mainly for debugging and admin model
@@ -524,10 +525,6 @@ User._meta.get_field('email')._unique = True
 ## create omnetppmanager user profiles
 class UserProfile(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE, null=True, blank=True)
-    server = models.ForeignKey(
-            "ServerConfig",
-            on_delete=models.CASCADE,
-            )
 
     def __str__(self):
         return self.group.name
