@@ -42,7 +42,7 @@ import json
 import os
 from django.core.exceptions import SuspiciousOperation
 
-import datetime, time
+import datetime, time, random
 import pytz
 
 from .forms import getOmnetppiniForm, selectSimulationForm, NodeSettingForm, GeneralSettingForm, ModelDetailSettingForm, BaseNodeSettingFormSet, RequestAccessForm, RerunSimForm,\
@@ -60,6 +60,7 @@ def redirect_to_here(request):
 def index(request):
     return render(request, 'omnetppManager/index.html', {'title':"Overview"})
 
+## it has been depreciated, since registration view is up now
 def request_access(request):
     form = None
     if request.method == "POST":
@@ -139,7 +140,6 @@ def logout_users(request):
 @auth_required
 def change_password(request):
     user= request.user
-    print(user)
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -307,6 +307,11 @@ def rerun_simulation(request, pk):
         if form.is_valid():
             # Start new sim derived from old config
             simulation.pk = None # store as new object
+                
+            ## choose server
+            servers = list(ServerConfig.objects.all())
+            server = random.choice(servers)
+
             args = {
                     "user" : str(request.user),
                     "title" : str(form.cleaned_data["simulation_title"]),
@@ -317,6 +322,7 @@ def rerun_simulation(request, pk):
                     "storage_backend_id" : str(simulation.storage_backend.backend_identifier),
                     "storage_backend_token" : str(simulation.storage_backend.backend_token),
                     "storage_backend_keep_days" : str(simulation.storage_backend.backend_keep_days),
+                    "server" : str(server),
                     }
 
 
@@ -335,6 +341,7 @@ def rerun_simulation(request, pk):
             simulation.title = form.cleaned_data["simulation_title"]
             simulation.simulation_id = job.id
             simulation.simulation_timeout = job.timeout
+            simulation.sim_server = str(server)
 
             simulation.save()
             sync_simulations()
@@ -419,6 +426,10 @@ class NewSimWizard(SessionWizardView):
                 pk=storage_backend_id
                 )
 
+        ## choose server
+        servers = list(ServerConfig.objects.all())
+        server = random.choice(servers)
+
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
@@ -430,6 +441,7 @@ class NewSimWizard(SessionWizardView):
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                "server" : str(server),
                 }
 
 
@@ -457,6 +469,7 @@ class NewSimWizard(SessionWizardView):
                 notification_mail_address = notification_mail_address,
                 storage_backend = storage_backend_object,
                 simulation_timeout = job.timeout,
+                sim_server = str(server),
                 )
 
         simulation.save()
@@ -556,13 +569,13 @@ class BenchSimWizard(SessionWizardView):
                 fwd_params=OmnetppBenchmarkForwarderParameters.objects.filter(config=fwd)
                 for fwd_param in fwd_params:
                     ini_file += fwd_param.param_name + ' = ' 
-                    if fwd_param.user_editable == True:
+                    if fwd_param.param_type == 2 or fwd_param.param_type == 3:
                         ini_file += f'{cleaned_data[fwd_param]}' + fwd_param.param_unit + '   #' + fwd_param.param_description + '\n'
                     else:
                         ini_file += fwd_param.param_default_value + fwd_param.param_unit + '   #' + fwd_param.param_description + '\n'
 
 
-        # print(ini_file)
+        print(ini_file)
         q = Queue(connection=get_redis_conn())
 
         notification_mail_address = None
@@ -577,6 +590,9 @@ class BenchSimWizard(SessionWizardView):
                 StorageBackend.objects.filter(backend_active=True),
                 pk=storage_backend_id
                 )
+        ## choose server
+        servers = list(ServerConfig.objects.all())
+        server = random.choice(servers)
 
         args = {
                 "user" : str(self.request.user),
@@ -588,6 +604,7 @@ class BenchSimWizard(SessionWizardView):
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                "server" : str(server),
                 }
 
 
@@ -614,6 +631,7 @@ class BenchSimWizard(SessionWizardView):
                 notification_mail_address = notification_mail_address,
                 storage_backend = storage_backend_object,
                 simulation_timeout = job.timeout,
+                sim_server = str(server),
                 )
 
         simulation.save()
@@ -698,6 +716,10 @@ class DetailSimWizard(SessionWizardView):
                 pk=storage_backend_id
                 )
 
+        ## choose server
+        servers = list(ServerConfig.objects.all())
+        server = random.choice(servers)
+
         args = {
                 "user" : str(self.request.user),
                 "title" : str(cleaned_data["simulation_title"]),
@@ -708,6 +730,7 @@ class DetailSimWizard(SessionWizardView):
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                "server" : str(server),
                 }
 
 
@@ -734,6 +757,7 @@ class DetailSimWizard(SessionWizardView):
                 notification_mail_address = notification_mail_address,
                 storage_backend = storage_backend_object,
                 simulation_timeout = job.timeout,
+                sim_server = str(server),
                 )
 
         simulation.save()
@@ -949,10 +973,7 @@ def get_server_config(request):
 
 ## User Profile Parameters access
 def get_profile_parameters(request):
-    server_token = request.headers.get("HTTP-X-HEADER-TOKEN")
-    server_id = request.headers.get("HTTP-X-HEADER-SERVER-ID")
     username = request.headers.get("HTTP-X-HEADER-USER")
-    # profile_name = request.headers.get("HTTP-X-HEADER-PROFILE-NAME")
 
     json_response = {}
 
@@ -962,12 +983,7 @@ def get_profile_parameters(request):
         profile_name = Group.objects.filter(user = user[0])
 
         try:
-            server = ServerConfig.objects.filter(server_token=server_token, server_id=server_id)
-        except:
-            return HttpResponseBadRequest('Check server token or id again')
-
-        try:
-            profile = UserProfile.objects.filter(group=profile_name[0], server=server[0])
+            profile = UserProfile.objects.filter(group=profile_name[0])
         except:
             return HttpResponseBadRequest('User has no group')
 
@@ -985,7 +1001,7 @@ def get_profile_parameters(request):
         return redirect('omnetppManager_index')
         # return HttpResponse('redirected')
     
-    elif len(user) == 0 and user:
+    elif len(user) == 0 and username:
         return HttpResponseBadRequest('user does not exist')
 
 
