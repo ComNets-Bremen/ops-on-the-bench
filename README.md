@@ -248,12 +248,10 @@ The manager offers a simple key-value system for User profile (parameter) data. 
 
 - Accessing `/omnetppManager/get-profile-parameter/` as a logged in admin user returns a
   json object containing all User profile parameters. This is mainly meant for debugging.
-- Accessing `/omnetppManager/get-profile-parameter/` with the three HTTP-headers
-  `HTTP-X-HEADER-TOKEN`, `HTTP-X-HEADER-SERVER-ID` and `HTTP-X-HEADER-USER` set will return the
+- Accessing `/omnetppManager/get-profile-parameter/` with the HTTP-header`HTTP-X-HEADER-USER` set, will return the
   values as json for the given server only.
 
 This can be tested using `curl`:
-    curl -H "HTTP-X-HEADER-SERVER-ID: <SERVER_ID>" -H "HTTP-X-HEADER-TOKEN: <TOKEN>" -H "HTTP-X-HEADER-USER: <USER>" <SERVER_ADDRESS>/omnetppManager/get-server-config/
+    curl -H "HTTP-X-HEADER-USER: <USER>" <SERVER_ADDRESS>/omnetppManager/get-profile-config/
 
-Token and server ID are configured in the table `Server Config`, the key-value-pairs in `Server Config Values`.
 User instance is obtained from the in built User model in django, User profile is configured in the table 'UserProfile',  the key-value-pairs are in `User Profile Parameters`.
