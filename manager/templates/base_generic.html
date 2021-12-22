@@ -135,6 +135,7 @@
                   <a class="dropdown-item" href="{% url 'omnetppManager_job_status' %}">Job status</a>
                 </div>
          </li>
+         {% if user.is_superuser %}
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" id="dropdown-03" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Management</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown-03">
@@ -143,6 +144,7 @@
 
                 </div>
          </li>
+        {% endif %}
          
           <li class="nav-item">
               <a class="nav-link" href="{% url 'omnetppManager_change_password' %}">Change password</a>
@@ -161,9 +163,6 @@
         {% else %}
           <li class="nav-item">
               <a class="nav-link" href="{% url 'omnetppManager_login' %}">Login</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="{% url 'omnetppManager_request_access' %}">Request Demo Access</a>
           </li>
         {% endif %}
 
