@@ -97,7 +97,7 @@ def register_users(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            group = Group.objects.get(name='Simple User')
+            group, created = Group.objects.get_or_create(name='Simple User')
             user.groups.add(group)
             messages.success(request, 'Account successfully created for ' + username)
             return redirect('omnetppManager_login')
@@ -116,8 +116,8 @@ def login_users(request):
 
         if user != None:
             # add groups to already exiting users without user profiles
-            group_simple = Group.objects.get(name='Simple User')
-            group_staff = Group.objects.get(name='Staff User')
+            group_simple, created = Group.objects.get_or_create(name='Simple User')
+            group_staff, created1 = Group.objects.get_or_create(name='Staff User')
             if len(Group.objects.filter(user = user)) == 0:
                 if user.is_staff:
                     user.groups.add(group_staff)
