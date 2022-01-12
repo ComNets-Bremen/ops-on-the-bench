@@ -252,7 +252,7 @@ The manager offers a simple key-value system for User profile (parameter) data. 
   values as json for the given server only.
 
 This can be tested using `curl`:
-    curl -H "HTTP-X-HEADER-USER: <USERNAME>" <SERVER_IP_ADDRESS>/omnetppManager/get-profile-config/
+    curl -H "HTTP-X-HEADER-USER: <USER_NAME>" <SERVER_IP_ADDRESS>/omnetppManager/get-profile-config/
 
     For instance: curl -H "HTTP-X-HEADER-USER: username" http://127.0.0.1:8000/omnetppManager/get-profile-parameter/
 
