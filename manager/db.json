@@ -600,6 +600,24 @@
     }
 },
 {
+    "model": "omnetppManager.serverconfig",
+    "pk": 3,
+    "fields": {
+        "server_token": "44884a3b-95e1-47df-8c58-9b5e6847a008",
+        "server_id": "eris",
+        "server_name": "eris"
+    }
+},
+{
+    "model": "omnetppManager.serverconfig",
+    "pk": 4,
+    "fields": {
+        "server_token": "8103487f-9eb4-49e8-918d-a3d31bad2020",
+        "server_id": "uranus",
+        "server_name": "uranus"
+    }
+},
+{
     "model": "omnetppManager.serverconfigvalue",
     "pk": 1,
     "fields": {
@@ -651,6 +669,96 @@
         "server": 2,
         "key": "msp430-cores",
         "value": "2"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 7,
+    "fields": {
+        "server": 3,
+        "key": "max_ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 8,
+    "fields": {
+        "server": 3,
+        "key": "max_cpu_cores",
+        "value": "4"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 9,
+    "fields": {
+        "server": 3,
+        "key": "redis.db.name",
+        "value": "testdb"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 10,
+    "fields": {
+        "server": 3,
+        "key": "redig.db.user",
+        "value": "testuser"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 11,
+    "fields": {
+        "server": 3,
+        "key": "redis.db.password",
+        "value": "test123"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 12,
+    "fields": {
+        "server": 4,
+        "key": "max_ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 13,
+    "fields": {
+        "server": 4,
+        "key": "max_cpu_cores",
+        "value": "4"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 14,
+    "fields": {
+        "server": 4,
+        "key": "redis.db.name",
+        "value": "testdb"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 15,
+    "fields": {
+        "server": 4,
+        "key": "redig.db.user",
+        "value": "testuser"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 16,
+    "fields": {
+        "server": 4,
+        "key": "redis.db.password",
+        "value": "test123"
     }
 },
 {
@@ -1169,6 +1277,78 @@
         "param_user_option": "0, 10",
         "param_description": "",
         "config": 4
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 1,
+    "fields": {
+        "profile": 1,
+        "key": "ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 2,
+    "fields": {
+        "profile": 1,
+        "key": "disk_space",
+        "value": "1000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 3,
+    "fields": {
+        "profile": 1,
+        "key": "max_sim_duration",
+        "value": "7"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 4,
+    "fields": {
+        "profile": 2,
+        "key": "ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 5,
+    "fields": {
+        "profile": 2,
+        "key": "disk_space",
+        "value": "1000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 6,
+    "fields": {
+        "profile": 2,
+        "key": "max_sim_duration",
+        "value": "14"
+    }
+},
+{
+    "model": "omnetppManager.userprofile",
+    "pk": 1,
+    "fields": {
+        "group": [
+            "Simple User"
+        ]
+    }
+},
+{
+    "model": "omnetppManager.userprofile",
+    "pk": 2,
+    "fields": {
+        "group": [
+            "Staff User"
+        ]
     }
 }
 ]
