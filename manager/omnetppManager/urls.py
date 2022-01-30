@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import views as auth_views
 from .decorators import already_authenticated, auth_required
@@ -28,8 +28,8 @@ urlpatterns = [
         path('logout/', views.logout_users, name="omnetppManager_logout"),
         path('change-password/', views.change_password, name="omnetppManager_change_password"),
         path('reset-password/', already_authenticated(views.ResetPassword.as_view()), name="omnetppManager_reset_password"),
-        path('password-reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),
-                name='omnetppManager_password_reset_confirm'),
+        path('password-reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html',
+                success_url = reverse_lazy('omnetppManager_password_reset_complete')),name='omnetppManager_password_reset_confirm'),
         path('password-reset-complete/',auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'),
                 name='omnetppManager_password_reset_complete'),
         path('rerun-sim/<int:pk>', views.rerun_simulation, name="omnetppManager_rerun_sim"),
