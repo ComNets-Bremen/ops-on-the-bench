@@ -123,7 +123,9 @@
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" id="dropdown-01" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Start new simulation</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown-01">
+                  {% if user.is_superuser %}
                   <a class="dropdown-item" href="{% url 'omnetppManager_new-simulation' %}">from omnetpp.ini</a>
+                  {% endif %}
                   <a class="dropdown-item" href="{% url 'omnetppManager_detail_sim' %}">from generator</a>
                   <a class="dropdown-item" href="{% url 'omnetppManager_benchmark-simulation' %}">from benchmark</a>
                 </div>
