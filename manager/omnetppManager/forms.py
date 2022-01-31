@@ -231,7 +231,7 @@ class UserEditorForm(forms.Form):
                     if field == display_name:
                         # clean data for ser editable range
                         if display_name.param_type == 2:
-                            if int(cleaned_data.get(field)) < int(display_name.param_user_option.split(',')[0]) or int(cleaned_data.get(field)) > int(display_name.param_user_option.split(',')[1]):
+                            if float(cleaned_data.get(field)) < float(display_name.param_user_option.split(',')[0]) or float(cleaned_data.get(field)) > float(display_name.param_user_option.split(',')[1]):
                                 raise forms.ValidationError({field :f"{display_name.param_display_name} should be between {display_name.param_user_option.split(',')[0]} and {display_name.param_user_option.split(',')[1]}" })
 
                         # clean data for user editable options
