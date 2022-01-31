@@ -173,33 +173,51 @@ class ResetPassword(SuccessMessageMixin, PasswordResetView):
 @login_required
 def queue_status(request):
     status = []
+    user= request.user
 
     q = Queue(connection=get_redis_conn())
-
-    status.append({
+    
+    # for simple user view
+    if not user.is_superuser:
+        simulations = Simulation.objects.filter(user = user)
+        queued_jobs = q.get_job_ids()
+        print(queued_jobs)
+        user_queue = 0
+        for sim_id in simulations:
+            print(sim_id.simulation_id)
+            if str(sim_id.simulation_id) in queued_jobs:
+                user_queue += 1
+        status.append({
         "name" : "Queued jobs",
-        "number" : len(q),
+        "number" : user_queue,
         })
-    status.append({
-        "name" : "Finished jobs",
-        "number" : len(q.finished_job_registry),
-        })
-    status.append({
-        "name" : "Failed jobs",
-        "number" : len(q.failed_job_registry),
-        })
-    status.append({
-        "name" : "Started jobs",
-        "number" : len(q.started_job_registry),
-        })
-    status.append({
-        "name" : "Deferred jobs",
-        "number" : len(q.deferred_job_registry),
-        })
-    status.append({
-        "name" : "Scheduled jobs",
-        "number" : len(q.scheduled_job_registry),
-        })
+
+    # for admin view     
+    else:
+        status.append({
+            "name" : "Queued jobs",
+            "number" : len(q),
+            })
+        status.append({
+            "name" : "Finished jobs",
+            "number" : len(q.finished_job_registry),
+            })
+        status.append({
+            "name" : "Failed jobs",
+            "number" : len(q.failed_job_registry),
+            })
+        status.append({
+            "name" : "Started jobs",
+            "number" : len(q.started_job_registry),
+            })
+        status.append({
+            "name" : "Deferred jobs",
+            "number" : len(q.deferred_job_registry),
+            })
+        status.append({
+            "name" : "Scheduled jobs",
+            "number" : len(q.scheduled_job_registry),
+            })
 
     return render(request, 'omnetppManager/queue_status_page.html', {
             "status" : status,
@@ -296,14 +314,15 @@ def job_kill(request, pk):
     q = Queue(connection=get_redis_conn())
     connection=get_redis_conn()
     running_jobs=q.started_job_registry.get_job_ids()
-    queued_jobs =q.get_job_ids()
+    # queued_jobs =q.get_job_ids()
+    # failed = q.failed_job_registry.get_job_ids()
 
     # for diagonising job status
     # print('running', len(running_jobs))
-    # print('queued', len(queued_jobs))
-    # job = Job.fetch(str(simulation.simulation_id), connection=connection)
-    # job_status=job.get_status()
-    # print(job_status)
+    # print('que', len(queued_jobs))
+    # print('failed', list(failed))
+    job = Job.fetch(str(simulation.simulation_id), connection=connection)
+    job_status=job.get_status()
 
     if q.remove(str(simulation.simulation_id)) > 0:
         # We removed one job. update status:
@@ -312,9 +331,12 @@ def job_kill(request, pk):
                 Simulation.Status.ABORTED,
                 Simulation.TerminateReason.TERMINATED_USER
                 )
+        
     elif str(simulation.simulation_id) in running_jobs: 
         # trys to stop running job and update status
         send_stop_job_command(connection, str(simulation.simulation_id))
+        # update sim status
+
         update_sim_status(
                 simulation.simulation_id,
                 Simulation.Status.ABORTED,
@@ -924,8 +946,15 @@ def sync_simulations(redis_conn=get_redis_conn()):
 
         store_sim_results(j, job.meta, job.result, job.exc_info, job=job)
         q.failed_job_registry.remove(job)
-
-        update_sim_status(j, Simulation.Status.FAILED)
+        try:
+            sim = Simulation.objects.get(simulation_id=j)
+            if sim.status == 8:
+                pass
+            else:
+                update_sim_status(j, Simulation.Status.FAILED)
+        except Simulation.DoesNotExist:
+            print("Simulation does not exist")
+            sim = None
 
     # update job status
 
