@@ -31,7 +31,9 @@ from .models import Simulation, StorageBackend, ConfigKeyValueStorage, ServerCon
 from .forms import getOmnetppiniForm, selectSimulationForm,getOmnetppBenchmarkSection,selectForwarderForm, BenchmarkGeneralSettingForm,UserEditorForm
 
 from rq import Queue
+from rq.job import Job
 from redis import Redis
+from rq.command import send_stop_job_command
 
 import configparser
 
@@ -292,6 +294,16 @@ def job_kill(request, pk):
     print("Trying to kill simulation", simulation.simulation_id)
 
     q = Queue(connection=get_redis_conn())
+    connection=get_redis_conn()
+    running_jobs=q.started_job_registry.get_job_ids()
+    queued_jobs =q.get_job_ids()
+
+    # for diagonising job status
+    # print('running', len(running_jobs))
+    # print('queued', len(queued_jobs))
+    # job = Job.fetch(str(simulation.simulation_id), connection=connection)
+    # job_status=job.get_status()
+    # print(job_status)
 
     if q.remove(str(simulation.simulation_id)) > 0:
         # We removed one job. update status:
@@ -300,8 +312,16 @@ def job_kill(request, pk):
                 Simulation.Status.ABORTED,
                 Simulation.TerminateReason.TERMINATED_USER
                 )
+    elif str(simulation.simulation_id) in running_jobs: 
+        # trys to stop running job and update status
+        send_stop_job_command(connection, str(simulation.simulation_id))
+        update_sim_status(
+                simulation.simulation_id,
+                Simulation.Status.ABORTED,
+                Simulation.TerminateReason.TERMINATED_USER
+                )
     else:
-        print("Not able to remove simulation from queue", len(q))
+        print("Not able to remove simulation from queue", len(q), "or started registry" )
 
     return HttpResponseRedirect(reverse("omnetppManager_job_status"))
 
