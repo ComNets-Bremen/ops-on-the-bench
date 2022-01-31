@@ -84,6 +84,7 @@ def request_access(request):
 
     return render(request, 'omnetppManager/request_access.html', {'form': form, 'title': "Request demo access"})
 
+## it has been depreciated, since registration view is up now
 def request_access_thanks(request):
     return render(request, 'omnetppManager/request_access_thanks.html', {'title': "Thanks for your request"})
 
@@ -206,16 +207,29 @@ def queue_status(request):
 ## Show status of jobs
 @login_required
 def job_status(request):
-    simulations = Simulation.objects.all()
-    paginator = Paginator(simulations, 25) # 25 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    user= request.user
+    if not user.is_superuser:
+        simulations = Simulation.objects.filter(user = user)
+        paginator = Paginator(simulations, 25) # 25 items per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-    return render(request, "omnetppManager/job_status_page.html",
-            {
-                "jobs" : page_obj,
-                "title" : "Job status",
-            })
+        return render(request, "omnetppManager/job_status_page.html",
+                {
+                    "jobs" : page_obj,
+                    "title" : "Job status",
+                })
+    else:
+        simulations = Simulation.objects.all()
+        paginator = Paginator(simulations, 25) # 25 items per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, "omnetppManager/job_status_page.html",
+                {
+                    "jobs" : page_obj,
+                    "title" : "Job status",
+                })
 
 
 ## Manage the queues and get the results from the queue.
