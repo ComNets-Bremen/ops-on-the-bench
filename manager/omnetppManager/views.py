@@ -181,42 +181,90 @@ def queue_status(request):
     if not user.is_superuser:
         simulations = Simulation.objects.filter(user = user)
         queued_jobs = q.get_job_ids()
-        print(queued_jobs)
-        user_queue = 0
+        user_queue, finished, started, deferred, scheduled, aborted, failed = [0]*7
         for sim_id in simulations:
-            print(sim_id.simulation_id)
             if str(sim_id.simulation_id) in queued_jobs:
                 user_queue += 1
+            if sim_id.status == 2:
+                finished += 1
+            if sim_id.status == 3:
+                failed += 1
+            if sim_id.status == 3:
+                aborted += 1
+            if sim_id.status == 4:
+                started += 1
+            if sim_id.status == 5:
+                deferred += 1
+            if sim_id.status == 6:
+                scheduled += 1
         status.append({
-        "name" : "Queued jobs",
-        "number" : user_queue,
-        })
+            "name" : "Queued jobs",
+            "number" : user_queue,
+            },
+            {
+            "name" : "Finished jobs",
+            "number" : finished,
+            },
+            {
+            "name" : "Started jobs",
+            "number" : started,
+            },
+            {
+            "name" : "Deferred jobs",
+            "number" : deferred,
+            },
+            {
+            "name" : "Scheduled jobs",
+            "number" : scheduled,
+            },
+            {
+            "name" : "Aborted jobs",
+            "number" : aborted,
+            },
+            {
+            "name" : "Failed jobs",
+            "number" : failed,
+            }
+            )
 
     # for admin view     
     else:
+        simulations = Simulation.objects.all()
+        finished, aborted, failed = [0]*3
+        for sims in simulations:
+            if sims.status == 2:
+                finished += 1
+            if sims.status == 3:
+                failed += 1
+            if sims.status == 8:
+                aborted += 1
         status.append({
             "name" : "Queued jobs",
             "number" : len(q),
-            })
-        status.append({
+            },
+            {
             "name" : "Finished jobs",
-            "number" : len(q.finished_job_registry),
-            })
-        status.append({
-            "name" : "Failed jobs",
-            "number" : len(q.failed_job_registry),
-            })
-        status.append({
+            "number" : finished,
+            },
+            {
             "name" : "Started jobs",
             "number" : len(q.started_job_registry),
-            })
-        status.append({
+            },
+            {
             "name" : "Deferred jobs",
             "number" : len(q.deferred_job_registry),
-            })
-        status.append({
+            },
+            {
             "name" : "Scheduled jobs",
             "number" : len(q.scheduled_job_registry),
+            },
+            {
+            "name" : "Failed jobs",
+            "number" : failed,
+            },
+            {
+            "name" : "Failed jobs",
+            "number" : aborted,
             })
 
     return render(request, 'omnetppManager/queue_status_page.html', {
@@ -948,6 +996,7 @@ def sync_simulations(redis_conn=get_redis_conn()):
         q.failed_job_registry.remove(job)
         try:
             sim = Simulation.objects.get(simulation_id=j)
+            # do not update aborted sim to failed
             if sim.status == 8:
                 pass
             else:
