@@ -1284,7 +1284,7 @@
     "pk": 1,
     "fields": {
         "profile": 1,
-        "key": "ram",
+        "key": "max_ram_bytes",
         "value": "10000000000"
     }
 },
@@ -1293,7 +1293,7 @@
     "pk": 2,
     "fields": {
         "profile": 1,
-        "key": "disk_space",
+        "key": "max_disk_space_bytes",
         "value": "1000000000"
     }
 },
@@ -1302,7 +1302,7 @@
     "pk": 3,
     "fields": {
         "profile": 1,
-        "key": "max_sim_duration",
+        "key": "max_sim_duration_hours",
         "value": "7"
     }
 },
@@ -1311,8 +1311,8 @@
     "pk": 4,
     "fields": {
         "profile": 2,
-        "key": "ram",
-        "value": "10000000000"
+        "key": "max_ram_bytes",
+        "value": "0"
     }
 },
 {
@@ -1320,8 +1320,8 @@
     "pk": 5,
     "fields": {
         "profile": 2,
-        "key": "disk_space",
-        "value": "1000000000"
+        "key": "max_disk_space_bytes",
+        "value": "0"
     }
 },
 {
@@ -1329,8 +1329,8 @@
     "pk": 6,
     "fields": {
         "profile": 2,
-        "key": "max_sim_duration",
-        "value": "14"
+        "key": "max_sim_duration_hours",
+        "value": "0"
     }
 },
 {
