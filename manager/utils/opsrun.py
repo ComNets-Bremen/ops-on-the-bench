@@ -25,6 +25,7 @@ import threading
 import enum
 import datetime
 import slugify
+import requests
 
 OUTPUT_FOLDER = '/opt/data'
 STAT_LIST = '/opt/OPS/simulations/stat-list.txt'
@@ -32,9 +33,12 @@ NET_LIST = '/opt/OPS/simulations/net-list.txt'
 ARCHIVE_FILE = 'results.zip'
 ARCHIVE_LIST = ['INFO.txt', 'omnetpp.ini', 'graphs', 'csv', 'simrun']
 STATUSVALS = enum.Enum('STATUSVALS', 'INITILIZING SIMULATING PARSING ARCHIVING UPLOADING TERMINATING COMPLETED CRASHED', start=1)
-MONITOR_INTERVAL_SEC = 3.0
+MONITOR_INTERVAL_SEC = 2.0
 ARCHIVE_LIFETIME_DAYS = 7300
 ESTIMATED_TOTAL_RESULTS_SIZE_PERC = 20.0
+LIMITS_REQUEST_TIMEOUT_SEC = 1.0
+DJANGO_CONN_ENV_VAR = 'DJANGO_CONN'
+DJANGO_CONN_DEFAULT_VAL = 'localhost:8000'
 
 # main entry point for performing a single job,
 # i.e., running a single OPS simulation
@@ -46,6 +50,8 @@ def run_ops(job, arguments):
               'status': STATUSVALS.INITILIZING,
               'start_time': time.time(),
               'sim_returncode': 0,
+              'user': arguments['user'],
+              'killed_file': None
              }
 
     # set initial job return values
@@ -75,6 +81,13 @@ def run_ops(job, arguments):
             common['root_folder'] = root_folder
             common['temp_folder'] = temp_folder
 
+        # create name of file to indicate simulation killed (used in resource limit checks)
+        killed_file = os.path.join(root_folder, 'killed.txt')
+
+        # update filled file path
+        with lock:
+            common['killed_file'] = killed_file
+
         # santize given omnetpp.ini
         sanitize_ini(root_folder, arguments['omnetpp.ini'])
 
@@ -86,6 +99,9 @@ def run_ops(job, arguments):
         # run simulations
         run_sim(root_folder, arguments['runconfig'], common, lock)
 
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
+
         # update final percentage, set time after simulation and status
         with lock:
             update_sim_progress(common)
@@ -95,12 +111,18 @@ def run_ops(job, arguments):
         # create graphs from vectors
         create_graphs(root_folder, graphs_folder, temp_folder, arguments['runconfig'], common, lock)
 
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
+
         # set time after creating graphs
         with lock:
             common['time_after_graphs'] = time.time()
 
         # create scalar stats
         scalar_stats = create_stats(root_folder, graphs_folder, csv_folder, temp_folder, arguments['runconfig'])
+
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
 
         with lock:
             job.meta["scalar_stats"] = scalar_stats
@@ -113,12 +135,18 @@ def run_ops(job, arguments):
         # create resolution changed CSV
         create_csv(root_folder, csv_folder, temp_folder, arguments['summarizing_precision'])
 
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
+
         # set time after creating summarized vector data
         with lock:
             common['time_after_summary_data'] = time.time()
 
         # create simulator performance stats
         sim_stats = create_sim_stats(root_folder, simrun_folder, arguments['runconfig'], common, lock)
+
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
 
         with lock:
             job.meta["sim_runtime_stats"] = sim_stats
@@ -132,6 +160,9 @@ def run_ops(job, arguments):
         # create INFO file
         create_info_file(root_folder, arguments['summarizing_precision'], arguments['runconfig'], common, lock)
 
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
+
         # set status
         with lock:
             common['status'] = STATUSVALS.ARCHIVING
@@ -139,13 +170,17 @@ def run_ops(job, arguments):
         # create an archive file of results to return
         archive_path = create_archive(root_folder, ARCHIVE_FILE, ARCHIVE_LIST)
 
+        # check if simulation terminated
+        check_killed(killed_file, common, lock)
+
         # set time after archive creation & status
         with lock:
             common['time_after_arch'] = time.time()
             common['status'] = STATUSVALS.UPLOADING
 
         # handle archive file as requested
-        shared_link = upload_archive(archive_path, arguments['storage_backend_id'], arguments['storage_backend_token'], title=arguments['title'], keep_days=ARCHIVE_LIFETIME_DAYS)
+        shared_link = upload_archive(archive_path, arguments['storage_backend_id'], \
+                        arguments['storage_backend_token'], title=arguments['title'], keep_days=ARCHIVE_LIFETIME_DAYS)
 
         # set time after arch file upload and status
         with lock:
@@ -167,8 +202,19 @@ def run_ops(job, arguments):
             job.save_meta()
 
     except Exception as err:
+
+        # set general crash info
         ops_failed = True
         ops_failure_msg = str(err)
+
+        # set info if sim terminated
+        if os.path.exists(common['killed_file']):
+            terminate_reason = ' '
+            with open(common['killed_file'], 'r') as kfp:
+                terminate_reason = kfp.read()
+            common['job'].meta['errors'].append(terminate_reason)
+            common['job'].meta['current_state'] = STATUSVALS.CRASHED.name
+            ops_failure_msg += (' ' + terminate_reason)
 
     # wait for monitor thread to finish
     monitor_thread.join()
@@ -315,7 +361,7 @@ def run_sim(root_folder, runconfig, common, lock):
     # raise hell if simulation failed
     with lock:
         if common['sim_returncode'] != 0:
-            # get errors from log?
+            # get errors from log
             errstr = str(common['sim_returncode'])
             common['job'].meta['errors'].append(str(common['sim_returncode']))
             with open(logpath, 'r') as logfp:
@@ -330,6 +376,19 @@ def run_sim(root_folder, runconfig, common, lock):
 
             # raise exception with the error string
             raise Exception(errstr)
+
+
+# check if sim terminated due to resource limit overruns
+def check_killed(killed_file, common, lock):
+
+    gen_exception = False
+    with lock:
+        if os.path.exists(killed_file):
+            common['status'] = STATUSVALS.CRASHED
+            gen_exception = True
+
+    if gen_exception:
+        raise Exception('-9')
 
 
 # create stat graphs
@@ -395,8 +454,23 @@ def create_graphs(root_folder, graphs_folder, temp_folder, runconfig, common, lo
             # wait for process to end
             proc.wait()
 
+            # get the return code of the simulation
+            with lock:
+                common['results_returncode'] = proc.returncode
+
             # close log file
             logfp.close()
+
+            # raise hell if results parsing crashed
+            with lock:
+                if common['sim_returncode'] != 0:
+                    # update error and staus
+                    errstr = str(common['sim_returncode'])
+                    common['job'].meta['errors'].append(errstr)
+                    common['job'].meta['current_state'] = STATUSVALS.CRASHED.name
+
+                    # raise exception with the error string
+                    raise Exception(errstr)
 
             # create x, y arrays to plot from the created CSV
             x = []
@@ -527,7 +601,6 @@ def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig)
 
                     break
 
-
     # create the .pdf file
     results_path = os.path.join(graphs_folder, 'scalar-stats.pdf')
     pdf.output(results_path, 'F')
@@ -542,9 +615,10 @@ def create_stats(root_folder, graphs_folder, csv_folder, temp_folder, runconfig)
     except Exception  as e:
         all_text_stats = str(e)
 
-
     # close scalar stat .csv
     ocsvfp.close()
+
+
 
     return all_text_stats
 
@@ -824,6 +898,8 @@ def monitor(common, lock):
 
     print('starting monitor thread ...')
 
+    enforcementinfo = {}
+
     while True:
 
         # wait for some time
@@ -877,6 +953,16 @@ def monitor(common, lock):
 
             # # dump all dict values
             # dump_dict(job.meta, common)
+
+        # collect info to perform resource limit exceed check
+        collect_enforcement_info(common, enforcementinfo, lock)
+
+        # perform resouce limit exceed checks and terminate simulation
+        job_terminated, terminate_reason = enforce_resource_limits(enforcementinfo, lock)
+
+        # update job if simulation terminated and exit
+        if job_terminated:
+            break
 
 
     print('finishing monitor thread ...')
@@ -1025,6 +1111,158 @@ def update_results_progress(common):
     common['results_completed_perc'] = results_completed_perc if results_completed_perc <= 100 else 100
 
 
+# collect info required to enfoce resource over use
+def collect_enforcement_info(common, enforcementinfo, lock):
+
+    with lock:
+        enforcementinfo['status'] = common['status']
+        enforcementinfo['user'] = common['user']
+        enforcementinfo['start_time'] = common['start_time']
+        if 'peak_disk_usage' in common:
+            enforcementinfo['peak_disk_usage'] = common['peak_disk_usage']
+        if 'peak_sim_ram_usage' in common:
+            enforcementinfo['peak_sim_ram_usage'] = common['peak_sim_ram_usage']
+        if 'peak_results_ram_usage' in common:
+            enforcementinfo['peak_results_ram_usage'] = common['peak_results_ram_usage']
+        if 'sim_proc_id' in common:
+            enforcementinfo['sim_proc_id'] = common['sim_proc_id']
+        if 'results_proc_id' in common:
+            enforcementinfo['results_proc_id'] = common['results_proc_id']
+        enforcementinfo['killed_file'] = common['killed_file']
+
+
+# check resource limits and terminate processes if exceeded
+# if limits are set to zero, then unlimited resources
+def enforce_resource_limits(enforcementinfo, lock):
+
+
+    dfp = open('debug-file.txt', 'a')
+    dfp.write('start resource checks - ' + str(time.time()) + '\n')
+    
+    # set connection info for the Django front-end
+    conn_str = os.environ.get(DJANGO_CONN_ENV_VAR) # expects in the form '192.168.1.1:8600' 
+    if conn_str is None:
+        conn_str = DJANGO_CONN_DEFAULT_VAL
+    headers = {'HTTP-X-HEADER-USER': enforcementinfo['user']}
+    url = 'http://' + conn_str.strip() + '/omnetppManager/get-profile-parameter/'
+
+    dfp.write('url, headers - ' + url + ' ' + enforcementinfo['user'] + '\n')
+
+    # get limits for user
+    try:
+        response = requests.get(url, headers=headers, timeout=LIMITS_REQUEST_TIMEOUT_SEC)
+    except requests.exceptions.Timeout as e:
+        dfp.write('get profile exception ' + str(e) + '\n')
+        dfp.close()
+        return
+
+    dfp.write('get json data from return ' + '\n')
+
+    data = response.json()
+    max_ram_bytes = None
+    max_disk_space_bytes = None
+    max_sim_duration_hours = None
+
+    dfp.write('get individual data from json data ' + '\n')
+
+    for key, value in data.items():
+        for item in value:
+            if item['key'] == 'max_ram_bytes':
+                max_ram_bytes = int(item['value'].strip())
+            if item['key'] == 'max_disk_space_bytes':
+                max_disk_space_bytes = int(item['value'].strip())
+            if item['key'] == 'max_sim_duration_hours':
+                max_sim_duration_hours = int(item['value'].strip())
+            dfp.write('loop round ' + '\n')
+
+    dfp.write('got individual data from json data ' + '\n')
+
+    # return if request did not bring values
+    if max_ram_bytes is None or max_disk_space_bytes is None \
+       or max_sim_duration_hours is None:
+        dfp.write('limits have problems ' + '\n')
+        dfp.close()
+        return
+
+    dfp.write('here ' + '\n')
+
+    dfp.write('limits for user - ' + enforcementinfo['user'] \
+              + ' ' + str(max_ram_bytes) \
+              + ' ' + str(max_disk_space_bytes) \
+              + ' ' + str(max_sim_duration_hours) + ' \n')
+
+    # check any usage limit exceeded
+    terminate_job = False
+    terminate_reason = ''
+    current_time = time.time()
+    start_time = enforcementinfo['start_time']
+    peak_disk_usage_bytes = enforcementinfo['peak_disk_usage'] if 'peak_disk_usage' in enforcementinfo else 0
+    peak_sim_ram_usage_bytes = enforcementinfo['peak_sim_ram_usage'] if 'peak_sim_ram_usage' in enforcementinfo else 0
+    peak_results_ram_usage_bytes = enforcementinfo['peak_results_ram_usage'] if 'peak_results_ram_usage' in enforcementinfo else 0
+    killed_file = enforcementinfo['killed_file']
+
+    if max_sim_duration_hours > 0 \
+       and (current_time - start_time) >  (max_sim_duration_hours * 3600):
+        terminate_job = True
+        terminate_reason = 'The simulation job exceeded the maximum time limit (limit = ' \
+                           + str(max_sim_duration_hours) + ' hours, current = ' \
+                           + str((current_time - start_time) / 3600) + ' hours)'
+
+    if not terminate_job and max_disk_space_bytes > 0 \
+       and 'peak_disk_usage' in enforcementinfo \
+       and peak_disk_usage_bytes > max_disk_space_bytes:
+        terminate_job = True
+        terminate_reason = 'The simulation job exceeded the maximum disk space limit (limit = ' \
+                           + str(max_disk_space_bytes) + ' bytes, current = ' \
+                           + str(peak_disk_usage_bytes) + ' bytes)'
+
+    if not terminate_job and max_ram_bytes > 0 \
+       and 'peak_sim_ram_usage' in enforcementinfo \
+       and peak_sim_ram_usage_bytes > max_ram_bytes:
+        terminate_job = True
+        terminate_reason = 'The simulation exceeded the maximum RAM limit (limit = ' \
+                           + str(max_ram_bytes) + ' bytes, current = ' \
+                           + str(peak_sim_ram_usage_bytes) + ' bytes)'
+
+    if not terminate_job and max_ram_bytes > 0 \
+       and 'peak_results_ram_usage' in enforcementinfo \
+       and peak_results_ram_usage_bytes > max_ram_bytes:
+        terminate_job = True
+        terminate_reason = 'The results parsing exceeded the maximum RAM limit (limit = ' \
+                           + str(max_ram_bytes) + ' bytes, current = ' \
+                           + str(peak_results_ram_usage_bytes) + ' bytes)'
+
+    # crash simulation or results parsing
+    if terminate_job:
+        dfp.write('terminating job - ' + terminate_reason + '\n')
+
+        # crash processes
+        if 'sim_proc_id' in enforcementinfo and enforcementinfo['status'] == STATUSVALS.SIMULATING:
+            proc_id = enforcementinfo['sim_proc_id']
+            dfp.write('killing sim, proc id - ' + str(proc_id) + '\n')
+            cmd = 'kill -9 ' + str(proc_id)
+            os.system(cmd)
+        if 'results_proc_id' in enforcementinfo and enforcementinfo['status'] == STATUSVALS.PARSING:
+            proc_id = enforcementinfo['results_proc_id']
+            dfp.write('killing results parser, proc id - ' + str(proc_id) + '\n')
+            cmd = 'kill -9 ' + str(proc_id)
+            os.system(cmd)
+
+        # created the killed file (to prevent any process starting)
+        with lock:
+            kfp = open(killed_file, 'w')
+            kfp.write(terminate_reason + '\n')
+            kfp.close()
+            dfp.write(killed_file + ' created ' + '\n')
+ 
+    else:
+        dfp.write('resource usage under limits - ' + '\n')
+
+    dfp.write('end resource checks - ' + '\n')
+    dfp.close()
+
+    return terminate_job, terminate_reason
+
 # Convert a string number to int or float (if possible
 def convert_number(number):
     ret = number
@@ -1035,5 +1273,6 @@ def convert_number(number):
     except ValueError:
         pass
     return ret
+
 
 
