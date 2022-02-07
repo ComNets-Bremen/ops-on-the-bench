@@ -189,7 +189,7 @@ def queue_status(request):
                 finished += 1
             if sim_id.status == 3:
                 failed += 1
-            if sim_id.status == 3:
+            if sim_id.status == 8:
                 aborted += 1
             if sim_id.status == 4:
                 started += 1
@@ -197,7 +197,7 @@ def queue_status(request):
                 deferred += 1
             if sim_id.status == 6:
                 scheduled += 1
-        status.append({
+        status.append([{
             "name" : "Queued jobs",
             "number" : user_queue,
             },
@@ -224,9 +224,9 @@ def queue_status(request):
             {
             "name" : "Failed jobs",
             "number" : failed,
-            }
+            }]
             )
-
+        print(status)
     # for admin view     
     else:
         simulations = Simulation.objects.all()
@@ -238,7 +238,7 @@ def queue_status(request):
                 failed += 1
             if sims.status == 8:
                 aborted += 1
-        status.append({
+        status.append([{
             "name" : "Queued jobs",
             "number" : len(q),
             },
@@ -259,16 +259,16 @@ def queue_status(request):
             "number" : len(q.scheduled_job_registry),
             },
             {
-            "name" : "Failed jobs",
-            "number" : failed,
+            "name" : "Aborted jobs",
+            "number" : aborted,
             },
             {
             "name" : "Failed jobs",
-            "number" : aborted,
-            })
+            "number" : failed,
+            }])
 
     return render(request, 'omnetppManager/queue_status_page.html', {
-            "status" : status,
+            "status" : status[0],
             "title"  : "Queue status",
         })
 
