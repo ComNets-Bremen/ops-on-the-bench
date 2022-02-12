@@ -106,9 +106,10 @@ def register_users(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
+            username = form.cleaned_data.get('username')
             current_site = get_current_site(request)
             mail_subject = 'Activate your Omnetpp manager account.'
-            message = render_to_string('user_activation_email.html', {
+            message = render_to_string('registration/user_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
@@ -122,12 +123,14 @@ def register_users(request):
                         [to_email, ],
                         fail_silently = False,
                         )
-            return HttpResponse('Please confirm your email address to complete the registration !!!')
+            
+            messages.info(request, f'{username} please confirm your email address to complete the registration !')
+            return redirect('omnetppManager_login')
     context= {'form': form}
     return render(request,'registration/register_users.html', context)
 
 ## activate user after confirmationx`
-def activate(request, uidb64, token):
+def activate_account(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -135,13 +138,10 @@ def activate(request, uidb64, token):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
-        user.save()
-        # return redirect('home')
-
-        username = form.cleaned_data.get('username')
         group, created = Group.objects.get_or_create(name='Simple User')
         user.groups.add(group)
-        messages.success(request, 'Account successfully created for ' + username)
+        user.save()
+        messages.success(request, 'Account successfully created for ' + user.username)
         return redirect('omnetppManager_login')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
@@ -170,7 +170,7 @@ def login_users(request):
             login(request, user)
             return redirect('omnetppManager_index')
         else:
-            messages.info(request,'username or password is incorrect, try again!')
+            messages.info(request,'username or password is incorrect or user not activated yet, try again!')
     return render(request, 'registration/login.html')
 
 
