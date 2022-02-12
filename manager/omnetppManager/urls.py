@@ -27,6 +27,7 @@ urlpatterns = [
         path('login/', views.login_users, name="omnetppManager_login"),
         path('logout/', views.logout_users, name="omnetppManager_logout"),
         path('change-password/', views.change_password, name="omnetppManager_change_password"),
+        path('activate/<uidb64>/<token>/', views.activate_account, name='activate_account'),
         path('reset-password/', already_authenticated(views.ResetPassword.as_view()), name="omnetppManager_reset_password"),
         path('password-reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html',
                 success_url = reverse_lazy('omnetppManager_password_reset_complete')),name='omnetppManager_password_reset_confirm'),
