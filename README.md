@@ -20,6 +20,7 @@ pip3 install matplotlib
 pip3 install fpdf
 pip3 install dropbox
 pip3 install slugify
+pip3 install six
 ```
 Please be aware that the manager requires a working mail configuration on the server. Either you setup a nullclient or you configure the email backend correctly: as described [here](https://docs.djangoproject.com/en/dev/topics/email/#smtp-backend).
 
