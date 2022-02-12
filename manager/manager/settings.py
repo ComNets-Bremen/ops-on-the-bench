@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = None
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,7 +35,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
         "127.0.0.1",
         "::1",
-        "localhost"
+        "localhost",
+        "10.10.160.35",
+        "10.10.0.0/16"
         ]
 
 
@@ -96,6 +98,7 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -150,17 +153,28 @@ OMNETPPINI_ALLOWED_MIMETYPE = [
 DEFAULT_SIMULATION_TIMEOUT = "12h"
 
 # Sender mail address
-DEFAULT_SENDER_MAIL_ADDRESS = "cn_server@comnets.uni-bremen.de"
-
-DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
+# DEFAULT_SENDER_MAIL_ADDRESS = "cn_server@comnets.uni-bremen.de"
+# 
+# DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
 
 # Base title for the webpage
 DEFAULT_MAIN_TITLE = "OPS on the bench"
 
 # Redis connection setup
-REDIS_DB_HOST       = None 
-REDIS_DB_PORT       = None
-REDIS_DB_PASSWORD   = None
+REDIS_DB_HOST       = "127.0.0.1" 
+REDIS_DB_PORT       = 6379
+REDIS_DB_PASSWORD   = "e05b11f734d15d2de4fb6ae0608d08b0"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'opsonthebench@gmail.com'
+EMAIL_HOST_PASSWORD = 'vgvhenplxpytylsm'
+DEFAULT_SENDER_MAIL_ADDRESS = "opsonthebench@gmail.com"
+
+
 
 
 # Overwrite settings by local ones (if available)
