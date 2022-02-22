@@ -141,7 +141,7 @@ def activate_account(request, uidb64, token):
         group, created = Group.objects.get_or_create(name='Simple User')
         user.groups.add(group)
         user.save()
-        messages.success(request, 'Account successfully created for ' + user.username)
+        messages.success(request, 'Account successfully activated for ' + user.username)
         return redirect('omnetppManager_login')
         # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
