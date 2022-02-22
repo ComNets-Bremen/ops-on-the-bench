@@ -108,7 +108,7 @@ def register_users(request):
             user.save()
             username = form.cleaned_data.get('username')
             current_site = get_current_site(request)
-            mail_subject = 'Activate your Omnetpp manager account.'
+            mail_subject = 'Activate your OOTB account.'
             message = render_to_string('registration/user_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
@@ -166,7 +166,7 @@ def login_users(request):
                     user.groups.add(group_staff)
                 else:
                     user.groups.add(group_simple)
-
+            # add is active logic here 
             login(request, user)
             return redirect('omnetppManager_index')
         else:
