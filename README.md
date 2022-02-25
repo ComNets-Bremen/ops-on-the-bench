@@ -1,15 +1,15 @@
 # OPS on the Bench (OOTB)
 
 
-Research in Opportunistic Networks (OppNets) related to large scale evaluations depends on simulations to compare the performance of different forwarding protocols and their parameters [1](https://www.mdpi.com/1999-5903/11/5/113). The comparability and credibility of research are in crisis due to the variety of ways researchers perform evaluations[2](https://dl.acm.org/doi/10.1145/1096166.1096174), [3](https://dl.acm.org/doi/10.1145/2812803), [4](https://www.acm.org/publications/policies/artifact-review-and-badging-current), [5](https://drops.dagstuhl.de/opus/frontdoor.php?source_opus=10347). The code in this repository implements a simulation platform called **OPS on the Bench**(OOTB) to overcome these problems by enabling the use of OppNets benchmarks that foster repeatability, reproducibility and replicability of comparable, credible and scalable performance evaluations. More details about are vailable in the publication [Benchmarking data dissemination protocols for opportunistic networks](https://dl.acm.org/doi/10.1145/3458473.3458819)
+Research in Opportunistic Networks (OppNets) related to large scale evaluations depends on simulations to compare the performance of different forwarding protocols and their parameters ([1](https://www.mdpi.com/1999-5903/11/5/113)). The comparability and credibility of research are in crisis due to the variety of ways researchers perform evaluations ([2](https://dl.acm.org/doi/10.1145/1096166.1096174), [3](https://dl.acm.org/doi/10.1145/2812803), [4](https://www.acm.org/publications/policies/artifact-review-and-badging-current), [5](https://drops.dagstuhl.de/opus/frontdoor.php?source_opus=10347)). The code in this repository implements a simulation platform called **OPS on the Bench**(OOTB) to overcome these problems by enabling the use of OppNets benchmarks that foster repeatability, reproducibility and replicability of comparable, credible and scalable performance evaluations. More details about are vailable in the publication [Benchmarking data dissemination protocols for opportunistic networks](https://dl.acm.org/doi/10.1145/3458473.3458819)
 
 The sections below describe installing, bringing up and using this platform. Here are the pointers to the different sections.
 
 - Architecture of OOTB and required components - [Architecture and Prerequisites](#architecture-and-prerequisites)  
 - Building up the OOTB platform - [Building and Installing](#building-and-installing)
-- Bringing up the OOTB platform - [Brining Up](#bringing-up)
+- Bringing up the OOTB platform - [Bringing Up](#bringing-up)
 - Running simulations in OOTB (by Users) - [Running Simulations](#running-simulations)
-
+- 
 
 
 
@@ -52,7 +52,6 @@ python3 -m venv venv
 
 ```
 git clone https://github.com/ComNets-Bremen/ops-on-the-bench.git
-
 ```
 
 4. Install all the following packages using `pip` package manager of `Python`. You may have to update `pip` before you use.
@@ -80,7 +79,6 @@ pip3 install six
 
 ```
 git clone https://github.com/ComNets-Bremen/ops-on-the-bench.git
-
 ```
 
 
