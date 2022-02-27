@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
-from django.utils.html import strip_tags
+from django.utils.html import strip_tags, format_html
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.contrib import messages
@@ -129,6 +129,36 @@ def register_users(request):
     context= {'form': form}
     return render(request,'registration/register_users.html', context)
 
+
+## User registration
+@already_authenticated
+def resend_activation(request):
+    if request.method == 'POST':
+        email_address = request.POST.get('email')
+        for user in User.objects.all():
+            if str(user.email) == email_address:
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your OOTB account.'
+                message = render_to_string('registration/user_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token':account_activation_token.make_token(user),
+                })
+                to_email = email_address
+                send_mail(
+                            mail_subject,
+                            message,
+                            ConfigKeyValueStorage.config.get_value("DEFAULT_SENDER_MAIL_ADDRESS"),
+                            [to_email, ],
+                            fail_silently = False,
+                            )
+                
+        messages.info(request, f'if the a valid email address was used you will receive a mail, please confirm your email address to complete the registration !')
+        return redirect('omnetppManager_login')
+    return render(request, 'registration/resend_activation.html')
+
+
 ## activate user after confirmationx`
 def activate_account(request, uidb64, token):
     try:
@@ -166,11 +196,17 @@ def login_users(request):
                     user.groups.add(group_staff)
                 else:
                     user.groups.add(group_simple)
-            # add is active logic here 
-            login(request, user)
-            return redirect('omnetppManager_index')
+            # add is active logic here
+            if user.is_active:
+                login(request, user)
+                return redirect('omnetppManager_index')
         else:
-            messages.info(request,'username or password is incorrect or user not activated yet, try again!')
+            for name in User.objects.all():
+                if str(name) == username:
+                    if name.is_active:
+                        messages.info(request,'username or password is incorrect, try again!')
+                    else:
+                        messages.info(request, format_html('user not activated yet, activate your account! or <a href="{}">resend activation link</a>', reverse('resend_activation')))
     return render(request, 'registration/login.html')
 
 
