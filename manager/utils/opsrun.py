@@ -925,6 +925,9 @@ def monitor(common, lock):
                 update_peak_disk_usage(common)
                 update_peak_ram(common, 'sim')
                 update_sim_progress(common)
+                job = common['job']
+                job.meta['sim_time_sofar'] = time.time()-common['start_time']
+                job.save_meta()
 
             elif common['status'] == STATUSVALS.PARSING:
                 update_peak_disk_usage(common)
