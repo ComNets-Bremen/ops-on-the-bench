@@ -107,6 +107,9 @@ def run_ops(job, arguments):
             update_sim_progress(common)
             common['time_after_sim'] = time.time()
             common['status'] = STATUSVALS.PARSING
+            job.meta["sim_run_time"] = time.time()
+            job.meta["sim_start_time"] = common['start_time'] 
+            job.save_meta()
 
         # create graphs from vectors
         create_graphs(root_folder, graphs_folder, temp_folder, arguments['runconfig'], common, lock)
@@ -922,6 +925,9 @@ def monitor(common, lock):
                 update_peak_disk_usage(common)
                 update_peak_ram(common, 'sim')
                 update_sim_progress(common)
+                job = common['job']
+                job.meta['sim_time_sofar'] = time.time()-common['start_time']
+                job.save_meta()
 
             elif common['status'] == STATUSVALS.PARSING:
                 update_peak_disk_usage(common)
