@@ -215,6 +215,7 @@ def run_ops(job, arguments):
             terminate_reason = ' '
             with open(common['killed_file'], 'r') as kfp:
                 terminate_reason = kfp.read()
+            common['job'].meta['terminated'] = terminate_reason
             common['job'].meta['errors'].append(terminate_reason)
             common['job'].meta['current_state'] = STATUSVALS.CRASHED.name
             ops_failure_msg += (' ' + terminate_reason)
@@ -1141,10 +1142,6 @@ def collect_enforcement_info(common, enforcementinfo, lock):
 # if limits are set to zero, then unlimited resources
 def enforce_resource_limits(enforcementinfo, lock):
 
-
-    dfp = open('debug-file.txt', 'a')
-    dfp.write('start resource checks - ' + str(time.time()) + '\n')
-    
     # set connection info for the Django front-end
     conn_str = os.environ.get(DJANGO_CONN_ENV_VAR) # expects in the form '192.168.1.1:8600' 
     if conn_str is None:
@@ -1152,24 +1149,16 @@ def enforce_resource_limits(enforcementinfo, lock):
     headers = {'HTTP-X-HEADER-USER': enforcementinfo['user']}
     url = 'http://' + conn_str.strip() + '/omnetppManager/get-profile-parameter/'
 
-    dfp.write('url, headers - ' + url + ' ' + enforcementinfo['user'] + '\n')
-
     # get limits for user
     try:
         response = requests.get(url, headers=headers, timeout=LIMITS_REQUEST_TIMEOUT_SEC)
     except requests.exceptions.Timeout as e:
-        dfp.write('get profile exception ' + str(e) + '\n')
-        dfp.close()
         return
-
-    dfp.write('get json data from return ' + '\n')
 
     data = response.json()
     max_ram_bytes = None
     max_disk_space_bytes = None
     max_sim_duration_hours = None
-
-    dfp.write('get individual data from json data ' + '\n')
 
     for key, value in data.items():
         for item in value:
@@ -1179,23 +1168,11 @@ def enforce_resource_limits(enforcementinfo, lock):
                 max_disk_space_bytes = int(item['value'].strip())
             if item['key'] == 'max_sim_duration_hours':
                 max_sim_duration_hours = int(item['value'].strip())
-            dfp.write('loop round ' + '\n')
-
-    dfp.write('got individual data from json data ' + '\n')
 
     # return if request did not bring values
     if max_ram_bytes is None or max_disk_space_bytes is None \
        or max_sim_duration_hours is None:
-        dfp.write('limits have problems ' + '\n')
-        dfp.close()
         return
-
-    dfp.write('here ' + '\n')
-
-    dfp.write('limits for user - ' + enforcementinfo['user'] \
-              + ' ' + str(max_ram_bytes) \
-              + ' ' + str(max_disk_space_bytes) \
-              + ' ' + str(max_sim_duration_hours) + ' \n')
 
     # check any usage limit exceeded
     terminate_job = False
@@ -1240,17 +1217,14 @@ def enforce_resource_limits(enforcementinfo, lock):
 
     # crash simulation or results parsing
     if terminate_job:
-        dfp.write('terminating job - ' + terminate_reason + '\n')
 
         # crash processes
         if 'sim_proc_id' in enforcementinfo and enforcementinfo['status'] == STATUSVALS.SIMULATING:
             proc_id = enforcementinfo['sim_proc_id']
-            dfp.write('killing sim, proc id - ' + str(proc_id) + '\n')
             cmd = 'kill -9 ' + str(proc_id)
             os.system(cmd)
         if 'results_proc_id' in enforcementinfo and enforcementinfo['status'] == STATUSVALS.PARSING:
             proc_id = enforcementinfo['results_proc_id']
-            dfp.write('killing results parser, proc id - ' + str(proc_id) + '\n')
             cmd = 'kill -9 ' + str(proc_id)
             os.system(cmd)
 
@@ -1259,15 +1233,9 @@ def enforce_resource_limits(enforcementinfo, lock):
             kfp = open(killed_file, 'w')
             kfp.write(terminate_reason + '\n')
             kfp.close()
-            dfp.write(killed_file + ' created ' + '\n')
- 
-    else:
-        dfp.write('resource usage under limits - ' + '\n')
-
-    dfp.write('end resource checks - ' + '\n')
-    dfp.close()
 
     return terminate_job, terminate_reason
+
 
 # Convert a string number to int or float (if possible
 def convert_number(number):
