@@ -186,9 +186,9 @@ class Simulation(models.Model):
         if not "sim_runtime_stats" in meta:
             return None
         for s in meta["sim_runtime_stats"]:
-            print(s)
+            # print(s)
             if statname == s[0]:
-                print(s, s[1])
+                # print(s, s[1])
                 return s[1]
         return None
 
@@ -196,6 +196,30 @@ class Simulation(models.Model):
     def get_total_events(self):
         return self.get_sim_runtime_stats("totevents")
 
+    # Access simulation runtime
+    def get_sim_runtime(self):
+        meta = self.get_meta()
+
+        if self.status == 8 or self.status == 3:
+            update_time = self.simulation_last_update_time
+            update_time = int(update_time.strftime('%s'))
+            start_time = self.simulation_start_time
+            start_time = int(start_time.strftime('%s'))
+            sim_time = update_time - start_time
+            sim_time =  "{}".format(str(datetime.timedelta(seconds=sim_time)))
+        elif "sim_run_time" in meta and meta["sim_completed_perc"] == 100:
+            end_time = int(meta["sim_run_time"])
+            start_time = self.simulation_start_time
+            start_time = int(start_time.strftime('%s'))
+            sim_time = end_time - start_time
+            sim_time = "{}".format(str(datetime.timedelta(seconds=sim_time)))
+        elif meta["current_state"] == 'SIMULATING' and self.status != 8 and self.status != 3 and "sim_time_sofar" in meta:
+            sim_time = int(meta["sim_time_sofar"])
+            sim_time = "{}".format(str(datetime.timedelta(seconds=sim_time)))
+        else:
+            sim_time = ''
+    
+        return sim_time
 
     ## Notify user on sim state change
     def send_notify_mail(self):

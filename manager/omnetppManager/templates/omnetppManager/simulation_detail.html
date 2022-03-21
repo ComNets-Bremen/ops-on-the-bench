@@ -52,6 +52,8 @@
 
     <li>Current state: <code>{{ object.get_meta.current_state }}</code></li>
     <li>Simulation start time: {{ object.get_meta.start_time_str }}</li>
+    <li>Total simulation time so far: {{ object.get_sim_runtime }}</li>
+
     <li>Resource usage:
         <ul>
             <li>Simulation: Peak RAM usage: {{ object.get_meta.peak_sim_ram_usage|filesizeformat }}</li>
