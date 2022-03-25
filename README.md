@@ -10,7 +10,7 @@ The sections below describe installing, bringing up and using this platform. Her
 - Bringing up the OOTB platform - [Bringing Up](#bringing-up)
 - Configuring Cloud Service - [Cloud Service](#cloud-service)
 - Running simulations in OOTB (by Users) - [Running Simulations](#running-simulations)
-
+- Questions or comments about this work - [Questions or Comments](#questions-or-comments) 
 
 
 ##  Architecture and Prerequisites
@@ -290,3 +290,7 @@ A list is output that shows the `ootb` images currently instantiated and informa
 
 
 
+
+## Questions or Comments
+
+We have described this work in the publication linked [here](https://dl.acm.org/doi/10.1145/3458473.3458819). If you have further questions, comments or even suggestions, we will be very glad to hear them. Write to us using ootb@comnets.uni-bremen.de.
