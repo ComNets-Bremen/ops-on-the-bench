@@ -3,13 +3,27 @@
 
 Research in Opportunistic Networks (OppNets) related to large scale evaluations depends on simulations to compare the performance of different forwarding protocols and their parameters ([1](https://www.mdpi.com/1999-5903/11/5/113)). The comparability and credibility of research are in crisis due to the variety of ways researchers perform evaluations ([2](https://dl.acm.org/doi/10.1145/1096166.1096174), [3](https://dl.acm.org/doi/10.1145/2812803), [4](https://www.acm.org/publications/policies/artifact-review-and-badging-current), [5](https://drops.dagstuhl.de/opus/frontdoor.php?source_opus=10347)). The code in this repository implements a simulation platform called **OPS on the Bench**(OOTB) to overcome these problems by enabling the use of OppNets benchmarks that foster repeatability, reproducibility and replicability of comparable, credible and scalable performance evaluations. More details about OOTB are vailable in the publication [Benchmarking data dissemination protocols for opportunistic networks](https://dl.acm.org/doi/10.1145/3458473.3458819)
 
-The sections below describe installing, bringing up and using this platform. Here are the pointers to the different sections.
+The sections linked below provide all information about OOTB including installing, bringing up and using the platform.
+
+#### Architectural Information
 
 - Architecture of OOTB and required components - [Architecture and Prerequisites](#architecture-and-prerequisites)  
-- Building up the OOTB platform - [Building and Installing](#building-and-installing)
+
+#### Installing and Using OOTB
+
+- Installing OOTB platform - [Building and Installing](#building-and-installing)
 - Bringing up the OOTB platform - [Bringing Up](#bringing-up)
-- Configuring Cloud Service - [Cloud Service](#cloud-service)
 - Running simulations in OOTB (by Users) - [Running Simulations](#running-simulations)
+
+#### Additional Information About OOTB
+
+- Configuring cloud service to store data - [Storage Backend](#storage-backend)
+- Accessing server details - [Accessing Server Configurations](#accessing-server-configurations)
+- Accessing user profile configurations - [Accessing Profile Configurations](#accessing-profile-configurations)
+- Versions of used software - [Software Versions]()
+
+#### Contact Information
+
 - Questions or comments about this work - [Questions or Comments](#questions-or-comments) 
 
 
@@ -53,8 +67,8 @@ The OOTB platform is realized using the Python programmimg language. Therefore, 
 
 1. Install `Python` in a `Linux` based computer with network connectivity.
 
-  - `Python 3`
-  - `Ubuntu LTS 20.04`
+  - `Python 3.6.9`
+  - `Ubuntu 18.04.6 LTS`
 
 2. Install `REDIS` packages in `Linux`
 
@@ -86,14 +100,13 @@ The `bind` entry specifies the IP address of the network interface of the comput
 
 1. Install `Python` in a `Linux` based computer with network connectivity.
 
-  - `Python 3`
-  - `Ubuntu LTS 20.04`
+  - `Python 3.6.9`
+  - `Ubuntu 18.04.6 LTS`
 
 2. Create and activate a `virtual environment` of `Python`
 
 ```
 python3 -m venv venv
-
 ./venv/bin/activate`
 ```
 
@@ -120,9 +133,9 @@ pip3 install six
 
 ```bash
 cd ops-on-the-bench/manager
-python manage.py makemigrations
-python manage.py migrate
-python manage.py loaddata db.json
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py loaddata db.json
 ```
 
 5. Configure the `settings.py` of Django with the parameter values to for this installation. There are three areas that is usually set for OOTB.
@@ -165,7 +178,7 @@ When using Google's mail service, an application must be created with the creden
 
 ```bash
 cd ops-on-the-bench/manager
-python manage.py createsuperuser
+python3 manage.py createsuperuser
 ```
 
 
@@ -174,8 +187,8 @@ python manage.py createsuperuser
 
 1. Install `Python` in a `Linux` based computer with network connectivity.
 
-  - `Python 3`
-  - `Ubuntu LTS 20.04`
+  - `Python 3.7.3`
+  - `Debian GNU/Linux 10 (buster)`
 
 2. Open a terminal and pull the OOTB repository (this repository) from Github
 
@@ -183,7 +196,7 @@ python manage.py createsuperuser
 git clone https://github.com/ComNets-Bremen/ops-on-the-bench.git
 ```
 
-3. Install Docker system on the selected Linux distribution (`Ubuntu LTS 20.04` recommended above). Use the [link](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04) on installing Docker. Follow the procedure given in the link and also setup `Executing the Docker Command Without Sudo`.
+3. Install Docker system on the selected Linux distribution (`Debian GNU/Linux 10 (buster)` recommended above). Use the [link](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-debian-10) on installing Docker. Follow the procedure given in the link and also setup `Executing the Docker Command Without Sudo`.
 
 4. Create the OOTB Docker image.
 
@@ -243,7 +256,7 @@ Check whether `REDIS` is running.
 
 ```bash
 cd ops-on-the-bench/manager
-python manage.py runserver 192.168.1.5:8000
+python3 manage.py runserver 192.168.1.5:8000
 ```
 
 The IP address is the address of the local computer (which is also given in the `ALLOWED_HOSTS`) and any preferable port (here 8000 is used).
@@ -283,14 +296,124 @@ docker ps -a
 A list is output that shows the `ootb` images currently instantiated and information about each instance.
 
 
-## Cloud Service
-
 
 ## Running Simulation
 
+Simulations using the OOTB platform are invoked though a user's web browser. The link is as follows.
 
+```bash
+http://192.168.1.5:8000
+```
+
+A few operations of OOTB and their screenshots are shows below.
+
+To use OOTB, a user must login to the system. Every user must create and confirm the e-mail address before hand to get the logging credentials. The picture below shows the login screen.
+
+<p align="center">
+<img src="res/screen-01.png" alt="Login Screen" width="500"/>
+</p>
+
+Once user has logged in, the following screen appears which has a set of pull-down menus.
+
+<p align="center">
+<img src="res/screen-02.png" alt="First Screen" width="500"/>
+</p>
+
+The `Start new simulation` pull-down provides three options.
+
+- Run a simulation by giving an `omnetpp.ini` file
+- Run a simulation by creating a configuration using a wizard
+- Run a benchmark simulation
+
+<p align="center">
+<img src="res/screen-04.png" alt="First Screen" width="500"/>
+</p>
+
+Rest of the functions and their details will be made available in subsequent updates.
+
+
+## Storage Backend
+
+The following information are transferred to the worker for handling the result data:
+
+- `storage_backend_id`: An identifier for the upload service like `Dropbox` or
+  `local`. Has to be implemented on the worker. One should check this variable
+  on the worker side to select the upload method.
+
+- `storage_backend`: A descriptive name of the backend like "Dropbox account of
+  abc"
+
+- `storage_backend_token`: The token required for the backend
+
+
+
+
+## Accessing Server Configurations
+
+The manager offers a simple key-value system for server (and simulation
+independent) data. This Server configurations can be accessed in two ways:
+
+- Accessing `/omnetppManager/get-server-config/` as a logged in user returns a
+  json object containing all configured server configurations. This is mainly
+  meant for debugging.
+- Accessing `/omnetppManager/get-server-config/` with the two HTTP-headers
+  `HTTP-X-HEADER-TOKEN` and `HTTP-X-HEADER-SERVER-ID` set will return the
+  values as json for the given server only.
+
+This can be tested using `curl`:
+
+```bash
+    curl -H "HTTP-X-HEADER-SERVER-ID: <SERVER_ID>" -H "HTTP-X-HEADER-TOKEN: <TOKEN>" <SERVER_ADDRESS>/omnetppManager/get-server-config/
+```
+
+Token and server ID are configured in the table `Server Config`, the
+key-value-pairs in `Server Config Values`.
+
+
+
+## Accessing Profile Configurations
+
+The manager offers a simple key-value system for User profile (parameter) data. This Profile Parameters can be accessed in two ways:
+
+- Accessing `/omnetppManager/get-profile-parameter/` as a logged in admin user returns a
+  json object containing all User profile parameters. This is mainly meant for debugging.
+- Accessing `/omnetppManager/get-profile-parameter/` with the HTTP-header`HTTP-X-HEADER-USER` set, will return the
+  values as json for the given server only.
+
+This can be tested using `curl`:
+
+```bash
+curl -H "HTTP-X-HEADER-USER: <USER_NAME>" <SERVER_IP_ADDRESS>/omnetppManager/get-profile-config/
+```
+
+For instance:
+```bash
+curl -H "HTTP-X-HEADER-USER: username" http://192.168.1.5:8000/omnetppManager/get-profile-parameter/
+```
+
+User instance is obtained from the in built User model in django, User profile is configured in the table 'UserProfile',  the key-value-pairs are in `User Profile Parameters`.
+
+
+## Software Versions
+
+The following software versions are used by the different components of OOTB.
+
+#### OOTB back-end
+- Debian GNU/Linux 10 (buster)
+- Python 3.7.3
+- Docker 18.09.1
+
+#### OOTB front-end
+- Ubuntu 18.04.6 LTS
+- Python 3.6.9
+- Django 3.0
+
+#### REDIS database
+- Ubuntu 18.04.6 LTS
+- Python 3.6.9
+- REDIS server 4.0.9 
 
 
 ## Questions or Comments
 
-We have described this work in the publication linked [here](https://dl.acm.org/doi/10.1145/3458473.3458819). If you have further questions, comments or even suggestions, we will be very glad to hear them. Write to us using ootb@comnets.uni-bremen.de.
+The OOTB platform is described in the publication linked [here](https://dl.acm.org/doi/10.1145/3458473.3458819). If you have further questions, comments or even suggestions, we will be very glad to hear them. Write to us using ootb@comnets.uni-bremen.de.
