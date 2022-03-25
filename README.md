@@ -18,7 +18,7 @@ The sections below describe installing, bringing up and using this platform. Her
 The architecture of the OOTB platform consist of a set of sofware modules interacting to provide simulations of opportunistic networks. The picture below shows the conceptual architecture of OOTB. 
 
 <p align="center">
-<img src="res/arch_v4.pdf" alt="OOTB Architecture" width="500"/>
+<img src="res/arch_v4.png" alt="OOTB Architecture" width="500"/>
 </p>
 
 
@@ -34,7 +34,7 @@ To enable OOTB, the following software components must be installed and configur
 The deployment architecture of OOTB is shown in the following picture.
 
 <p align="center">
-<img src="res/ootb-deployment.pdf" alt="OOTB Deployment Architecture" width="500"/>
+<img src="res/ootb-deployment.png" alt="OOTB Deployment Architecture" width="500"/>
 </p>
 
 The picture shows three parts of the deployment that have to be setup.
