@@ -30,7 +30,7 @@ def upload_file(filename,
     if dropbox_path:
         path = dropbox_path
     else:
-        path = "/" + prefix + "_" + str(uuid.uuid4()) + "_" + os.path.basename(filename)
+        path = "/" + str(prefix) + "_" + str(uuid.uuid4()) + "_" + os.path.basename(filename)
 
     dbx = dropbox.Dropbox(token)
 
