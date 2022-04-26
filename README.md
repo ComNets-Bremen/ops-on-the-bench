@@ -35,15 +35,16 @@ The architecture of the OOTB platform consist of a set of sofware modules intera
 <img src="res/arch_v4.png" alt="OOTB Architecture" width="500"/>
 </p>
 
-
-## Building and Installing
-
 To enable OOTB, the following software components must be installed and configured.
 
 - Django, a Python-based web framework [Django](https://www.djangoproject.com)
 - Docker, an OS-level virtualization environment [Docker](https://www.docker.com)
 - Redis, a distributed in-memort data store [redis](https://redis.io)
 - OPS, an opportunistic networking model framework [OPS](https://github.com/ComNets-Bremen/OPS.git)
+- Cloud Service, a cloud based storage service (such as Dropbox)
+
+ 
+## Building and Installing
 
 The deployment architecture of OOTB is shown in the following picture.
 
