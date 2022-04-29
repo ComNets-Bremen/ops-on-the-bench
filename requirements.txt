@@ -1,0 +1,9 @@
+Django
+django-formtools
+dropbox
+redis
+rq
+six
+slugify
+matplotlib
+fpdf
