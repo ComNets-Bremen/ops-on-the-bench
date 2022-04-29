@@ -108,7 +108,7 @@ The `bind` entry specifies the IP address of the network interface of the comput
 
 ```
 python3 -m venv venv
-./venv/bin/activate`
+. ./venv/bin/activate`
 ```
 
 3. Open a terminal and pull the OOTB repository (this repository) from Github
@@ -117,24 +117,17 @@ python3 -m venv venv
 git clone https://github.com/ComNets-Bremen/ops-on-the-bench.git
 ```
 
-4. Install all the following packages using `pip` package manager of `Python`. You may have to update `pip` before you use.
+4. Install all the packages specified in `requirements.txt` using `pip` package manager of `Python`. You may have to update `pip` before you use.
 
 ```
-pip3 install django
-pip3 install rq
-pip3 install django-formtools
-pip3 install matplotlib
-pip3 install fpdf
-pip3 install dropbox
-pip3 install slugify
-pip3 install six
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
 5. OOTB definitions  are in a local SQLite database and this database is created by importing the `db.json` file. Follow the steps below to create the database.
 
 ```bash
 cd ops-on-the-bench/manager
-python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py loaddata db.json
 ```
