@@ -134,6 +134,8 @@ python3 manage.py loaddata db.json
 
 5. Configure the `settings.py` of Django with the parameter values to for this installation. There are three areas that is usually set for OOTB.
 
+The changes should not be done in the `settings.py` directly. Please create a new file with the name `settings_local.py` next to it. In here, all settings can be overwritten. The `settings_local.py` will not be submitted to the repository to keep your credentials private.
+
 - Give the host on which Django is setup, i.e. the current computer using the `Allowed_HOSTS` key word.
 
 ```bash
