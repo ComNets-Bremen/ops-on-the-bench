@@ -1,4 +1,4 @@
-Django
+Django>0,<4
 django-formtools
 dropbox
 redis
