@@ -171,3 +171,12 @@ try:
 except ImportError as e:
     pass
 
+
+# At least the following variables should be set in the settings_local.py.
+# Give a meaningful error if they are missing
+required_fields = ["REDIS_DB_HOST", "REDIS_DB_PORT", "REDIS_DB_PASSWORD", "SECRET_KEY"]
+
+for rf in required_fields:
+    if rf not in globals() or not globals()[rf]:
+        raise ValueError("The variable \"" + rf + "\" is not set. Please set it in your \"settings_local.py\"")
+
