@@ -330,17 +330,34 @@ Rest of the functions and their details will be made available in subsequent upd
 
 ## Storage Backend
 
-The following information are transferred to the worker for handling the result data:
+Once the results are collected, parsed and statistics are computed, a zip file is 
+created. This zip file is then uploaded to a cloud service and then a link to the
+zip file sent to the user.
 
-- `storage_backend_id`: An identifier for the upload service like `Dropbox` or
-  `local`. Has to be implemented on the worker. One should check this variable
-  on the worker side to select the upload method.
+Currently, there are 2 possible cloud storage possibilities.
 
-- `storage_backend`: A descriptive name of the backend like "Dropbox account of
-  abc"
+- `Dropbox` - use of a Dropbox account to upload data
+- `Local` - use of a local storage in a file server
+
+For every storage possibility above, a storage backend must be defined with the 
+the following information (tags) in the front-end definitions (in Django).
+
+- `storage_backend_id`: An identifier for the upload service like `dropbox` or
+  `local`
+
+- `storage_backend`: A descriptive name of the backend like "Dropbox paid" or
+  "Local storage"
 
 - `storage_backend_token`: The token required for the backend
+  - With Dropbox, it is a token generated from the Dropbox account
+  - With Local, it is the IP address and the port where the storage server 
+    is located withe form `10.10.160.10:8976`
 
+The functionality required to access and upload the zip file must be implemented 
+in the backend, i.e., worker code.
+
+The local storage handling server is implemented in the file `local-cloud.py`
+source file. Run this file separately to bring up the local storage server.
 
 
 

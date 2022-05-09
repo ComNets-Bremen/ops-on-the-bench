@@ -69,6 +69,7 @@ COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
 COPY worker_utils.py /opt/OPS/simulations/
 COPY dropboxops.py /opt/OPS/simulations/
+COPY localstoreops.py /opt/OPS/simulations/
 COPY stat-list.txt /opt/OPS/simulations/
 COPY net-list.txt /opt/OPS/simulations/
 RUN chmod +x /opt/OPS/simulations/*.py
@@ -77,6 +78,7 @@ COPY worker.py /opt/OPS/simulations/utils/
 COPY opsrun.py /opt/OPS/simulations/utils/
 COPY worker_utils.py /opt/OPS/simulations/utils/
 COPY dropboxops.py /opt/OPS/simulations/utils/
+COPY localstoreops.py /opt/OPS/simulations/utils/
 COPY stat-list.txt /opt/OPS/simulations/utils/
 COPY net-list.txt /opt/OPS/simulations/utils/
 RUN chmod +x /opt/OPS/simulations/utils/*.py
