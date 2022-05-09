@@ -21,6 +21,12 @@ try:
     import dropboxops
 except ModuleNotFoundError:
     from . import dropboxops
+
+try:
+    import localstoreops
+except ModuleNotFoundError:
+    from . import localstoreops
+
 import threading
 import enum
 import datetime
@@ -864,8 +870,12 @@ def upload_archive(archive_path, storage_id, token, title='no title', keep_days=
     if 'dropbox' in storage_id:
         # use DropBox with given token
         shared_link = dropboxops.upload_file(archive_path, token, prefix, livetime=datetime.timedelta(days=keep_days))
+
+    elif 'local' in storage_id:
+        # use local storage and provide a local web link (server 'local-cloud.py' must be run before)
+        shared_link = localstoreops.upload_file(archive_path, token, prefix, livetime=datetime.timedelta(days=keep_days))
+
     else:
-        # move to some place in local storage (not implemented)
         pass
 
     return shared_link
