@@ -18,6 +18,7 @@ import datetime
 from django.contrib.auth.models import Group, User
 
 
+
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
 
 # Create your models here.
@@ -28,9 +29,10 @@ alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters 
 #
 class StorageBackend(models.Model):
     backend_name = models.CharField(max_length=100)
-    backend_description = models.TextField(default="")
-    backend_identifier = models.CharField(max_length=100, default="dropbox")
-    backend_token = models.CharField(max_length=100, null=True, blank=True, default=None)
+    backend_description = models.TextField(default="", help_text="Human-readable description of the field")
+    backend_identifier = models.CharField(max_length=100, default="dropbox", help_text="identifier for the storage backend. Should only be used once")
+    backend_token = models.CharField(max_length=100, null=True, blank=True, default=None, help_text="Token (if required)")
+    backend_config = models.JSONField(default=str, null=True, blank=True, help_text="Additional information as a json object")
     backend_active = models.BooleanField(default=False)
     backend_keep_days = models.PositiveIntegerField(default=7)
 
