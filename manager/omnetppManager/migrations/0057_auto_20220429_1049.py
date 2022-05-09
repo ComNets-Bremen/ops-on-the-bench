@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0013_alter_user_email'),
+        ('auth', '__latest__'),
         ('omnetppManager', '0056_auto_20211027_0938'),
     ]
 
