@@ -188,8 +188,14 @@ def run_ops(job, arguments):
             common['status'] = STATUSVALS.UPLOADING
 
         # handle archive file as requested
-        shared_link = upload_archive(archive_path, arguments['storage_backend_id'], \
-                        arguments['storage_backend_token'], title=arguments['title'], keep_days=ARCHIVE_LIFETIME_DAYS)
+        shared_link = upload_archive(
+                archive_path,
+                arguments['storage_backend_id'],
+                arguments['storage_backend_token'],
+                arguments['storage_backend_config'],
+                title=arguments['title'],
+                keep_days=ARCHIVE_LIFETIME_DAYS
+                )
 
         # set time after arch file upload and status
         with lock:
@@ -862,14 +868,39 @@ def create_archive(root_folder, archive_file, archive_list):
 
 
 # handle (e.g., upload) archive file
-def upload_archive(archive_path, storage_id, token, title='no title', keep_days=7):
+def upload_archive(archive_path, storage_id, token, config, title='no title', keep_days=7):
     # slugify the title and create prefix to use in archieve name
     prefix = slugify.slugify('ootb ' + title)
 
     shared_link = ''
     if 'dropbox' in storage_id:
         # use DropBox with given token
-        shared_link = dropboxops.upload_file(archive_path, token, prefix, livetime=datetime.timedelta(days=keep_days))
+        shared_link = dropboxops.upload_file(archive_path, token, prefix, lifetime=datetime.timedelta(days=keep_days))
+
+    elif 'dropbox_oauth2' in storage_id:
+        # Use dropbox with oauth2.
+        # We need:
+        # - app_key
+        # - app_secret
+        # - refresh_token
+        # from the config dir
+        json_config = None
+        try:
+            json.loads(config)
+        except:
+            raise ValueError("Improperly configured storage backend")
+
+        if json_config and "app_key" in json_config and "app_secret" in json_config and "refresh_token" in json_config:
+            shared_link = dropboxops.upload_file_oauth2(
+                    archive_path,
+                    json_config["app_key"],
+                    json_config["app_secret"],
+                    json_config["refresh_token"],
+                    prefix,
+                    lifetime=datetime.timedelta(days=keep_days)
+                    )
+        else:
+            raise ValueError("Config for storage backend should at least define app_key, app_secret and refresh_token")
 
     elif 'local' in storage_id:
         # use local storage and provide a local web link (server 'local-cloud.py' must be run before)
