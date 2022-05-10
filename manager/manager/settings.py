@@ -167,7 +167,7 @@ REDIS_DB_PASSWORD   = None
 
 # Overwrite settings by local ones (if available)
 try:
-    from .settings_local import *
+    from .local_settings import *
 except ImportError as e:
     pass
 
