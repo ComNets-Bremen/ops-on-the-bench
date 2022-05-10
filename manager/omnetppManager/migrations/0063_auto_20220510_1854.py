@@ -28,6 +28,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         # depends on '0001_initial'
+        ('omnetppManager', '0001_initial'),
         ('omnetppManager', '0062_auto_20220509_1147'),
     ]
 
