@@ -501,6 +501,7 @@ def rerun_simulation(request, pk):
                     "storage_backend" : str(simulation.storage_backend.backend_name),
                     "storage_backend_id" : str(simulation.storage_backend.backend_identifier),
                     "storage_backend_token" : str(simulation.storage_backend.backend_token),
+                    "storage_backend_config" : str(simulation.storage_backend.backend_config) if hasattr(simulation.storage_backend, "backend_config") else "",
                     "storage_backend_keep_days" : str(simulation.storage_backend.backend_keep_days),
                     "server" : str(server),
                     }
@@ -621,6 +622,7 @@ class NewSimWizard(SessionWizardView):
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                "storage_backend_config" : str(storage_backend_object.backend_config),
                 "server" : str(server),
                 }
 
@@ -783,6 +785,7 @@ class BenchSimWizard(SessionWizardView):
                 "storage_backend" : str(storage_backend_object.backend_name),
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
+                "storage_backend_config" : str(storage_backend_object.backend_config),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
                 "server" : str(server),
                 }
@@ -909,6 +912,7 @@ class DetailSimWizard(SessionWizardView):
                 "storage_backend" : str(storage_backend_object.backend_name),
                 "storage_backend_id" : str(storage_backend_object.backend_identifier),
                 "storage_backend_token" : str(storage_backend_object.backend_token),
+                "storage_backend_config" : str(storage_backend_object.backend_config),
                 "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
                 "server" : str(server),
                 }
