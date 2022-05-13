@@ -24,6 +24,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
+from django.utils.datastructures import MultiValueDict
 
 from django.core.mail import send_mail
 
@@ -553,6 +554,40 @@ class NewSimWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'temp_omnetppini_files'))
     template_name = 'omnetppManager/start_simulation.html'
 
+    # change post function to accomodate handling of multiple ini files
+    def post(self, *args, **kwargs):
+        form = self.get_form(data=self.request.POST, files=self.request.FILES)
+        if form.is_valid():
+            self.storage.set_step_data(self.steps.current, self.process_step(form))
+            # apply changes to only step 0
+            if self.steps.current == '0':
+                files=self.request.FILES.getlist('0-simulation_file')
+                # overwrite file saving method to temporary save each files using file name
+                for f in files:
+                    if f == files[0]:
+                        file= MultiValueDict({f'0-simulation_file': [f]})
+                    else:
+                        file= MultiValueDict({f'0-simulation_file{f}': [f]})
+                    # file= {f'0-simulation_file_{f}': [files[0],files[1]]}
+                    form1 = self.get_form(data=self.request.POST, files=file)
+                    form.is_valid()
+                    # print('0', files, '\n', len(files), '\n',files['0-simulation_file'],'\n', len(files['0-simulation_file']))
+                    self.storage.set_step_files(self.steps.current, self.process_step_files(form1))
+                # print('2', self.storage.current_step_files)
+                # print('3',self.storage.current_step_data)
+                return self.render_next_step(form)
+            else: 
+                self.storage.set_step_files(self.steps.current, self.process_step_files(form))
+                # check if the current step is the last step
+                if self.steps.current == self.steps.last:
+                    # no more steps, render done view
+                    return self.render_done(form, **kwargs)
+                else:
+                    # proceed to the next step
+                    return self.render_next_step(form)
+        return self.render(form)
+
+
     # Get the sections from the omnetpp.ini for the dropdown dialog in step 2
     def get_form_initial(self, step):
         returnDict = {}
@@ -560,7 +595,7 @@ class NewSimWizard(SessionWizardView):
         # Set default mail address (if available)
         if self.request.user.email and self.request.user.email != "":
             returnDict["notification_mail_address"] = self.request.user.email
-
+        # Use the first file to setup config parameters and sections 
         if step == "1":
             simulation_file = self.get_cleaned_data_for_step("0")["simulation_file"]
             omnetppini = simulation_file.read().decode("utf-8")
@@ -586,78 +621,85 @@ class NewSimWizard(SessionWizardView):
     # Form is finished, process the data, start the job
     def done(self, form_list, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
-        q = Queue(connection=get_redis_conn())
-#        print(cleaned_data)
-#        print("User", self.request.user)
-#        print("Simulation title", cleaned_data["simulation_title"])
-#        print("omnetpp.ini", cleaned_data["simulation_file"])
-#        print("simulation name", cleaned_data["simulation_name"])
-        omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
+        files =  self.storage.get_step_files(self.steps.first)
+        # process each files starting with the first file in the cleaned data and the remaining files in temporary storage
+        for file in files:
+            if files[file] == cleaned_data["simulation_file"]:
+                omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
+                # print('try1',cleaned_data["simulation_file"])
+            else:
+                omnetppini = files[file].read().decode("utf-8")
+            # print('try2',omnetppini)
+            q = Queue(connection=get_redis_conn())
 
-        notification_mail_address = None
-        if cleaned_data["notification_mail_address"] not in ["", None]:
-            notification_mail_address = cleaned_data["notification_mail_address"]
+            # print(cleaned_data)
+            # print("User", self.request.user)
+            # print("Simulation title", cleaned_data["simulation_title"])
+            # print("omnetpp.ini", cleaned_data["simulation_file"])
+            # print("simulation name", cleaned_data["simulation_name"])
+                
+            # omnetppini = cleaned_data["simulation_file"].read().decode("utf-8")
 
-        # Handle backend
-        storage_backend_id = int(cleaned_data["storage_backend"])
+            notification_mail_address = None
+            if cleaned_data["notification_mail_address"] not in ["", None]:
+                notification_mail_address = cleaned_data["notification_mail_address"]
 
-        # TODO: Do further checks on backend id?
-        storage_backend_object = get_object_or_404(
-                StorageBackend.objects.filter(backend_active=True),
-                pk=storage_backend_id
-                )
+            # Handle backend
+            storage_backend_id = int(cleaned_data["storage_backend"])
 
-        ## choose server
-        servers = list(ServerConfig.objects.all())
-        server = random.choice(servers)
+            # TODO: Do further checks on backend id?
+            storage_backend_object = get_object_or_404(
+                    StorageBackend.objects.filter(backend_active=True),
+                    pk=storage_backend_id
+                    )
+            servers = list(ServerConfig.objects.all())
+            server = random.choice(servers)
 
-        args = {
-                "user" : str(self.request.user),
-                "title" : str(cleaned_data["simulation_title"]),
-                "is_debug_sim" : str(cleaned_data["is_debug_sim"]),
-                "omnetpp.ini" : str(omnetppini),
-                "runconfig" : str(cleaned_data["simulation_name"]),
-                "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
-                "storage_backend" : str(storage_backend_object.backend_name),
-                "storage_backend_id" : str(storage_backend_object.backend_identifier),
-                "storage_backend_token" : str(storage_backend_object.backend_token),
-                "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
-                "storage_backend_config" : str(storage_backend_object.backend_config),
-                "server" : str(server),
-                }
+            args = {
+                    "user" : str(self.request.user),
+                    "title" : str(cleaned_data["simulation_title"]),
+                    "is_debug_sim" : str(cleaned_data["is_debug_sim"]),
+                    "omnetpp.ini" : str(omnetppini),
+                    "runconfig" : str(cleaned_data["simulation_name"]),
+                    "summarizing_precision" : float(cleaned_data["summarizing_precision"]),
+                    "storage_backend" : str(storage_backend_object.backend_name),
+                    "storage_backend_id" : str(storage_backend_object.backend_identifier),
+                    "storage_backend_token" : str(storage_backend_object.backend_token),
+                    "storage_backend_keep_days" : str(storage_backend_object.backend_keep_days),
+                    "storage_backend_config" : str(storage_backend_object.backend_config),
+                    "server" : str(server),
+                    }
+            # print("Simulation arguments:", args)
 
 
-        print("Simulation arguments:", args)
+            # Start job
+            job = q.enqueue(
+                    run_simulation,
+                    SimulationRuntimes.OPS_KEETCHI,
+                    args,
+                    job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
+                    )
+            # print("Job with id", job.id, "started")
 
+            # Store simulation including the job id for later
+            simulation = Simulation(
+                    user = self.request.user,
+                    title = str(cleaned_data["simulation_title"]),
+                    simulation_is_debug_sim = cleaned_data["is_debug_sim"],
+                    omnetppini = str(omnetppini),
+                    runconfig = str(cleaned_data["simulation_name"]),
+                    simulation_id = job.id,
+                    summarizing_precision = float(cleaned_data["summarizing_precision"]),
+                    notification_mail_address = notification_mail_address,
+                    storage_backend = storage_backend_object,
+                    simulation_timeout = job.timeout,
+                    sim_server = str(server),
+                    )
 
-        # Start job
-        job = q.enqueue(
-                run_simulation,
-                SimulationRuntimes.OPS_KEETCHI,
-                args,
-                job_timeout=ConfigKeyValueStorage.config.get_value("DEFAULT_SIMULATION_TIMEOUT"),
-                )
-        print("Job with id", job.id, "started")
+            simulation.save()
 
-        # Store simulation including the job id for later
-        simulation = Simulation(
-                user = self.request.user,
-                title = str(cleaned_data["simulation_title"]),
-                simulation_is_debug_sim = cleaned_data["is_debug_sim"],
-                omnetppini = str(omnetppini),
-                runconfig = str(cleaned_data["simulation_name"]),
-                simulation_id = job.id,
-                summarizing_precision = float(cleaned_data["summarizing_precision"]),
-                notification_mail_address = notification_mail_address,
-                storage_backend = storage_backend_object,
-                simulation_timeout = job.timeout,
-                sim_server = str(server),
-                )
-
-        simulation.save()
-
-        # Make sure the simulation status in the db is up to date
-        sync_simulations()
+            # Make sure the simulation status in the db is up to date
+            sync_simulations()
 
         # Redirect to detail view for simulation
         return redirect(simulation.get_absolute_url())
@@ -757,7 +799,7 @@ class BenchSimWizard(SessionWizardView):
                         ini_file += fwd_param.param_default_value + fwd_param.param_unit + '   #' + fwd_param.param_description + '\n'
 
 
-        print(ini_file)
+        # print(ini_file)
         q = Queue(connection=get_redis_conn())
 
         notification_mail_address = None
@@ -1018,6 +1060,10 @@ def store_sim_results(simulation_id, meta, data=None, job_error=None, job=None):
 
         if "exception" in meta:
             sim.simulation_error = meta["exception"]
+            # The simulation job exceeded the maximum time limit
+            # The simulation job exceeded the maximum disk space limit
+            # The simulation exceeded the maximum RAM limit
+            # The results parsing exceeded the maximum RAM limit 
 
         if "handled_by" in meta:
             sim.handled_by = meta["handled_by"]
@@ -1080,7 +1126,19 @@ def sync_simulations(redis_conn=get_redis_conn()):
             if sim.status == 8:
                 pass
             else:
-                update_sim_status(j, Simulation.Status.FAILED)
+                # check if simulation was terminated by the server
+                sim.terminated = 1
+                server_termination_reasons = ["The simulation job exceeded the maximum time limit", "The simulation job exceeded the maximum disk space limit",
+                "The simulation exceeded the maximum RAM limit", "The results parsing exceeded the maximum RAM limit"]
+                for reason in server_termination_reasons:
+                    if reason in sim.simulation_error:
+                        if reason == server_termination_reasons[0]:
+                            sim.terminated = 3
+                        elif reason == server_termination_reasons[1]:
+                            sim.terminated = 6
+                        else:
+                            sim.terminated = 5
+                update_sim_status(j, Simulation.Status.FAILED, sim.terminated)
         except Simulation.DoesNotExist:
             print("Simulation does not exist")
             sim = None

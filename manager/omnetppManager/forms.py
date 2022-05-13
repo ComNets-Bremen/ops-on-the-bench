@@ -80,7 +80,7 @@ class OmnetppiniFileUploadField(forms.FileField):
 # Used for two step form
 class getOmnetppiniForm(forms.Form):
     simulation_title = forms.CharField(max_length=50)
-    simulation_file  = OmnetppiniFileUploadField()
+    simulation_file  = OmnetppiniFileUploadField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
     is_debug_sim     = forms.BooleanField(label="Debug simulation", help_text="This simulation is for debugging. Do not count for statistics.", required=False)
 
 
