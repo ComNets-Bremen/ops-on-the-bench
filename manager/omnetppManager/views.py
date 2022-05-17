@@ -1010,8 +1010,9 @@ class DetailSimWizard(SessionWizardView):
 def update_sim_status(simulation_id, new_status, terminate_reason=Simulation.TerminateReason.NOT_TERMINATED):
     if new_status == Simulation.Status.ABORTED and terminate_reason==Simulation.TerminateReason.NOT_TERMINATED:
         raise ValueError("If you abort a simulation, you have to give a terminate reason.")
-    if new_status != Simulation.Status.ABORTED and terminate_reason != Simulation.TerminateReason.NOT_TERMINATED:
-        raise ValueError("If a simulation is aborted, a terminate reason has to be given.")
+    # contradicts (failed status) caused by server termiations. commenting it for now 
+    # if new_status != Simulation.Status.ABORTED and terminate_reason != Simulation.TerminateReason.NOT_TERMINATED:
+    #     raise ValueError("If a simulation is aborted, a terminate reason has to be given.")
 
     sim = None
     try:
