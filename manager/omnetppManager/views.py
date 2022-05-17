@@ -1128,17 +1128,17 @@ def sync_simulations(redis_conn=get_redis_conn()):
                 pass
             else:
                 # check if simulation was terminated by the server
-                sim.terminated = 1
+                sim.terminated = 1 #NOT_TERMINATED
                 server_termination_reasons = ["The simulation job exceeded the maximum time limit", "The simulation job exceeded the maximum disk space limit",
                 "The simulation exceeded the maximum RAM limit", "The results parsing exceeded the maximum RAM limit"]
                 for reason in server_termination_reasons:
                     if reason in sim.simulation_error:
                         if reason == server_termination_reasons[0]:
-                            sim.terminated = 3
+                            sim.terminated = 3 #TERMINATED_EVENTS
                         elif reason == server_termination_reasons[1]:
-                            sim.terminated = 6
+                            sim.terminated = 6 #TERMINATED_DISK
                         else:
-                            sim.terminated = 5
+                            sim.terminated = 5 #TERMINATED_RAM
                 update_sim_status(j, Simulation.Status.FAILED, sim.terminated)
         except Simulation.DoesNotExist:
             print("Simulation does not exist")
