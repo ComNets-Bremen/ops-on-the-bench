@@ -136,6 +136,13 @@ python3 manage.py loaddata db.json
 
 The changes should not be done in the `settings.py` directly. Please create a new file with the name `settings_local.py` next to it. In here, all settings can be overwritten. The `settings_local.py` will not be submitted to the repository to keep your credentials private.
 
+- Create a secret key on the terminal.
+
+```bash
+python3 -c 'import secrets; print(secrets.token_hex(16))'
+```
+- Input the printed token as the 'SECRET_KEY'.
+
 - Give the host on which Django is setup, i.e. the current computer using the `Allowed_HOSTS` key word.
 
 ```bash
