@@ -124,14 +124,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-5. OOTB definitions  are in a local SQLite database and this database is created by importing the `db.json` file. Follow the steps below to create the database.
-
-```bash
-cd ops-on-the-bench/manager
-python3 manage.py migrate
-python3 manage.py loaddata db.json
-```
-
 5. Configure the `settings.py` of Django with the parameter values to for this installation. There are three areas that is usually set for OOTB.
 
 The changes should not be done in the `settings.py` directly. Please create a new file with the name `settings_local.py` next to it. In here, all settings can be overwritten. The `settings_local.py` will not be submitted to the repository to keep your credentials private.
@@ -176,8 +168,16 @@ DEFAULT_SENDER_MAIL_ADDRESS = "ob2022@gmail.com"
 ```
 When using Google's mail service, an application must be created with the credentials which are then used here. See [link](https://data-flair.training/blogs/django-send-email/) for more info.
 
+6. OOTB definitions  are in a local SQLite database and this database is created by importing the `db.json` file. Follow the steps below to create the database.
 
-6. Create a administrative user (super user) in Django
+```bash
+cd ops-on-the-bench/manager
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py loaddata db.json
+```
+
+7. Create a administrative user (super user) in Django
 
 ```bash
 cd ops-on-the-bench/manager
