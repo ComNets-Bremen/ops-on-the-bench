@@ -264,18 +264,21 @@ python3 manage.py runserver 192.168.1.5:8000
 
 The IP address is the address of the local computer (which is also given in the `ALLOWED_HOSTS`) and any preferable port (here 8000 is used).
 
-2. The following URL must be called regularly for the simulation job statuses to be updated in Django. Usually, this can be done by configuring a Cron job. To setup a Cron job, open a terminal and run the following command.
+2. The OOTB Django front-end has to be triggered to update status of running simulations regularlyi by callinfg a URL. To do that, a cron job must be started. A script is available to call this URL. The script is called `update-manager.sh`. Do the following to create the cron job.
 
-```bash
-cron -e
-```
+  - Edit crontab by running,
 
-Insert the following entry in the Cron file.
+   ```bash
+   crontab -e
+   ```
 
-```bash
-* * * * * wget -q -O /dev/null http://192.168.1.5:8000/omnetppManager/manage_queues/
-```
+  - Insert the following entry in the Cron file. /.../ refers to where OOTB is installed.
 
+  ```bash
+  * * * * * /.../ops-on-the-bench/manager/update-manager.sh -i 192.168.1.5 -p 8000 
+  ```
+
+  The above `/.../` refers to where OOTB is installed.
 
 
 ### Starting OOTB Worker Components (back-end)
