@@ -58,12 +58,14 @@ The picture shows three parts of the deployment that have to be setup.
 - Setup `REDIS` database
 - Setup back-end
 
-In the explanations below, we assume that the three parts are deplyed in three different Linux based computers with connectivity to each other. But, they may also be in one single computer.
+In the explanations below, we assume that the three parts are deplyed in three different Linux based computers (servers) with connectivity to each other. But, they may also be in one single computer.
 
 The OOTB platform is realized using the Python programmimg language. Therefore, for developing, setting up and finally, brining up the OOTB platform, Python must be available in all computers. All components have been tested on **Python 3**.
 
 
 ### Setup REDIS Database
+
+
 
 
 1. Install `Python` in a `Linux` based computer with network connectivity.
@@ -92,9 +94,7 @@ port 6379
 requirepass deadbeefdeadbeefdeadbeefdeadbeef
 ```
 
-The `bind` entry specifies the IP address of the network interface of the computer (on which `REDIS` is run), waiting for incomming connections. `port` specifies the IP port on which `REDIS` is listening (6379 is the standard port). `requirepass` is where the passphrase generated above is given. 
-
-
+The `bind` entry specifies the IP address of the network interface of the computer (on which `REDIS` is run), waiting for incomming connections. `port` specifies the IP port on which `REDIS` is listening (6379 is the standard port). Use the passphrase output in previous step for `requirepass`. 
 
 
 ### Setup OOTB Django Components (front-end)
@@ -124,35 +124,40 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-5. Configure the `settings.py` of Django with the parameter values to for this installation. There are three areas that is usually set for OOTB.
+5. Configure the settings of Django with the parameter values to for this installation. There are three areas that is usually set for OOTB.
 
-The changes should not be done in the `settings.py` directly. Please create a new file with the name `settings_local.py` next to it. In here, all settings can be overwritten. The `settings_local.py` will not be submitted to the repository to keep your credentials private.
+The changes should not be done in the `settings.py` in the `manager/manager` folder directly. Please create a new file in `manager/manager` with the name `local_settings.py` next to it. In here, all settings can be overwritten. The `local_settings.py` will be private to you and will not be submitted to the repository to keep your credentials private.
 
 - Create a secret key on the terminal.
 
 ```bash
 python3 -c 'import secrets; print(secrets.token_hex(16))'
 ```
-- Input the printed token as the 'SECRET_KEY'.
 
-- Give the host on which Django is setup, i.e. the current computer using the `Allowed_HOSTS` key word.
+- Input the printed token as the `SECRET_KEY` as shown below, placing the example.
+
+```bash
+SECRET_KEY = 'deadbeefbeefdeaddeadbeefbeefdead'
+```
+
+- Give the host on which Django is setup (i.e. the current computer) with the `ALLOWED_HOSTS` key word.
 
 ```bash
 ALLOWED_HOSTS = [
-        "127.0.0.1",
-        "::1",
-        "localhost",
-        "192.168.1.0/16",
-        "192.168.1.5"
+        '127.0.0.1',
+        '::1',
+        'localhost',
+        '192.168.1.0/16',
+        '192.168.1.5'
         ]
 ```
 
-- Give connection details of `REDIS`
+- Give connection details of `REDIS` (remember the quotation marks around values)
 
 ```bash
-REDIS_DB_HOST       = "192.168.1.1" 
+REDIS_DB_HOST       = '192.168.1.1'
 REDIS_DB_PORT       = 6379
-REDIS_DB_PASSWORD   = "deadbeefdeadbeefdeadbeefdeadbeef"
+REDIS_DB_PASSWORD   = 'deadbeefdeadbeefdeadbeefdeadbeef'
 ```
 
 - Give details of the SMTP server used to send emails. A Google mail based simple (less secure) solution is shown here, but an own SMTP server may also be used.
@@ -167,6 +172,14 @@ EMAIL_HOST_PASSWORD = 'deadbeefdeadbeef'
 DEFAULT_SENDER_MAIL_ADDRESS = "ob2022@gmail.com"
 ```
 When using Google's mail service, an application must be created with the credentials which are then used here. See [link](https://data-flair.training/blogs/django-send-email/) for more info.
+
+Another is to setup your own SMTP server. In that case, setup your SMTP server and provide only the following details.
+
+```bash
+DEFAULT_SENDER_MAIL_ADDRESS = 'ootb-admin@deadbeef-domain.de'
+DEFAULT_RECEIVER_MAIL_ADDRESS = DEFAULT_SENDER_MAIL_ADDRESS
+```
+
 
 6. OOTB definitions  are in a local SQLite database and this database is created by importing the `db.json` file. Follow the steps below to create the database.
 
@@ -226,7 +239,7 @@ mkdir /home/myname/data
 
 ## Bringing Up
 
-Once the three computers are setup, the OOTB components have to be brought up. The following 
+Once the three computers are setup, the OOTB components have to be brought up. Follow the following steps.
 
 
 ### Starting REDIS Database
@@ -237,7 +250,14 @@ Once the three computers are setup, the OOTB components have to be brought up. T
 sudo systemctl start redis
 ```
 
-2. Other `REDIS` related useful commands are as follows.
+2. Check whether `REDIS` is up and running
+
+```bash
+sudo systemctl status redis
+sudo netstat -lnp | grep redis
+```
+
+Other `REDIS` related useful commands are as follows.
 
 ```bash
 sudo systemctl restart redis
@@ -246,11 +266,6 @@ sudo systemctl stop redis
 
 Above commands used to restart or stop `REDIS`.
 
-```bash
-sudo systemctl status redis
-sudo netstat -lnp | grep redis
-```
-Check whether `REDIS` is running.
 
 
 ### Starting OOTB Django Components (front-end)

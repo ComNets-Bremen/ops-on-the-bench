@@ -178,5 +178,5 @@ required_fields = ["REDIS_DB_HOST", "REDIS_DB_PORT", "REDIS_DB_PASSWORD", "SECRE
 
 for rf in required_fields:
     if rf not in globals() or not globals()[rf]:
-        raise ValueError("The variable \"" + rf + "\" is not set. Please set it in your \"settings_local.py\"")
+        raise ValueError("The variable \"" + rf + "\" is not set. Please set it in your \"local_settings.py\"")
 
