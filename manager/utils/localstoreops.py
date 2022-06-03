@@ -15,7 +15,7 @@ TOKEN = '10.10.160.10:8976'
 BUFFER_SIZE = 64000
 TESTFILE = 'testfile.zip'
 
-def upload_file(filename, token, prefix, livetime=datetime.timedelta(days=7)):
+def upload_file(filename, token, prefix, lifetime=datetime.timedelta(days=7)):
 
     # Generate filename
     path = str(prefix) + "_" + str(uuid.uuid4()) + "_" + os.path.basename(filename)

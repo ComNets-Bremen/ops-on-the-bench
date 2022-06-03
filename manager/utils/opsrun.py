@@ -27,6 +27,12 @@ try:
 except ModuleNotFoundError:
     from . import localstoreops
 
+try:
+    import seafileops
+except ModuleNotFoundError:
+    from . import seafileops
+
+
 import threading
 import enum
 import datetime
@@ -886,9 +892,9 @@ def upload_archive(archive_path, storage_id, token, config, title='no title', ke
         # from the config dir
         json_config = None
         try:
-            json.loads(config)
+            json_config = json.loads(config)
         except:
-            raise ValueError("Improperly configured storage backend")
+            raise ValueError("Improperly configured Dropbox storage backend")
 
         if json_config and "app_key" in json_config and "app_secret" in json_config and "refresh_token" in json_config:
             shared_link = dropboxops.upload_file_oauth2(
@@ -900,11 +906,32 @@ def upload_archive(archive_path, storage_id, token, config, title='no title', ke
                     lifetime=datetime.timedelta(days=keep_days)
                     )
         else:
-            raise ValueError("Config for storage backend should at least define app_key, app_secret and refresh_token")
+            raise ValueError("Config for Dropbox storage backend should at least define app_key, app_secret and refresh_token")
+
+    elif 'seafile' in storage_id:
+        # expects a string with Seafile token and repo ID in the following example format
+        #
+        # {'token':'d32ae65128432fabdec4d889e', 'repoid':'d324567e23adc519da21e4ff9f890'}
+        #
+        str_config = config.replace('\'', '\"')
+
+        json_config = None
+        try:
+            json_config = json.loads(str_config)
+        except:
+            raise ValueError("Improperly configured Seafile storage backend")
+
+        if type(json_config) is dict and 'token' in json_config and 'repoid' in json_config:
+            shared_link = seafileops.upload_file(archive_path,
+                    json_config['token'], json_config['repoid'],
+                    prefix, lifetime=datetime.timedelta(days=keep_days))
+        else:
+            raise ValueError("Config for Seafile storage backend should at least define token and repoid")
 
     elif 'local' in storage_id:
         # use local storage and provide a local web link (server 'local-cloud.py' must be run before)
-        shared_link = localstoreops.upload_file(archive_path, token, prefix, livetime=datetime.timedelta(days=keep_days))
+        # expects token in the form '10.10.160.99:8976' where local-cloud.py is running
+        shared_link = localstoreops.upload_file(archive_path, token, prefix, lifetime=datetime.timedelta(days=keep_days))
 
     else:
         pass
@@ -1288,6 +1315,3 @@ def convert_number(number):
     except ValueError:
         pass
     return ret
-
-
-

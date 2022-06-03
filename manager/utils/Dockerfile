@@ -17,6 +17,7 @@ RUN apt-get install -y python3-minimal python3-pip \
 RUN apt-get install ccache -y
 RUN apt-get install zip unzip -y
 RUN apt-get install pv -y
+RUN apt-get install curl -y
 
 
 # set caching path
@@ -69,6 +70,7 @@ COPY worker.py /opt/OPS/simulations/
 COPY opsrun.py /opt/OPS/simulations/
 COPY worker_utils.py /opt/OPS/simulations/
 COPY dropboxops.py /opt/OPS/simulations/
+COPY seafileops.py /opt/OPS/simulations/
 COPY localstoreops.py /opt/OPS/simulations/
 COPY stat-list.txt /opt/OPS/simulations/
 COPY net-list.txt /opt/OPS/simulations/
@@ -79,6 +81,7 @@ COPY opsrun.py /opt/OPS/simulations/utils/
 COPY worker_utils.py /opt/OPS/simulations/utils/
 COPY dropboxops.py /opt/OPS/simulations/utils/
 COPY localstoreops.py /opt/OPS/simulations/utils/
+COPY seafileops.py /opt/OPS/simulations/utils/
 COPY stat-list.txt /opt/OPS/simulations/utils/
 COPY net-list.txt /opt/OPS/simulations/utils/
 RUN chmod +x /opt/OPS/simulations/utils/*.py
