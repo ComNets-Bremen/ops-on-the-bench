@@ -13,7 +13,8 @@ The sections linked below provide all information about OOTB including installin
 
 - Installing OOTB platform - [Building and Installing](res/INSTALL.md)
 - Bringing up the OOTB platform - [Bringing Up](res/START.md)
-- Running simulations in OOTB (by Users) - [Running Simulations](res/RUN.md)
+- Running simulations in OOTB (by Users) - [Running Simulations](res/RUN.md) and [User Manual](res/USERMANUAL.md)
+
 
 #### Additional Information About OOTB
 
