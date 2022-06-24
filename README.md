@@ -48,4 +48,4 @@ To enable OOTB, the following software components must be installed and configur
 
 ## Questions or Comments
 
-The OOTB platform is described in the publication linked [here](https://dl.acm.org/doi/10.1145/3458473.3458819). If you have further questions, comments or even suggestions, we will be very glad to hear them. Write to us using ootb@comnets.uni-bremen.de.
+The OOTB platform is described in the publication linked [here](https://dl.acm.org/doi/10.1145/3458473.3458819). If you have further questions, comments or even suggestions, we will be very glad to hear them. Write to us using `ootb at comnets.uni-bremen.de`.

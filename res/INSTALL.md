@@ -4,7 +4,7 @@
 The deployment architecture of OOTB is shown in the following picture.
 
 <p align="center">
-<img src="res/pics/ootb-deployment.png" alt="OOTB Deployment Architecture" width="500"/>
+<img src="pics/ootb-deployment.png" alt="OOTB Deployment Architecture" width="500"/>
 </p>
 
 The picture shows three parts of the deployment that have to be setup.

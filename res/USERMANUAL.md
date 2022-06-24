@@ -39,6 +39,16 @@ The account creation is done by filling the `REGISTER ACCOUNT` dialog seen below
 <img src="pics/login-02.png" alt="Login Screen" width="250"/>
 </p>
 
+All fields are compulsory. Once completed, click the `Register Account` to create your account. If there are a 
+errors, they will be shown immediately. If the account creation was successful, an email is sent to the email
+address given. This email has a link to click to confirm the account creation before a login.  
+
+If the email is not received, two usual reasons are,
+
+- email address was incorrect
+- email was received but moved to another folder in the email client (such as the Junk folder)
+
+If non of these, then contact the system administrator using `ootb at comnets.uni-bremen.de`.
 
 
 
