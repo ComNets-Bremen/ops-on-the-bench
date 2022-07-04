@@ -58,7 +58,7 @@ TIMES_RUN=0
 while [ $TIMES_RUN -lt $TIMES_TO_RUN ]
   do
     # echo $TIMES_RUN
-    wget -o /dev/null http://$IPADDRESS:$IPPORT/omnetppManager/manage_queues/
+    wget -q -O /dev/null http://$IPADDRESS:$IPPORT/omnetppManager/manage_queues/
     TIMES_RUN=$(( $TIMES_RUN + 1 ))
     sleep $RUN_FREQUENCY_SEC
   done
