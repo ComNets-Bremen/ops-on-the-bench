@@ -1039,6 +1039,7 @@ def monitor(common, lock):
         if job_terminated:
             break
 
+
     print('finishing monitor thread ...')
 
 # # dump dictionary values to a file
@@ -1209,10 +1210,6 @@ def collect_enforcement_info(common, enforcementinfo, lock):
 # if limits are set to zero, then unlimited resources
 def enforce_resource_limits(enforcementinfo, lock):
 
-    # init return variables
-    terminate_job = False
-    terminate_reason = ''
-
     # set connection info for the Django front-end
     conn_str = os.environ.get(DJANGO_CONN_ENV_VAR) # expects in the form '192.168.1.1:8600' 
     if conn_str is None:
@@ -1224,7 +1221,7 @@ def enforce_resource_limits(enforcementinfo, lock):
     try:
         response = requests.get(url, headers=headers, timeout=LIMITS_REQUEST_TIMEOUT_SEC)
     except requests.exceptions.Timeout as e:
-        return terminate_job, terminate_reason
+        return
 
     data = response.json()
     max_ram_bytes = None
@@ -1243,9 +1240,11 @@ def enforce_resource_limits(enforcementinfo, lock):
     # return if request did not bring values
     if max_ram_bytes is None or max_disk_space_bytes is None \
        or max_sim_duration_hours is None:
-        return terminate_job, terminate_reason
+        return
 
     # check any usage limit exceeded
+    terminate_job = False
+    terminate_reason = ''
     current_time = time.time()
     start_time = enforcementinfo['start_time']
     peak_disk_usage_bytes = enforcementinfo['peak_disk_usage'] if 'peak_disk_usage' in enforcementinfo else 0
