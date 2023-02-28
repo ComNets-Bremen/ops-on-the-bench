@@ -12,7 +12,7 @@ The OOTB platform uses containerization techniques to run several simulations in
 This project provides a solution to overcome this problem by training a Machine learning model and using it to predict the resources prior to the simulation and give an estimate to the user about the network resource utilization.
 
 ## Methodology
-**Steps**
+**Procedure**
 
 - Install all the necessary dependencies
 - Run Simulations on OOTB to generate data
@@ -40,7 +40,7 @@ All the required dependencies can found [here](./OOTB/OOTB_DjangoModel/requireme
 You will also need to have software installed to run and execute a [Jupyter Notebook](http://jupyter.org/install.html).
 If you do not have Python installed yet, it is highly recommended that you run and execute on [Google Colab](https://colab.research.google.com/), which already has most of the above packages included already.
 
-**Data**
+**Data Generation**
 
 The data used for building the model in this project is obtained by performing simulations on OOTB tool. Once the required number of simulations are performed the user can also get these simulation results from the ‘Collect Simulation Data’ tab in the OOTB in JSON format. And the required data related to the simulation parameters can be extracted using the [DataExtraction.py](./OOTB/SourceCode/DataExtraction.py)
 
@@ -58,6 +58,7 @@ The dataset used for the training the models in this project is available in the
  - Maximum Cache Size
  - Forwarding Layer
  - Application Layer
+ - Mobility Speed
  
  **Targets**
  - Peak Disk Usage
@@ -65,7 +66,7 @@ The dataset used for the training the models in this project is available in the
  - Peak RAM Used in Results parsing
  - Total Job Time Taken
  
-**Models**
+**Predictive Models**
 
  **[Averaging Regressor](./OOTB/SourceCode/Model_AveragingRegressor.py)**
  
@@ -81,9 +82,9 @@ The dataset used for the training the models in this project is available in the
 
 A dense neural network is a type of artificial neural network that consists of multiple layers of densely connected neurons. Dense neural networks are commonly used for regression tasks and can be used to model complex non-linear relationships between input variables and output variables. Some of the hyperparameters that can be tuned in a dense neural network for regression include the number of layers, the number of neurons per layer, the activation functions, the learning rate, the batch size, and the number of epochs. During the training process, the neural network learns to adjust the weights and biases of the neurons to minimize the loss function, which measures the difference between the predicted values and the actual values. The optimizer is used to update the weights and biases in each iteration of the training process.
 
-**Run**
+**Run (Inference)**
 
-Once after the dataset is built we perform one-hot encoding for the categorical features. Then the data is transformed accordingly to reduce the skewness in the independent and dependent variables, many transformation techniques like boxcox, sqrt, log, lognorm etc., are available and finally we perform standardization to bring the features under same scale and center their mean values. Both the models can be executed through the colab links provided in the respective models in the root/[Source_Code](https://github.com/Srikanth635/COMNETS/tree/main/Source_Code)  folder.
+Once after the dataset is built we perform one-hot encoding for the categorical features. Then the data is transformed accordingly to reduce the skewness in the independent and dependent variables, many transformation techniques like boxcox, sqrt, log, lognorm etc., are available and finally the data is standardized to bring the features under same scale and center their mean values. The colab [notebook](./OOTB/SourceCode/OOTB_Inference.ipynb) can be used to have a glance at the entire procedure starting from data extraction to finally saving the model.
 
 **Save the Model**
 
