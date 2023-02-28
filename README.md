@@ -103,8 +103,8 @@ The instances of models and scaling functions are unpickled using the Python's p
 
 **Project Summary**
 
-In this work, we've taken few of the simulations parameters i.e., 10 as features for predicitng 4 target variables. And the range of values for the parameter 'NumNodes' are from 10 to 1000. Considering the variablity and size of the dataset available we went with tree based algorithms for building the predictive models and the results obtained were satisfactory inspite of having some imbalances in the dataset.
+In this work, we've taken some of the simulations parameters for predicitng 4 target variables. And the range of values for the parameter 'NumNodes' are from 10 to 3600 that includes simulations with and without trace files i.e., BONN and SWIM mobility simulations. Considering the variablity and size of the dataset available, tree based algorithms are used for building the predictive models and neural network models are used to attain the capability of extrapolation which the tree based models lack in general.
 
 ## Future Scope
 
-The work can be extended by incorporating more parameters as features and implementing through complex models like neural networks. The size of dataset can be increased which helps in figuring out more complex patterns in the data.
+The work can be extended by increasing the size of the dataset which helps in figuring out more complex patterns in the data.
