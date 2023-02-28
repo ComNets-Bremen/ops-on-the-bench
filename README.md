@@ -44,7 +44,7 @@ If you do not have Python installed yet, it is highly recommended that you run a
 
 The data used for building the model in this project is obtained by performing simulations on OOTB tool. Once the required number of simulations are performed the user can also get these simulation results from the ‘Collect Simulation Data’ tab in the OOTB in JSON format. And the required data related to the simulation parameters can be extracted using the [JSONExtraction.ipynb](https://colab.research.google.com/github/Srikanth635/COMNETS/blob/main/Source_Code/JSONExtraction.ipynb)
 
-The dataset used for the training the models in this project is available in the root/[Dataset](https://github.com/Srikanth635/COMNETS/tree/main/Dataset) folder
+The dataset used for the training the models in this project is available in the root/OOTB/[Dataset](./OOTB/Dataset/Data_27_02_2023.csv) folder
 
 **Features**
 
