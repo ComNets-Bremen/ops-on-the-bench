@@ -45,7 +45,7 @@ If you do not have Python installed yet, it is highly recommended that you run a
 
 The data used for building the model in this project is obtained by performing simulations on OOTB tool. Once the required number of simulations are performed the user can also get these simulation results from the ‘Collect Simulation Data’ tab in the OOTB in JSON format. And the required data related to the simulation parameters can be extracted using the [DataExtraction.py](./model/Source code/DataExtraction.py)
 
-The dataset used for the training the models in this project is available in the [Dataset.csv](./model/Dataset/Dataset.csv) folder and the preprocessing steps performed on the dataset is availble at [DataPreProcessing.py](./OOTB/SourceCode/Data_PreProcessing.py)
+The dataset used for the training the models in this project is available in the [Dataset.csv](./model/Dataset/Dataset.csv) folder and the preprocessing steps performed on the dataset is availble at [DataPreProcessing.py](./model/Source code/Data_PreProcessing.py)
 
 **Features**
 
