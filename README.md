@@ -23,8 +23,8 @@ The sections linked below provide all information about OOTB including installin
 - Accessing user profile configurations - [Accessing Profile Configurations](res/PROFILECONFACCESS.md)
 - Versions of used software - [Software Versions](res/SWVERSIONS.md)
 
-#### Information About Prediction Mechanism
-- Predicting Simulation Resources -
+#### Predicting and Using Simulation Resources
+- Method to predict simulation resources - [Predictions](Predictions/README.md)
 
 #### Contact Information
 
