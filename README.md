@@ -23,6 +23,9 @@ The sections linked below provide all information about OOTB including installin
 - Accessing user profile configurations - [Accessing Profile Configurations](res/PROFILECONFACCESS.md)
 - Versions of used software - [Software Versions](res/SWVERSIONS.md)
 
+#### Information About Prediction Mechanism
+- Predicting Simulation Resources -
+
 #### Contact Information
 
 - Questions or comments about this work - [Questions or Comments](#questions-or-comments) 
@@ -43,10 +46,6 @@ To enable OOTB, the following software components must be installed and configur
 - Redis, a distributed in-memort data store [redis](https://redis.io)
 - OPS, an opportunistic networking model framework [OPS](https://github.com/ComNets-Bremen/OPS.git)
 - Cloud Service, a cloud based storage service (such as Dropbox)
-
-##  Predictions
-
--- To Do
 
 ## Questions or Comments
 

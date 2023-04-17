@@ -21,19 +21,20 @@ This project provides a solution to overcome this problem by training a Machine 
 - Model Building and Inference
 - Pickling Model instances
 - Unpickling the model instance in OOTB Django environment
+- Enabling Cronjob to execute new queue mechanism
 
 **Install**
 
 This project requires **Python** and the following Python libraries installed:
 - [NumPy](http://www.numpy.org/)
 - [Pandas](http://pandas.pydata.org/)
-- [TensorFlow](https://pypi.org/project/tensorflow/)
 - [scikit-learn](http://scikit-learn.org/stable/)
 - [XGBoost](https://pypi.org/project/xgboost/)
-- [Keras](https://pypi.org/project/keras/)
-- [lightGBM](https://pypi.org/project/lightgbm/)
 - [pickle](https://pypi.org/project/pickle5/)
 - [Django](https://pypi.org/project/Django/)
+- [Requests](https://requests.readthedocs.io/en/latest/)
+- [JSON](https://docs.python.org/3/library/json.html)
+- [rq](https://python-rq.org/)
 
 All the required dependencies can found [here](./OOTB/OOTB_DjangoModel/requirements.txt).
 
@@ -74,13 +75,10 @@ The dataset used for the training the models in this project is available in the
  
 [Gradient Boosting Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html) is a type of machine learning model used for regression problems. It is an ensemble learning algorithm that combines multiple weak models to create a strong predictive model. The main idea behind Gradient Boosting is to fit a regression model to the residuals of the previous model. This way, each new tree corrects the errors of the previous ones, leading to a more accurate model. It is a popular algorithm due to its high predictive accuracy and robustness to outliers.
 
-[LightGBM](https://lightgbm.readthedocs.io/en/v3.3.2/) is a gradient boosting framework that uses a tree-based learning algorithm. It is similar to other gradient boosting algorithms such as XGBoost and Gradient Boosting Regressor, but it uses a novel technique called Gradient-based One-Side Sampling (GOSS) to speed up the training process. In LightGBM, each tree is built on the previous tree's residuals. However, instead of using all the data, GOSS selects only a subset of the data based on the gradient magnitude, which reduces the number of data points used for training. This technique helps to improve the efficiency of the training process without sacrificing the model's accuracy.
+[Random Forest Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) A random forest regressor is a type of machine learning algorithm that is used for regression problems.In a random forest regressor, the input data is divided into multiple random subsets, and a decision tree is constructed for each subset. Each decision tree is trained on a different subset of the data, and the prediction of the model is obtained by aggregating the predictions of all the individual decision trees.The random forest algorithm uses two sources of randomness: the random subsets used to train each decision tree and the random selection of features used at each split in the decision tree. These sources of randomness help to reduce overfitting and improve the generalization performance of the model.
 
 [XGBoost (Extreme Gradient Boosting)](https://xgboost.readthedocs.io/en/stable/index.html) is a popular gradient boosting algorithm with an efficient and scalable implementation of the gradient boosting framework. XGBoost includes L1 and L2 regularization to control the model's complexity and prevent overfitting. XGBoost works by sequentially adding decision trees to the model while minimizing the objective function, which is the sum of the loss function and a regularization term. The loss function measures the difference between the predicted values and the actual values, while the regularization term controls the complexity of the model to prevent overfitting.
 
-**[Dense Neural Network](OOTB/SourceCode/Model_NeuralNetwork.py)**
-
-A dense neural network is a type of artificial neural network that consists of multiple layers of densely connected neurons. Dense neural networks are commonly used for regression tasks and can be used to model complex non-linear relationships between input variables and output variables. Some of the hyperparameters that can be tuned in a dense neural network for regression include the number of layers, the number of neurons per layer, the activation functions, the learning rate, the batch size, and the number of epochs. During the training process, the neural network learns to adjust the weights and biases of the neurons to minimize the loss function, which measures the difference between the predicted values and the actual values. The optimizer is used to update the weights and biases in each iteration of the training process.
 
 **Run (Inference)**
 
@@ -98,9 +96,13 @@ OOTB uses the containerisation mechanism offered by Docker to host Linux based i
 
 **Model Deployment in Django Environment**
 
-The sample local build of OOTB in Django can be found [here](./OOTB/OOTB_DjangoModel/). All the necessary templates are linked to allow the user to upload the configuration file and trigger the model to predict the resources required by the simulation of the uploaded configuration.
+Respective changes are made to views.py in the NewSimWizard class by adding a predict a method that takes in the uploaded configuration file and the selected run configuration. Then parsing of the configuration file to extract required parameters is done and predictions are displayed. To display the predicted results of the simulation minor chnages were made to the exisitng template by creating a form as a the third step.
 
-The instances of models and scaling functions are unpickled using the Python's pickle in the Django views.py file, as can be seen [here](./OOTB/OOTB_DjangoModel/OOTB/views.py#L167) and are used to predict the target resources. As the trained models are custom estimators, their implementation is added to the Django in the manage.py file before the main method as can be seen [here](./OOTB/OOTB_DjangoModel/manage.py#L22). This makes the Django aware to create instances of these custom estimators.
+The instances of models and scaling functions are unpickled using the Python's pickle in the Django views.py file, as can be seen [here](./OOTB/OOTB_DjangoModel/OOTB/views.py#L167) and are used to predict the target resources. As the trained models are custom estimators, their implementation is added to the Django in the manage.py file before the main method as can be seen [here](./OOTB/OOTB_DjangoModel/manage.py#L22). This makes the Django aware of this to create instances of these custom estimators.
+
+**Enabling Cronjob to Update Redis Queue**
+
+For the purpose of having an efficient mechanism to handle simulation jobs on redis queue such that simulation will have enough resources on the server required for its execution and gets picked up by the worker on that server. To enable this a python script was written which contains commands to retrieve server resource information, calculate the total resources used by the ongoing simulations and then finds the avaiable respources on the server. Then this information is used to shuffle the redis queue accordingly to keep the next suitable queued job at the front. The procedure followed for these steps can be found in this Python script. And this script has to run automatically as a cronjob.
 
 **Project Summary**
 

@@ -1,0 +1,1354 @@
+[
+{
+    "model": "omnetppManager.storagebackend",
+    "pk": 1,
+    "fields": {
+        "backend_name": "Storage_name",
+        "backend_description": "Storage_description",
+        "backend_identifier": "Storage_identifier",
+        "backend_token": "Storage_Token",
+        "backend_active": true,
+        "backend_keep_days": 7
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigtype",
+    "pk": 1,
+    "fields": {
+        "name": "General Settings",
+        "label": "General Settings",
+        "has_multiple_instances": false,
+        "order": 10
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigtype",
+    "pk": 2,
+    "fields": {
+        "name": "Application Layer",
+        "label": "Application Layer Model",
+        "has_multiple_instances": true,
+        "order": 20
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigtype",
+    "pk": 3,
+    "fields": {
+        "name": "Forwarding Layer",
+        "label": "Forwarding Layer Model",
+        "has_multiple_instances": true,
+        "order": 30
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigtype",
+    "pk": 4,
+    "fields": {
+        "name": "Wireless Interface",
+        "label": "Wireless Interface",
+        "has_multiple_instances": true,
+        "order": 40
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigtype",
+    "pk": 5,
+    "fields": {
+        "name": "INET mobility",
+        "label": "INET mobility",
+        "has_multiple_instances": true,
+        "order": 50
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 1,
+    "fields": {
+        "name": "omnetpp-ops-multi-trace-mm.ini",
+        "model_type": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 2,
+    "fields": {
+        "name": "KHeraldApp",
+        "model_type": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 3,
+    "fields": {
+        "name": "KEpidemicRoutingLayer",
+        "model_type": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 4,
+    "fields": {
+        "name": "KWirelessInterface",
+        "model_type": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 5,
+    "fields": {
+        "name": "Bonn Motion 100 traces",
+        "model_type": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfig",
+    "pk": 6,
+    "fields": {
+        "name": "Bonn Motion 200 traces",
+        "model_type": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 1,
+    "fields": {
+        "param_name": "network",
+        "param_default_value": "OPSNetwork",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 2,
+    "fields": {
+        "param_name": "sim-time-limit",
+        "param_default_value": "864000",
+        "param_unit": "s",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 3,
+    "fields": {
+        "param_name": "num-rngs",
+        "param_default_value": "6",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 4,
+    "fields": {
+        "param_name": "seed-0-mt",
+        "param_default_value": "1000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "left specifically unused for \"unknown\" RNG uses",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 5,
+    "fields": {
+        "param_name": "seed-1-mt",
+        "param_default_value": "2000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "application",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 6,
+    "fields": {
+        "param_name": "seed-2-mt",
+        "param_default_value": "3000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "user behaviour model RNG",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 7,
+    "fields": {
+        "param_name": "seed-3-mt",
+        "param_default_value": "4000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "forwarding RNG",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 8,
+    "fields": {
+        "param_name": "seed-4-mt",
+        "param_default_value": "5000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "link layer RNG",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 9,
+    "fields": {
+        "param_name": "seed-5-mt",
+        "param_default_value": "6000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "mobility RNG",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 10,
+    "fields": {
+        "param_name": "result-dir",
+        "param_default_value": "results/",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "Result directory",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 11,
+    "fields": {
+        "param_name": "output-vector-file",
+        "param_default_value": "\"${resultdir}/${datetime}-${inifile}-${configname}-${runnumber}.vec\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 12,
+    "fields": {
+        "param_name": "output-scalar-file",
+        "param_default_value": "\"${resultdir}/${datetime}-${inifile}-${configname}-${runnumber}.sca\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 13,
+    "fields": {
+        "param_name": "**.vector-recording",
+        "param_default_value": "true",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 14,
+    "fields": {
+        "param_name": "**.scalar-recording",
+        "param_default_value": "true",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 15,
+    "fields": {
+        "param_name": "**.statistic-recording",
+        "param_default_value": "true",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 16,
+    "fields": {
+        "param_name": "**.applicationLayer",
+        "param_default_value": "\"KHeraldApp\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 17,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_default_value": "\"KEpidemicRoutingLayer\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 18,
+    "fields": {
+        "param_name": "**.linkLayer",
+        "param_default_value": "\"KWirelessInterface\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 19,
+    "fields": {
+        "param_name": "**.mobilityType",
+        "param_default_value": "\"BonnMotionMobility\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 20,
+    "fields": {
+        "param_name": "**.app.dataGenerationInterval",
+        "param_default_value": "900",
+        "param_unit": "s",
+        "user_editable": false,
+        "param_description": "every 1/4 of an hour - we simulate for 7 days",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 21,
+    "fields": {
+        "param_name": "**.app.dataSizeInBytes",
+        "param_default_value": "10000",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 22,
+    "fields": {
+        "param_name": "**.app.popularityAssignmentPercentage",
+        "param_default_value": "25",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 23,
+    "fields": {
+        "param_name": "**.app.usedRNG",
+        "param_default_value": "1",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 24,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_default_value": "5000000",
+        "param_unit": "byte",
+        "user_editable": true,
+        "param_description": "# 5 M",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 25,
+    "fields": {
+        "param_name": "**.forwarding.antiEntropyInterval",
+        "param_default_value": "300",
+        "param_unit": "s",
+        "user_editable": false,
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 26,
+    "fields": {
+        "param_name": "**.forwarding.maximumHopCount",
+        "param_default_value": "25",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 27,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 28,
+    "fields": {
+        "param_name": "**.link.wirelessRange",
+        "param_default_value": "30",
+        "param_unit": "m",
+        "user_editable": false,
+        "param_description": "Range in m",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 29,
+    "fields": {
+        "param_name": "**.link.neighbourScanInterval",
+        "param_default_value": "1",
+        "param_unit": "s",
+        "user_editable": false,
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 30,
+    "fields": {
+        "param_name": "**.link.bandwidthBitRate",
+        "param_default_value": "100000",
+        "param_unit": "bps",
+        "user_editable": false,
+        "param_description": "100 Kbps",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 31,
+    "fields": {
+        "param_name": "**.link.wirelessHeaderSize",
+        "param_default_value": "16",
+        "param_unit": "byte",
+        "user_editable": false,
+        "param_description": "BT header",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 32,
+    "fields": {
+        "param_name": "**.link.usedRNG",
+        "param_default_value": "4",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 33,
+    "fields": {
+        "param_name": "**.mobility.traceFile",
+        "param_default_value": "\"/opt/data/traces/sf-taxi/100_traces.gpx.movements\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 34,
+    "fields": {
+        "param_name": "**.mobility.nodeId",
+        "param_default_value": "-1",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "means \"host module's index\"",
+        "config": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 35,
+    "fields": {
+        "param_name": "repeat",
+        "param_default_value": "1",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 36,
+    "fields": {
+        "param_name": "**.mobilityType",
+        "param_default_value": "\"BonnMotionMobility\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 6
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 37,
+    "fields": {
+        "param_name": "**.mobility.traceFile",
+        "param_default_value": "\"/opt/data/traces/sf-taxi/200_traces.gpx.movements\"",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 6
+    }
+},
+{
+    "model": "omnetppManager.omnetppconfigparameter",
+    "pk": 38,
+    "fields": {
+        "param_name": "**.mobility.nodeId",
+        "param_default_value": "-1",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "means \"host module's index\"",
+        "config": 6
+    }
+},
+{
+    "model": "omnetppManager.configkeyvaluestorage",
+    "pk": 1,
+    "fields": {
+        "config_key": "DEFAULT_SIMULATION_TIMEOUT",
+        "config_value": "\"240h\""
+    }
+},
+{
+    "model": "omnetppManager.configkeyvaluestorage",
+    "pk": 2,
+    "fields": {
+        "config_key": "DEFAULT_RECEIVER_MAIL_ADDRESS",
+        "config_value": "\"jd@comnets.uni-bremen.de\""
+    }
+},
+{
+    "model": "omnetppManager.serverconfig",
+    "pk": 1,
+    "fields": {
+        "server_token": "01f45d72-ea34-4a91-8958-bb1536b01485",
+        "server_id": "makemake",
+        "server_name": "makemake"
+    }
+},
+{
+    "model": "omnetppManager.serverconfig",
+    "pk": 2,
+    "fields": {
+        "server_token": "dc1c6220-6743-4da1-8448-b3c43176e59d",
+        "server_id": "Testserver",
+        "server_name": "Test server on Arduino"
+    }
+},
+{
+    "model": "omnetppManager.serverconfig",
+    "pk": 3,
+    "fields": {
+        "server_token": "44884a3b-95e1-47df-8c58-9b5e6847a008",
+        "server_id": "eris",
+        "server_name": "eris"
+    }
+},
+{
+    "model": "omnetppManager.serverconfig",
+    "pk": 4,
+    "fields": {
+        "server_token": "8103487f-9eb4-49e8-918d-a3d31bad2020",
+        "server_id": "uranus",
+        "server_name": "uranus"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 1,
+    "fields": {
+        "server": 1,
+        "key": "max_ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 2,
+    "fields": {
+        "server": 1,
+        "key": "max_cpu_cores",
+        "value": "4"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 3,
+    "fields": {
+        "server": 1,
+        "key": "redis.db.name",
+        "value": "testdb"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 4,
+    "fields": {
+        "server": 1,
+        "key": "redig.db.user",
+        "value": "testuser"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 5,
+    "fields": {
+        "server": 1,
+        "key": "redis.db.password",
+        "value": "test123"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 6,
+    "fields": {
+        "server": 2,
+        "key": "msp430-cores",
+        "value": "2"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 7,
+    "fields": {
+        "server": 3,
+        "key": "max_ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 8,
+    "fields": {
+        "server": 3,
+        "key": "max_cpu_cores",
+        "value": "4"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 9,
+    "fields": {
+        "server": 3,
+        "key": "redis.db.name",
+        "value": "testdb"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 10,
+    "fields": {
+        "server": 3,
+        "key": "redig.db.user",
+        "value": "testuser"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 11,
+    "fields": {
+        "server": 3,
+        "key": "redis.db.password",
+        "value": "test123"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 12,
+    "fields": {
+        "server": 4,
+        "key": "max_ram",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 13,
+    "fields": {
+        "server": 4,
+        "key": "max_cpu_cores",
+        "value": "4"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 14,
+    "fields": {
+        "server": 4,
+        "key": "redis.db.name",
+        "value": "testdb"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 15,
+    "fields": {
+        "server": 4,
+        "key": "redig.db.user",
+        "value": "testuser"
+    }
+},
+{
+    "model": "omnetppManager.serverconfigvalue",
+    "pk": 16,
+    "fields": {
+        "server": 4,
+        "key": "redis.db.password",
+        "value": "test123"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 2,
+    "fields": {
+        "name": "General",
+        "label": "[General]",
+        "order": 10
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 3,
+    "fields": {
+        "name": "Config Benchmark 01 Taxi Scenario",
+        "label": "[Config Benchmark-01-Taxi-Scenario]",
+        "order": 20
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 4,
+    "fields": {
+        "name": "Config Benchmark 02 Typhoon Disaster Scenario",
+        "label": "[Config Benchmark-02-Typhoon-Disaster-Scenario]",
+        "order": 30
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 5,
+    "fields": {
+        "name": "Config Benchmark 04 Conference Scenario",
+        "label": "[Config Benchmark-04-Conference-Scenario]",
+        "order": 50
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 6,
+    "fields": {
+        "name": "Config Benchmark 05 University Scenario",
+        "label": "[Config Benchmark-05-University-Scenario]",
+        "order": 60
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 7,
+    "fields": {
+        "name": "Config Benchmark 06 Roller Skate Scenario",
+        "label": "[Config Benchmark-06-Roller-Skate-Scenario]",
+        "order": 70
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkconfig",
+    "pk": 8,
+    "fields": {
+        "name": "Config Benchmark 07 Office Scenario",
+        "label": "[Config Benchmark-07-Office-Scenario]",
+        "order": 80
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "General",
+        "param_default_value": "[General]\r\nnetwork = OPSNetwork\r\n\r\n\r\n\r\n# results location\r\nresult-dir = results/\r\noutput-vector-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.vec\"\r\noutput-scalar-file = \"${resultdir}/${inifile}-${configname}-${runnumber}.sca\"\r\n\r\n\r\n\r\n# RNG initialization",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "Config Benchmark-01-Taxi-Scenario",
+        "param_default_value": "[Config Benchmark-01-Taxi-Scenario]\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 500\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-01-taxi/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-01-taxi/Trace/all_traces.gpx.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "Config Benchmark-02-Typhoon-Disaster-Scenario",
+        "param_default_value": "[Config Benchmark-02-Typhoon-Disaster-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 200000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 3600\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"trace\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-02-typhoon/Scenario\" \r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterface\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n\r\n\r\n\r\n## mobility parameters for BonnMotion\r\n**.mobilityType = \"BonnMotionMobility\"\r\n**.mobility.traceFile = \"/opt/traces/benchmarks/scenario-02-typhoon/Trace/halong.movements\"\r\n**.mobility.nodeId = -1  #means \"host module's index\"",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "Config Benchmark-04-Conference-Scenario",
+        "param_default_value": "[Config Benchmark-04-Conference-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 250000s # 2+ days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 98\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-04-conference/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-04-conference/Trace\"",
+        "config": 5
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "Config Benchmark-05-University-Scenario",
+        "param_default_value": "[Config Benchmark-05-University-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 54\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-05-university/Scenario\" \r\n\r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-05-university/Trace\"",
+        "config": 6
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "Config Benchmark-06-Roller-Skate-Scenario",
+        "param_default_value": "[Config Benchmark-06-Roller-Skate-Scenario]\r\n\r\n\r\n# simulation control parameters\r\nsim-time-limit = 10800s # 3 hours\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 62\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Scenario\" \r\n\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-06-roller-skate/Trace\"",
+        "config": 7
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "Config Benchmark-07-Office-Scenario",
+        "param_default_value": "[Config Benchmark-07-Office-Scenario]\r\n\r\n\r\n#simulation control parameters\r\nsim-time-limit = 604800s # 7 days\r\nrepeat = 1\r\n\r\n\r\n\r\n# network parameters\r\n**.numNodes = 49\r\n\r\n\r\n\r\n# application layer (herald)\r\n**.applicationLayer = \"KHeraldAppForDifferentiatedTraffic\"\r\n**.app.dataGenerationInterval = 1s # every 1/4 of an hour - we simulate for 7 days\r\n**.app.dataSizeInBytes = 10000\r\n**.app.popularityAssignmentPercentage = 25\r\n**.app.usedRNG = 1\r\n**.app.dataGenerationIntervalMode = \"random\"\r\n**.app.trafficInfoPath = \"/opt/traces/benchmarks/scenario-07-office/Scenario\"\r\n\r\n\r\n# wireless interface parameters\r\n**.linkLayer = \"KWirelessInterfaceWithContactTraces\"\r\n**.link.wirelessRange = 30m\r\n**.link.neighbourScanInterval = 1s\r\n**.link.bandwidthBitRate = 100000bps # 100 Kbps\r\n**.link.wirelessHeaderSize = 16byte # BT header\r\n**.link.usedRNG = 4\r\n**.link.contactTracesPath = \"/opt/traces/benchmarks/scenario-07-office/Trace\"",
+        "config": 8
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "num-rngs",
+        "param_default_value": "6",
+        "param_unit": "",
+        "user_editable": false,
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "seed-0-mt",
+        "param_default_value": "1000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "left specifically unused for \"unknown\" RNG uses",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "seed-1-mt",
+        "param_default_value": "2000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "application",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "seed-2-mt",
+        "param_default_value": "3000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "user behaviour model RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "seed-3-mt",
+        "param_default_value": "4000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "forwarding RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "seed-4-mt",
+        "param_default_value": "5000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "link layer RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkeditableparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "seed-5-mt",
+        "param_default_value": "6000",
+        "param_unit": "",
+        "user_editable": true,
+        "param_description": "mobility RNG",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 1,
+    "fields": {
+        "name": "Epidemic forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 2,
+    "fields": {
+        "name": "Keetchi forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 3,
+    "fields": {
+        "name": "Optimum forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderconfig",
+    "pk": 4,
+    "fields": {
+        "name": "RRS forwarding"
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 1,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KEpidemicRoutingLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 2,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 3,
+    "fields": {
+        "param_name": "**.forwarding.antiEntropyInterval",
+        "param_display_name": "Anti-Entropy Interval",
+        "param_default_value": "300",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "300, 600",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 4,
+    "fields": {
+        "param_name": "**.forwarding.maximumHopCount",
+        "param_display_name": "Maximum Hop Count",
+        "param_default_value": "25",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "10, 100",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 5,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 1
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 6,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KKeetchiLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 7,
+    "fields": {
+        "param_name": "**.forwarding.agingInterval",
+        "param_display_name": "Aging Interval",
+        "param_default_value": "600",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "60, 3600",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 8,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 9,
+    "fields": {
+        "param_name": "**.forwarding.neighbourhoodChangeSignificanceThreshold",
+        "param_display_name": "Neighbourhood Change Significance Threshold",
+        "param_default_value": "0.25",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "0, 1",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 10,
+    "fields": {
+        "param_name": "**.forwarding.coolOffDuration",
+        "param_display_name": ".Cool Off Duration",
+        "param_default_value": "300",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "60, 600",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 11,
+    "fields": {
+        "param_name": "**.forwarding.learningConst",
+        "param_display_name": "Learning Const",
+        "param_default_value": "0.5",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "0, 1",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 12,
+    "fields": {
+        "param_name": "**.forwarding.backoffTimerIncrementFactor",
+        "param_display_name": "Backoff Timer Increment Factor",
+        "param_default_value": "1.5",
+        "param_unit": "",
+        "param_type": 2,
+        "param_user_option": "1, 5",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 13,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 2
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 14,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KOptimumDelayRoutingLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 3
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 15,
+    "fields": {
+        "param_name": "**.forwardingLayer",
+        "param_display_name": "Forwarding Layer",
+        "param_default_value": "\"KRRSLayer\"",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 16,
+    "fields": {
+        "param_name": "**.forwarding.maximumCacheSize",
+        "param_display_name": "Maximum Cache Size",
+        "param_default_value": "100000000",
+        "param_unit": "byte",
+        "param_type": 2,
+        "param_user_option": "100000000, 1000000000",
+        "param_description": "100 MB cache",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 17,
+    "fields": {
+        "param_name": "**.forwarding.usedRNG",
+        "param_display_name": "Used RNG",
+        "param_default_value": "3",
+        "param_unit": "",
+        "param_type": 1,
+        "param_user_option": "None",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 18,
+    "fields": {
+        "param_name": "**.forwarding.broadcastRRS",
+        "param_display_name": "Broadcast RRS",
+        "param_default_value": "false",
+        "param_unit": "",
+        "param_type": 3,
+        "param_user_option": "false, true",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 19,
+    "fields": {
+        "param_name": "**.forwarding.sendOnNeighReportingFrequency",
+        "param_display_name": "Send On Neigh Reporting Frequency",
+        "param_default_value": "false",
+        "param_unit": "",
+        "param_type": 3,
+        "param_user_option": "false, true",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.omnetppbenchmarkforwarderparameters",
+    "pk": 20,
+    "fields": {
+        "param_name": "**.forwarding.sendFrequencyWhenNotOnNeighFrequency",
+        "param_display_name": "Send Frequency When Not On Neigh Frequency",
+        "param_default_value": "4",
+        "param_unit": "s",
+        "param_type": 2,
+        "param_user_option": "0, 10",
+        "param_description": "",
+        "config": 4
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 1,
+    "fields": {
+        "profile": 1,
+        "key": "max_ram_bytes",
+        "value": "10000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 2,
+    "fields": {
+        "profile": 1,
+        "key": "max_disk_space_bytes",
+        "value": "1000000000"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 3,
+    "fields": {
+        "profile": 1,
+        "key": "max_sim_duration_hours",
+        "value": "7"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 4,
+    "fields": {
+        "profile": 2,
+        "key": "max_ram_bytes",
+        "value": "0"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 5,
+    "fields": {
+        "profile": 2,
+        "key": "max_disk_space_bytes",
+        "value": "0"
+    }
+},
+{
+    "model": "omnetppManager.userprofileparameters",
+    "pk": 6,
+    "fields": {
+        "profile": 2,
+        "key": "max_sim_duration_hours",
+        "value": "0"
+    }
+},
+{
+    "model": "omnetppManager.userprofile",
+    "pk": 1,
+    "fields": {
+        "group": [
+            "Simple User"
+        ]
+    }
+},
+{
+    "model": "omnetppManager.userprofile",
+    "pk": 2,
+    "fields": {
+        "group": [
+            "Staff User"
+        ]
+    }
+}
+]

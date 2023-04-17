@@ -1,0 +1,101 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'js/tools.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="display-3">Start a new simulation</h1>
+<form class="form-horizontal" method="POST" action="">
+{% csrf_token %}
+{{wizard.management_form}}
+
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+
+    {% if form.non_form_errors %}
+    <span class="error text-danger">
+        {% for error in form.non_form_errors %}
+        {{ error }}
+        {% endfor %}
+    </span>
+    {% endif %}
+
+<table class="table">
+    {% for form in wizard.form.forms %}
+
+        {{form.non_field_errors}}
+
+        {% if forloop.first %}
+        <thead>
+            <tr>
+        {% for field in form %}
+        <th scope="col">{{field.label}}</th>
+        {% endfor %}
+
+            <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% endif %}
+
+            <tr>
+        {% for field in form %}
+        <td>
+                {{field}}
+                {% if field.errors %}
+                <span class="error text-danger">
+                    {% for error in field.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </span>
+                {% endif %}
+        </td>
+            {% if forloop.last %}
+                {% if forloop.parentloop.last %}
+                <td><button class="btn btn-success add-form-row">+</button></td>
+                {% else %}
+                <td><button class="btn btn-danger remove-form-row">-</button></td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+
+{% else %}
+{{wizard.form}}
+{% endif %}
+
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+step {{ wizard.steps.step1 }} from {{ wizard.steps.count }}
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <div class="btn-group" role="group" aria-label="Navigation">
+            {% if wizard.steps.prev %}
+            <button class="btn btn-primary" type="submit" value="{{ wizard.steps.first }}">first step</button>
+            <button class="btn btn-primary" type="submit" value="{{ wizard.steps.prev }}">prev step</button>
+            {% endif %}
+            <button type="submit" class="btn  btn-primary">Continue</button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</form>
+
+    <script>
+        initEventListeners();
+    </script>
+{% endblock %}

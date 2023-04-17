@@ -1,0 +1,28 @@
+.rng{
+    /* margin-top: 5%; */
+    /* margin-right: 5%; */
+    width: 80%;
+    /* padding: 5%; */
+    /* margin-left:1%; */
+    margin-block-end: 2%;
+}
+#rng_label{
+    font-weight: bolder;
+    padding-right: 2%;
+}
+#forward_tag{
+    margin-top: 3%;
+}
+.forward_sections{
+    margin-block-end: 2%;
+}
+.rng_error{
+    color: red !important;
+}
+/* .errorlist
+    {
+        color: red;
+    } */
+.defa{
+    width: 100%;
+}

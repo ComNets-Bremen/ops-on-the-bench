@@ -1,0 +1,199 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="noindex">
+
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <!-- CSS file-->
+    <link rel="stylesheet" href="{% static 'css/omnetppManager.css' %}">
+
+    <!-- Font Awesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    {% block title %}<title>
+      {{manager_general.base_title}}
+      {% if title %}
+      - {{title}}
+      {% endif %}
+  </title>{% endblock %}
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+    .bg-sunday{
+        background-color:#343a40 !important;
+    }
+
+    .text-sunday{
+        color: #fff !important;
+    }
+
+    .bg-saturday{
+        background-color:#6c757d !important;
+    }
+
+    .text-saturday{
+        color: #fff !important;
+    }
+
+    .bg-weekday{
+        background-color:#dbdddf !important;
+    }
+
+    .text-weekday{
+        color: #000 !important;
+    }
+
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 60px;
+      line-height: 60px; /* Vertically center the text there */
+      background-color: #f5f5f5;
+    }
+
+
+    /* Custom page CSS
+    -------------------------------------------------- */
+    /* Not required for template or sticky footer method. */
+
+    body > .container {
+      padding: 60px 15px 0;
+    }
+
+    .footer > .container {
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+
+    code {
+      font-size: 80%;
+    }
+
+
+
+    </style>
+  {% block head %}<!-- Block for adding content to the head //--> {% endblock %}
+  </head>
+
+  <body>
+  {% block sidebar %}
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="{% url 'omnetppManager_index' %}">Simulation Manager</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="dropdown-01" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Start new simulation</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown-01">
+                  {% for group in user.groups.all %}
+                  {% if 'Staff User' == group.name %}
+                  <a class="dropdown-item" href="{% url 'omnetppManager_new-simulation' %}">from omnetpp.ini</a>
+                  {% endif %}
+                  {% endfor %}
+                  <a class="dropdown-item" href="{% url 'omnetppManager_detail_sim' %}">from generator</a>
+                  <a class="dropdown-item" href="{% url 'omnetppManager_benchmark-simulation' %}">from benchmark</a>
+                </div>
+          </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="dropdown-02" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Status</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown-02">
+                  <a class="dropdown-item" href="{% url 'omnetppManager_queue_status' %}">Status Summary</a>
+                  <a class="dropdown-item" href="{% url 'omnetppManager_job_status' %}">Job status</a>
+                </div>
+         </li>
+         {% if user.is_superuser %}
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="dropdown-03" href="#", data-toggle="dropdown", aria-haspopup="true" aria-expand="false">Management</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown-03">
+                  <a class="dropdown-item" href="{% url 'omnetppManager_manage_queues' output_format='html' %}">Collect Simulation data</a>
+                  <a class="dropdown-item" href="{% url 'omnetppManager_export_simulation_stats' %}">Download Simulation Meta Data</a>
+
+                </div>
+         </li>
+        {% endif %}
+         
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'omnetppManager_change_password' %}">Change password</a>
+          </li>
+
+        {% if user.is_superuser %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin:index' %}">Admin interface</a>
+          </li>
+        {% endif %}
+
+          <li class="nav-item">
+                <a class="nav-link" href="{% url 'omnetppManager_logout' %}">logout user {{ user }}</a>
+          </li>
+
+        {% else %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'omnetppManager_login' %}">Login</a>
+          </li>
+        {% endif %}
+
+    </ul>
+  </div>
+</nav>
+
+
+  {% endblock %}
+  <main role="main" class="container">
+    {% block content %}<!-- default content text (typically empty) -->{% endblock %}
+  </main><!-- /.container -->
+
+    <footer class="footer">
+      <div class="container">
+          <span class="text-muted">
+              This service is provided by <a href="https://comnets.uni-bremen.de" target="_blank">ComNets Bremen</a>&nbsp; &middot; &nbsp;
+              <a href="https://www.uni-bremen.de/impressum" target="_blank">Impressum</a>&nbsp; &middot; &nbsp;
+              <a href="https://twitter.com/ComNetsBremen" target="_blank"><i class="fa fa-twitter"></i></a>&nbsp; &middot; &nbsp;
+              <a href="https://www.youtube.com/ComNetsBremen" target="_blank"><i class="fa fa-youtube"></i></a>
+          </span>
+      </div>
+    </footer>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Demo Account Request</h1>
+<p>Our <i>Ops On The Bench</i> (OOTB) simulation service is currently in a closed beta test. Using this form, you can request a demo account.</p>
+
+<form action="{% url 'omnetppManager_request_access' %}" method="post">
+    {% csrf_token %}
+
+    {% if form.non_form_errors %}
+    <span class="error text-danger">
+        {% for error in form.non_form_errors %}
+        {{ error }}
+        {% endfor %}
+    </span>
+    {% endif %}
+
+
+    <table class="table">
+        <tbody>
+        {% for field in form %}
+        <tr>
+            <td>{{field.label}}</td><td>{{field}} <small class="form-text text-muted">{{field.help_text}}</small></td>
+
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
+{% endblock %}

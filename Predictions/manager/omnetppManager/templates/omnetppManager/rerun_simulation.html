@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Rerun Simulation</h1>
+
+<form action="{% url 'omnetppManager_rerun_sim' pk=pk %}" method="post">
+    {% csrf_token %}
+
+    {% if form.non_form_errors %}
+    <span class="error text-danger">
+        {% for error in form.non_form_errors %}
+        {{ error }}
+        {% endfor %}
+    </span>
+    {% endif %}
+
+
+    <table class="table">
+        <tbody>
+        {% for field in form %}
+        <tr>
+            <td>{{field.label}}</td><td>{{field}} <small class="form-text text-muted">{{field.help_text}}</small></td>
+
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    <input type="submit" value="Run again" class="btn btn-primary">
+    <a href="{% url 'omnetppManager_job_status' %}">Return to overview</a>
+</form>
+{% endblock %}

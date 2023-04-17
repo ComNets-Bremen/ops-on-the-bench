@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">OMNeT++ Simulation Testserver</h1>
+
+<p>Tired of setting up simulation? ootb aims on easy to setup simulation. The following video gives a brief introduction to the main functions of OOTB.</p>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4GDNheit1qc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    {% for message in messages  %}
+    <script>
+    alert('{{ message }}')
+    </script>
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Simulation Status</h1>
+
+<div class="d-flex justify-content-center">
+        {% if jobs.has_previous %}
+            <div class="px-2"><a href="?page=1">&laquo; First page</a></div>
+            <div class="px-2"><a href="?page={{ jobs.previous_page_number }}">back</a></div>
+        {% endif %}
+
+            Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}
+
+        {% if jobs.has_next %}
+            <div class="px-2"><a href="?page={{ jobs.next_page_number }}">next</a></div>
+            <div class="px-2"><a href="?page={{ jobs.paginator.num_pages }}">last page &raquo;</a></div>
+        {% endif %}
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+        <th scope="col">job id</th>
+        <th scope="col">title</th>
+        <th scope="col">run config</th>
+        <th scope="col">started by</th>
+        <th scope="col">status</th>
+        <th scope="col">action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+        <tr>
+            <td><a href="{{ job.get_absolute_url }}">{{job.simulation_id}}</a></td>
+            <td>{{job.title}}</td>
+            <td>{{job.runconfig}}</td>
+            <td>{{job.user}}</td>
+            <td class="{% if job.is_finished %}bg-success{% elif job.is_failed %}bg-danger{% elif job.is_started %}bg-primary{% elif job.is_aborted %}bg-warning{% elif job.is_queued %}bg-warning{% endif %}">{{job.get_status_display}}</td>
+            <td>
+                <form action="{% url 'job-kill' pk=job.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" aria-label="Kill Simulation">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="{% url 'omnetppManager_rerun_sim' pk=job.id %}" class="btn btn-primary" aria-label="Restart Simulation">
+                    <i class="fa fa-repeat" aria-hidden="true"></i>
+                </a>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<div class="d-flex justify-content-center">
+        {% if jobs.has_previous %}
+            <div class="px-2"><a href="?page=1">&laquo; First page</a></div>
+            <div class="px-2"><a href="?page={{ jobs.previous_page_number }}">back</a></div>
+        {% endif %}
+
+            Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}
+
+        {% if jobs.has_next %}
+            <div class="px-2"><a href="?page={{ jobs.next_page_number }}">next</a></div>
+            <div class="px-2"><a href="?page={{ jobs.paginator.num_pages }}">last page &raquo;</a></div>
+        {% endif %}
+</div>
+
+
+{% endblock %}

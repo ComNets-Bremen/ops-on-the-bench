@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Start a new simulation: Step {{wizard.steps.step1}}</h1>
+<p> Step {{ wizard.steps.step1 }} of {{wizard.steps.count}} of simulation <code>{{ simulation_title }}</code></p>
+
+{% if wizard.steps.step1 == 3%}
+  <h5>Selected run configuration  <b>{{simulation_name}}</b>  </h5><br>
+  <h5>Estimated resources required for the selected run configuration </h5><br>
+{% endif %}
+
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <table>
+
+    {% if wizard.form.forms %}
+      {{ wizard.form.management_form }}
+          {% for form in wizard.form.forms %}
+            {{ form }}
+          {% endfor %}
+        {% else %}
+          {{ wizard.form }}
+        {% endif %}
+
+    </table>
+    <br>
+    
+
+
+    <input type="submit" value="next""/>
+</form>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h2 class="display-3">Start a new benchmark simulation</h2>
+<h5> Step {{ wizard.steps.step1 }} of {{wizard.steps.count}} of simulation <code>{{ simulation_title }}</code></h5>
+{% if wizard.steps.step1 == 3%}
+  <h5>You have selected  {{simulation_name}}  and {{forwarding_layer}} layer</h5><br>
+{% endif %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <table>
+
+    {% if wizard.form.forms %}
+      {{ wizard.form.management_form }}
+          {% for form in wizard.form.forms %}
+            {{ form }}
+          {% endfor %}
+        {% else %}
+          {% if wizard.steps.step1 == 3%}
+          <h4>Edit RNG parameters below</h4><br>
+          <div class="row rngs">
+          {% for field in form %}
+          {% if forloop.counter == 7 %}
+          <div class="col-lg-12 col-md-12 col-xs-12 ">
+            <h4 id="forward_tag"> Edit Forwarding layer parameters below</h4><br>
+          </div>
+          {% endif %}
+          {% if 'form-control rng' in field.field.widget.attrs.class %}
+          <div class="col-lg-5 col-md-5 col-xs-12  rng">
+            <div class="col-lg-12 col-md-12 col-xs-12 form-inline">
+              <label id="rng_label" for="{{ field.auto_id }}">{{ field.label }}</label>
+              {{ field }} 
+            </div>
+            <div class="col-lg-12 col-md-12 col-xs-12">
+              <em>{{ field.help_text }}</em>
+              {% if field.errors %}
+                {% for error in field.errors %}
+                <p class="rng_error">
+                    <strong>{{ error|escape }}</strong>
+                </p>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <div class="container">
+          <div class="col-lg-7 col-md-7 col-xs-12 forward_sections">
+            <label id="rng_label" for="{{ field.auto_id }}">{{ field.label }}</label>
+             {{ field }}
+            {{ field.help_text }}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                <p class="rng_error">
+                    <strong>{{ error|escape }}</strong>
+                </p>
+                {% endfor %}
+              {% endif %}
+            <br>
+          </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% else %}
+          {{ wizard.form }}
+          {% endif %}
+        {% endif %}
+
+    </table><br>
+    <input type="submit" name="wizard_goto_step" value="next"/>
+    <br> <br>
+</form>
+
+{% endblock %}

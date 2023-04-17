@@ -1,0 +1,119 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1 class="display-3">Simulation details for &quot;{{object.title}}&quot;</h1>
+
+<ul>
+    <li>Title: {{object.title}}</li>
+    <li>User: {{object.user}}</li>
+    <li>Run config: {{object.runconfig}}</li>
+    <li>Status: <code>{{object.get_status_display}}</code></li>
+    <li>Terminated: <code>{{object.get_terminated_display}}</code></li>
+    <li>Precision: {{object.summarizing_precision}} s</li>
+    <li>ID: <code>{{object.simulation_id}}</code></li>
+    <li>Storage backend: {{object.storage_backend.backend_name}}</li>
+    <li>Timeout: {{ object.get_simulation_timeout_formatted }}</li>
+    <li>Will timeout: {{ object.get_timeout }} (UTC)</li>
+    {% if object.send_notify_mail%}
+    <li>Last status change: {{object.simulation_last_update_time}}</li>
+    <li>All status changes: <code>{{object.get_state_times}}</code></li>
+    <li>Notifications to {{object.notification_mail_address}}</li>
+    {% else %}
+    <li>No notifications enabled</li>
+    {% endif %}
+    {% if object.handled_by %}
+    <li>Simulation server: {{ object.handled_by }}</li>
+    {% endif %}
+    {% if object.shared_link %}
+    <li><a href="{{object.shared_link}}" target="_blank">Download results</a></li>
+    {% endif %}
+</ul>
+
+{% if object.meta_full %}
+<h2 class="display-5">Simulation Meta Data</h2>
+<ul>
+    <li>
+        <label for="sim_percentage">
+            Simulation Percentage: {{ object.get_meta.sim_completed_perc }}&percnt;
+        </label>
+        <progress id="sim_percentage" value="{{ object.get_meta.sim_completed_perc }}" max="100">
+            {{ object.get_meta.sim_completed_perc }}&percnt;
+        </progress>
+    </li>
+    <li>
+        <label for="res_percentage">
+            Result Processing Percentage: {{ object.get_meta.results_completed_perc }}&percnt;
+        </label>
+        <progress id="res_percentage" value="{{ object.get_meta.results_completed_perc }}" max="100">
+            {{ object.get_meta.results_completed_perc }}&percnt;
+        </progress>
+    </li>
+
+    <li>Current state: <code>{{ object.get_meta.current_state }}</code></li>
+    <li>Simulation start time: {{ object.get_meta.start_time_str }}</li>
+    <li>Total simulation time so far: {{ object.get_sim_runtime }}</li>
+
+    <li>Resource usage:
+        <ul>
+            <li>Simulation: Peak RAM usage: {{ object.get_meta.peak_sim_ram_usage|filesizeformat }}</li>
+            <li>Results: Peak RAM usage: {{ object.get_meta.peak_results_ram_usage|filesizeformat }}</li>
+            <li>Peak disk usage: {{ object.get_meta.peak_disk_usage|filesizeformat }}</li>
+            {% if object.get_total_events %}
+                <li>Total number of events: {{object.get_total_events}}</li>
+            {% endif %}
+        </ul>
+    </li>
+
+
+</ul>
+{% endif %}
+
+<h2 class="display-5">omnetpp.ini</h2>
+<p>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCode" aria-expanded="false" aria-controls="collapseCode">
+      Show / hide omnetpp.ini
+  </button>
+</p>
+<div class="collapse" id="collapseCode">
+    <code>
+        {{object.omnetppini|linebreaks|safe}}
+    </code>
+</div>
+
+{% if object.meta_full %}
+
+<h2 class="display-5">Raw meta data</h2>
+<p>
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseMeta" aria-expanded="false" aria-controls="collapseMeta">
+      Show / hide full meta data
+  </button>
+</p>
+<div class="collapse" id="collapseMeta">
+    <code>
+        {{object.meta_full|linebreaks|safe}}
+    </code>
+</div>
+
+
+
+{% endif %}
+
+{% if object.simulation_error%}
+
+<h2 class="display-5">Simulation error</h2>
+<code>
+    {{object.simulation_error|linebreaks|safe}}
+</code>
+{% endif %}
+
+{% if object.job_error%}
+
+<h2 class="display-5">Job execution error</h2>
+<code>
+    {{object.job_error|linebreaks|safe}}
+</code>
+{% endif %}
+
+
+{% endblock %}
