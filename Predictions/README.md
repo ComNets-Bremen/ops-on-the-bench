@@ -36,16 +36,16 @@ This project requires **Python** and the following Python libraries installed:
 - [JSON](https://docs.python.org/3/library/json.html)
 - [rq](https://python-rq.org/)
 
-All the required dependencies can found [here](./OOTB/OOTB_DjangoModel/requirements.txt).
+All the required dependencies can found [here](./model/requirements.txt).
 
 You will also need to have software installed to run and execute a [Jupyter Notebook](http://jupyter.org/install.html).
 If you do not have Python installed yet, it is highly recommended that you run and execute on [Google Colab](https://colab.research.google.com/), which already has most of the above packages included already.
 
 **Data Generation**
 
-The data used for building the model in this project is obtained by performing simulations on OOTB tool. Once the required number of simulations are performed the user can also get these simulation results from the ‘Collect Simulation Data’ tab in the OOTB in JSON format. And the required data related to the simulation parameters can be extracted using the [DataExtraction.py](./OOTB/SourceCode/DataExtraction.py)
+The data used for building the model in this project is obtained by performing simulations on OOTB tool. Once the required number of simulations are performed the user can also get these simulation results from the ‘Collect Simulation Data’ tab in the OOTB in JSON format. And the required data related to the simulation parameters can be extracted using the [DataExtraction.py](./model/Source code/DataExtraction.py)
 
-The dataset used for the training the models in this project is available in the [Dataset.csv](./OOTB/Dataset/Data_27_02_2023.csv) folder and the preprocessing steps performed on the dataset is availble at [DataPreProcessing.py](./OOTB/SourceCode/Data_PreProcessing.py)
+The dataset used for the training the models in this project is available in the [Dataset.csv](./model/Dataset/Dataset.csv) folder and the preprocessing steps performed on the dataset is availble at [DataPreProcessing.py](./OOTB/SourceCode/Data_PreProcessing.py)
 
 **Features**
 
@@ -69,9 +69,9 @@ The dataset used for the training the models in this project is available in the
  
 **Predictive Models**
 
- **[Averaging Regressor](./OOTB/SourceCode/Model_AveragingRegressor.py)**
+ **[Averaging Regressor](./model/Source code/Model_AveragingRegressor.py)**
  
- This is a custom estimator model thath utilizes three different regression algorithms and averages their outcomes. This results in better stability and perfromance of the model in situations of smaller dataset. The three differnt algorithms used in this custom estimator are Gradient Boost Regressor, lightGBM regressor and XGBoost regressor.
+ This is a custom estimator model thath utilizes three different regression algorithms and averages their outcomes. This results in better stability and perfromance of the model in situations of smaller dataset. The three differnt algorithms used in this custom estimator are Gradient Boost Regressor, Random Forest regressor and XGBoost regressor.
  
 [Gradient Boosting Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html) is a type of machine learning model used for regression problems. It is an ensemble learning algorithm that combines multiple weak models to create a strong predictive model. The main idea behind Gradient Boosting is to fit a regression model to the residuals of the previous model. This way, each new tree corrects the errors of the previous ones, leading to a more accurate model. It is a popular algorithm due to its high predictive accuracy and robustness to outliers.
 
@@ -82,7 +82,7 @@ The dataset used for the training the models in this project is available in the
 
 **Run (Inference)**
 
-Once after the dataset is built we perform one-hot encoding for the categorical features. Then the data is transformed accordingly to reduce the skewness in the independent and dependent variables, many transformation techniques like boxcox, sqrt, log, lognorm etc., are available and finally the data is standardized to bring the features under same scale and center their mean values. The colab [notebook](./OOTB/SourceCode/OOTB_Inference.ipynb) can be used to have a glance at the entire procedure starting from data extraction to finally saving the model.
+Once after the dataset is built we perform one-hot encoding for the categorical features. Then the data is transformed accordingly to reduce the skewness in the independent and dependent variables, many transformation techniques like boxcox, sqrt, log, lognorm etc., are available and finally the data is standardized to bring the features under same scale and center their mean values.
 
 **Save the Model**
 
@@ -96,18 +96,30 @@ OOTB uses the containerisation mechanism offered by Docker to host Linux based i
 
 **Model Deployment in Django Environment**
 
-Respective changes are made to views.py in the NewSimWizard class by adding a predict a method that takes in the uploaded configuration file and the selected run configuration. Then parsing of the configuration file to extract required parameters is done and predictions are displayed. To display the predicted results of the simulation minor chnages were made to the exisitng template by creating a form as a the third step.
+Respective changes are made to views.py in the [NewSimWizard](./manager/omnetppManager/views.py#L573) class by adding a predict a method that takes in the uploaded configuration file and the selected run configuration. Then parsing of the configuration file to extract required parameters is done and predictions are displayed. To display the predicted results of the simulation minor chnages were made to the exisitng template by creating a form as a the third step. Also the prediction values get saved in the sqlite simulation model as four different fields are added as shown [here](./manager/omnetppManager/models.py#L140)
 
-The instances of models and scaling functions are unpickled using the Python's pickle in the Django views.py file, as can be seen [here](./OOTB/OOTB_DjangoModel/OOTB/views.py#L167) and are used to predict the target resources. As the trained models are custom estimators, their implementation is added to the Django in the manage.py file before the main method as can be seen [here](./OOTB/OOTB_DjangoModel/manage.py#L22). This makes the Django aware of this to create instances of these custom estimators.
+The instances of models and scaling functions are unpickled using the Python's pickle in the Django views.py file, as can be seen [here](./manager/omnetppManager/views.py#L790) and are used to predict the target resources. As the trained models are custom estimators, their implementation is added to the Django in the manage.py file before the main method as can be seen [here](./manager/manage.py#L21). This makes the Django aware of this to create instances of these custom estimators.
 
 **Enabling Cronjob to Update Redis Queue**
 
-For the purpose of having an efficient mechanism to handle simulation jobs on redis queue such that simulation will have enough resources on the server required for its execution and gets picked up by the worker on that server. To enable this a python script was written which contains commands to retrieve server resource information, calculate the total resources used by the ongoing simulations and then finds the avaiable respources on the server. Then this information is used to shuffle the redis queue accordingly to keep the next suitable queued job at the front. The procedure followed for these steps can be found in this Python script. And this script has to run automatically as a cronjob.
+For the purpose of having an efficient mechanism to handle simulation jobs on redis queue such that simulation will have enough resources on the server required for its execution and gets picked up by the worker on that server. To enable this a python script was written which contains commands to retrieve server resource information, calculate the total resources used by the ongoing simulations and then finds the avaiable respources on the server. Then this information is used to shuffle the redis queue accordingly to keep the next suitable queued job at the front. The procedure followed for these steps can be found in [this](./manager/omnetppManager/queueUpdater.py) Python script. 
 
+Do the following to create the cron job.
+
+  - Edit crontab by running,
+
+   ```bash
+   crontab -e
+   ```
+
+  - Insert the following entry in the Cron file. /.../ refers to where OOTB is installed.
+
+  ```bash
+  * * * * * /.../python3 /.../ops-on-the-bench/manager/omnetppManager/queueUpdater.py
+  ```
+
+  The above first `/.../` refers to where Python is installed and the second '/.../' referes to the location of OOTB.
+  
 **Project Summary**
 
-In this work, we've taken some of the simulations parameters for predicitng 4 target variables. And the range of values for the parameter 'NumNodes' are from 10 to 3600 that includes simulations with and without trace files i.e., BONN and SWIM mobility simulations. Considering the variablity and size of the dataset available, tree based algorithms are used for building the predictive models and neural network models are used to attain the capability of extrapolation which the tree based models lack in general.
-
-## Future Scope
-
-The work can be extended by increasing the size of the dataset which helps in figuring out more complex patterns in the data.
+In this work, we've taken some of the simulations parameters for predicitng 4 target variables. And the range of values for one of the feature parameter 'NumNodes' are from 10 to 3600 that includes simulations with and without trace files i.e., BONN and SWIM mobility simulations. Considering the variablity and size of the dataset available, a stacking regresor model is used which averages the predictions of different tree based algorithms. Also 'queueUpdater.py' script has been executed as a cronjob to shuffel the order of jobs in the redis queue based on their resource requirement.
