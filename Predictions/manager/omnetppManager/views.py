@@ -40,6 +40,7 @@ from rq import Queue
 from rq.job import Job
 from redis import Redis
 from rq.command import send_stop_job_command
+from rq.serializers import DefaultSerializer,JSONSerializer
 
 import configparser
 
@@ -68,6 +69,7 @@ from sklearn.base import BaseEstimator, TransformerMixin,RegressorMixin,clone
 #LeakyReLU = LeakyReLU(alpha=0.1)
 import pickle
 import warnings
+import requests
 warnings.filterwarnings('ignore')
 
 
@@ -407,6 +409,7 @@ def job_status(request):
 # TODO: Increase security?
 def manage_queues(request, output_format="json"):
 
+    sync_simulations2()
     return_values = sync_simulations()
 
     if output_format == "json":
@@ -660,11 +663,67 @@ class NewSimWizard(SessionWizardView):
         if self.steps.step1 == 3:       
         #    r_temp = get_redis_conn()       
         #    try:
+            url2 = "http://192.168.142.128:8000/omnetppManager/get-server-config/"
+    
+            headers = {'HTTP-X-HEADER-SERVER-ID':'uranus', 'HTTP-X-HEADER-TOKEN':'8103487f-9eb4-49e8-918d-a3d31bad2020'}
+					
+            response2 = requests.get(url2,headers=headers)
+    
+            if response2.status_code == 200:
+                servdata = response2.json()
+                #print(type(servdata))
+            else:
+                print("No Server Content was read")
+                
+            dicts = {}
+            for key,value in servdata.items():
+                max_ram = 0
+                max_disk = 0
+                
+                disk = {}
+                li = []
+            
+                for dic in value:
+                    for k,v in dic.items():
+                        li.append(v)
+                    
+                for i in range(len(li)):
+                    if li[i]=='max_ram':
+                        max_ram = li[i+1]
+                    elif li[i]=='max_disk_space':
+                        max_disk = li[i+1]
+                    
+                    disk['max_ram'] = max_ram
+                    disk['max_disk_space'] = max_disk
+                    dicts[key] = disk
+                    
+            for key,value in dicts.items():
+                server = key
+                Tm = int(value['max_ram'])
+                Tds = int(value['max_disk_space'])
+                break
+                
+            Tm = Tm*1e-9
+            Tds = Tds*1e-9
+                
         #        server_contents = r_temp.lrange('server_resource', 0, -1)
         #        server_dict = [json.loads(json_dict) for json_dict in server_contents]           
         #        Tds = server_dict[0]["Total_Disk_Space"]
         #        Tm = server_dict[0]["Total_Memory"]/1024
-        #        context.update({"Total_Server_Resources":str(Tds)+" GB of Disk"+" and "+str(round(Tm,2))+" GB of RAM"})
+            context.update({"Total_Server_Resources":str(round(Tds,2))+" GB of Disk"+" and "+str(round(Tm,2))+" GB of RAM"})
+            
+            run_name = self.get_cleaned_data_for_step("1")["simulation_name"]
+            preds = self.predict(self.Gomnetppini,str(run_name))
+            
+            pred_disk = round(preds[0]*1e-9,2)
+            pred_ram = max(round(preds[1]*1e-9,2),round(preds[2]*1e-9,2))
+            
+            if pred_disk>=Tds or pred_ram>=Tm:
+                context.update({"recommendation":"Resources required by the simulation exceeds maximum server resources. Reconfigure."})
+            elif pred_disk>Tds*0.9 or pred_ram>Tm*0.9:
+                context.update({"recommendation":"Resources required by the simulation use 90% of maximum server resources. Try to Reconfigure."})
+            else:
+                context.update({"recommendation":"Resources required are less than maximum server resources."})
         #    except:
         #        context.update({"Total_Server_Resources":"No Data Available"})
         #    r_temp.close()         
@@ -688,11 +747,12 @@ class NewSimWizard(SessionWizardView):
                 omnetppini = files[file].read().decode("utf-8")
                 runconfig = str(cleaned_data["simulation_name"])
             
-            print("Inside Done",omnetppini,runconfig)    
+            #print("Inside Done",omnetppini,runconfig)    
             predictions = self.predict(omnetppini,runconfig)
             
             r = get_redis_conn()
-            q = Queue(connection=r)
+            #q = Queue(connection=r)
+            q = Queue('secondary', connection=r)
 
             # print(cleaned_data)
             # print("User", self.request.user)
@@ -768,11 +828,11 @@ class NewSimWizard(SessionWizardView):
                     Predicted_Time = round(predictions[3],2),
                     )
                     
-            pred_dict = {"simulation_id" : job.id,
-            		"pred_peak_disk_usage" : round(predictions[0]*1e-9,2),
-                    "pred_peak_RAM_simulation" : round(predictions[1]*1e-9,2),
-                    "pred_peak_RAM_results" : round(predictions[2]*1e-9,2),
-                    "pred_time_taken" : round(predictions[3],2)}
+            #pred_dict = {"simulation_id" : job.id,
+            		#"pred_peak_disk_usage" : round(predictions[0]*1e-9,2),
+                    #"pred_peak_RAM_simulation" : round(predictions[1]*1e-9,2),
+                    #"pred_peak_RAM_results" : round(predictions[2]*1e-9,2),
+                    #"pred_time_taken" : round(predictions[3],2)}
             
             
             #pred_dict_str = json.dumps(pred_dict)
@@ -782,113 +842,221 @@ class NewSimWizard(SessionWizardView):
             simulation.save()
 
             # Make sure the simulation status in the db is up to date
+            sync_simulations2()
             sync_simulations()	
         # Redirect to detail view for simulation
         return redirect(simulation.get_absolute_url())
         #return HttpResponse("Predictions are made")
     
     def predict(self,Gomnetppini,Grunconfig):
-        print("Inside Predict")
-        omnet = re.compile(Grunconfig + r'[\]\n\#\s\w\*\.=\(\)\"\,\-\/]+').findall(Gomnetppini)
-        allParams = re.findall(r'\*\*\.([a-zA-Z\.]+) = ([A-Za-z0-9\"\.\/\-]+)',str(omnet))
-        dictParams = dict(allParams)
+        print("Inside Predictsssssss")
+        configs = configparser.ConfigParser()
+        
+        configs.read_string(Gomnetppini)
+        
+        items = configs.items(Grunconfig)
+        
+        dictParams = {}
+        for key,value in items:
+            k = key.replace('**.','')
+            v = value.replace('"','')
+            if '#' in v:
+                v = v.split('#')[0].strip()
+            dictParams[k] = v
+    
+        #omnet = re.compile(Grunconfig + r'[\]\n\#\s\w\*\.=\(\)\"\,\-\/]+').findall(Gomnetppini)
+        #allParams = re.findall(r'\*\*\.([a-zA-Z\.]+) = ([A-Za-z0-9\"\.\/\-]+)',str(omnet))
+        #dictParams = dict(allParams)
+        
         df1 = pd.DataFrame(dictParams,index=[0])
         df1.columns = df1.columns.str.replace('.','_',regex=False)
-        Numericals = ['app_dataGenerationInterval','constraintAreaMaxX','constraintAreaMaxY','mobility_noOfLocations','mobility_Hosts',
-                      'mobility_speed','numNodes','app_dataSizeInBytes','forwarding_maximumCacheSize']
-        Categoricals = ['applicationLayer','forwardingLayer','linkLayer','mobilityType']
-        df = pd.concat([df1[Numericals],df1[Categoricals]],axis=1)
-        df = df.fillna('0')
+        #print(df1.head())
         
-        fwd = []
-        app = []
-        mob = []
-        link = []
-        Id = []
+        Numericals = ['app_datagenerationinterval','numnodes','app_datasizeinbytes']
         
-        if df['forwardingLayer'].values[0].replace('"','') == "KEpidemicRoutingLayer":
-            fwd = [0,0,0,0,0]
-        elif df['forwardingLayer'].values[0].replace('"','') == "KKeetchiLayer":
-            fwd = [1,0,0,0,0]
-        elif df['forwardingLayer'].values[0].replace('"','') == "KOptimumDelayRoutingLayer":
-            fwd = [0,1,0,0,0]
-        elif df['forwardingLayer'].values[0].replace('"','') == "KProphetRoutingLayer":
-            fwd = [0,0,1,0,0]
-        elif df['forwardingLayer'].values[0].replace('"','') == "KRRSLayer":
-            fwd = [0,0,0,1,0]
-        # elif df['forwardingLayer'].values[0] == "KSpraywaitRoutingLayer":
-        else:
-            fwd = [0,0,0,0,1]
+        Categoricals = ['applicationlayer','forwardinglayer','linklayer']
         
-        if df['mobilityType'].values[0].replace('"','') =="BonnMotionMobility":
-            mob = [0,0]
-        elif df['mobilityType'].values[0].replace('"','') =="SWIMMobility":
-            mob = [1,0]
-        else:
-            mob = [0,1]
-            
-        if df['applicationLayer'].values[0].replace('"','') =="KHeraldApp":
-            app = [0,0]
-        elif df['applicationLayer'].values[0].replace('"','') =="KHeraldAppForDifferentiatedTraffic":
-            app = [1,0]
-        else:
-            app = [0,1]
-            
-        if df['linkLayer'].values[0].replace('"','') =="KWirelessInterface":
-            link = [0]
-        else:
-            link = [1]
-            
-        if 'mobility_nodeId' in dictParams:
-            Id = [1]
-        else:
-            Id = [0]
-            
-        df['app_dataGenerationInterval'] =  df.app_dataGenerationInterval.apply(lambda x : x.replace('s','') if 's' in x else x)
-        df['constraintAreaMaxX'] =  df.constraintAreaMaxX.apply(lambda x : x.replace('m','') if 'm' in x else x)
-        df['constraintAreaMaxY'] =  df.constraintAreaMaxY.apply(lambda x : x.replace('m','') if 'm' in x else x)
-        df['mobility_speed'] =  df.mobility_speed.apply(lambda x : x.replace('mps','') if 'mps' in x else x)
+        SWIMs = ['constraintareamaxx','constraintareamaxy','mobility_nooflocations','mobility_hosts', 'mobility_speed']
         
-        def for_maxCache(cache):
-            if 'bytes' in cache:
-                return cache.replace('bytes','')
-            elif 'byte' in cache:
-                return cache.replace('byte','')
+        try:
+            if 'mobilitytype' in dictParams:
+            
+                if df1['mobilitytype'].values[0] == "BonnMotionMobility":
+                    print("BONN")
+                    df = pd.concat([df1[Numericals],df1[Categoricals]],axis=1)
+                    df['constraintareamaxx'] = "0m"
+                    df['constraintareamaxy'] = "0m"
+                    df['mobility_nooflocations'] = 0
+                    df['mobility_hosts'] = 0
+                    df['mobility_speed'] = "0mps"
+                    print("BONN")
+                
+                elif df1['mobilitytype'].values[0] =="SWIMMobility":
+                    df = pd.concat([df1[Numericals],df1[Categoricals],df1[SWIMs]],axis=1)
+                    df = df.fillna('0')
+                    print("SWIM")
+                
             else:
-                return cache
+                print("Trace")
+                df = pd.concat([df1[Numericals],df1[Categoricals]],axis=1)
+                df['constraintareamaxx'] = "0m"
+                df['constraintareamaxy'] = "0m"
+                df['mobility_nooflocations'] = 0
+                df['mobility_hosts'] = 0
+                df['mobility_speed'] = "0mps"
+                print("TRACE")
+                
+                
+            
+            fwd = []
+            app = []
+            mob = []
+            link = []
+            Id = []
+            
+		    
+		    # Converting Categoricals to OneHots
+            if df['forwardinglayer'].values[0].replace('"','') == "KEpidemicRoutingLayer":
+                fwd = [0,0,0,0,0]
+            elif df['forwardinglayer'].values[0].replace('"','') == "KKeetchiLayer":
+                fwd = [1,0,0,0,0]
+            elif df['forwardinglayer'].values[0].replace('"','') == "KOptimumDelayRoutingLayer":
+                fwd = [0,1,0,0,0]
+            elif df['forwardinglayer'].values[0].replace('"','') == "KProphetRoutingLayer":
+                fwd = [0,0,1,0,0]
+            elif df['forwardinglayer'].values[0].replace('"','') == "KRRSLayer":
+                fwd = [0,0,0,1,0]
+		    # elif df['forwardingLayer'].values[0] == "KSpraywaitRoutingLayer":
+            else:
+                fwd = [0,0,0,0,1]
+            print("Forwarding Selected")
+            
+            
+		    
+            if 'mobilityType' in dictParams:
+                if df1['mobilitytype'].values[0].replace('"','') =="BonnMotionMobility":
+                    mob = [0,0]
+                elif df1['mobilitytype'].values[0].replace('"','') =="SWIMMobility":
+                    mob = [1,0]
+            else:
+                mob = [0,1]
+            print("mobility Selecetd")
+            
+		        
+            
+            if df['applicationlayer'].values[0].replace('"','') =="KHeraldApp":
+                app = [0,0]
+            elif df['applicationlayer'].values[0].replace('"','') =="KHeraldAppForDifferentiatedTraffic":
+                app = [1,0]
+            else:
+                app = [0,1]
+            print("Application Selected")
+            
+		          
+		        
+            if df['linklayer'].values[0].replace('"','') =="KWirelessInterface":
+                link = [0]
+            else:
+                link = [1]
+            print("Link",link)
+            
+		    
+            if 'mobility.nodeid' in dictParams:
+                Id = [1]
+            else:
+                Id = [0]
+            
+            print("Mobility node ID Selecetd")
+		    
+		     
+		    #Preprocessing Numerical Features
+            df['app_datagenerationinterval'] =  df.app_datagenerationinterval.apply(lambda x : x.replace('s','') if 's' in x else x)
+            print("app_datagenerationinterval Selecetd")
+            
+            df['constraintareamaxx'] =  df.constraintareamaxx.apply(lambda x : x.replace('m','') if 'm' in x else x)
+            print("constraintareamaxx Selecetd")
+            
+            df['constraintareamaxy'] =  df.constraintareamaxy.apply(lambda x : x.replace('m','') if 'm' in x else x)
+            print("constraintareamaxy Selecetd")
+            
+            df['mobility_speed'] =  df.mobility_speed.apply(lambda x : x.replace('mps','') if 'mps' in x else x)
+            print("mobility_speed Selecetd")
+            
         
-        df['forwarding_maximumCacheSize'] =  df.forwarding_maximumCacheSize.apply(lambda x : for_maxCache(x))
+            def for_maxCache(cache):
+                if 'bytes' in cache:
+                    return cache.replace('bytes','')
+                elif 'byte' in cache:
+                    return cache.replace('byte','')
+                else:
+                    return cache
+                    
+            if 'forwarding_maximumcachesize' in dictParams:
+                df['forwarding_maximumcachesize'] =  df1.forwarding_maximumcachesize.apply(lambda x : for_maxCache(x))
+            else:
+                df['forwarding_maximumcachesize'] = 0
+            print("forwarding_maximumcachesize Selecetd")
+            
+		    
+		    
+		    #Preparing Input Data For Prediction
+            ins1 = [float(boxcox1p(float(df.numnodes.values[0]),0.20)) , float(boxcox1p(float(df['app_datagenerationinterval'].values[0]),0.20)) , float(boxcox1p(float(df['app_datasizeinbytes'].values[0]),0.20)) ,  float(boxcox1p(float(df['forwarding_maximumcachesize'].values[0]),0.20)) ] + [float(boxcox1p(Id,0.20))]
+		    
+            ins2 = [float(df['constraintareamaxx'].values[0]), float(df['constraintareamaxy'].values[0]), float(df["mobility_nooflocations"].values[0]), float(df["mobility_hosts"].values[0]),  float(boxcox1p(float(df["mobility_speed"].values[0]),0.20)) ] + app + fwd + link + mob
+		    
+            ins = ins1 + ins2
+            insf = np.array(ins).reshape(1,-1)
+            
         
-        df_list = df[Numericals].apply(pd.to_numeric).values
+		    #FOR OLD MODELs
+		    #df_list = df[Numericals].apply(pd.to_numeric).values
+		    #input = np.concatenate([df_list,np.array([Id + app + fwd + link + mob])],axis=1)
+		    #input_df = pd.DataFrame(input)
         
-        input = np.concatenate([df_list,np.array([Id + app + fwd + link + mob])],axis=1)
-        input_df = pd.DataFrame(input)
-        bc_input = boxcox1p(input_df,0.20)
+            input_df = pd.DataFrame(insf)
+		    
+		    #bc_input = boxcox1p(input_df,0.20)
+            bc_input = input_df
+		    
+		    # Loading Pickles
+		    #fs = open(r'./omnetppManager/pickles/AveragingRegressor/CharmEstFeatureScalar.pkl','rb')
+            fs = open(r'./omnetppManager/pickles/AveragingRegressor/D_FeatScalar.pkl','rb')
+            fscalar = pickle.load(fs)
+            fs.close()
+            
+            scaled_input = fscalar.transform(bc_input)
+            print("Scaled Input ",scaled_input)
+		    
+		    
+		    #mod1 = open(r'./omnetppManager/pickles/AveragingRegressor/CharmAvgReg.pkl','rb')
+            mod1 = open(r'./omnetppManager/pickles/AveragingRegressor/D_AvgReg3.pkl','rb')
+            model1 = pickle.load(mod1)
+            mod1.close()
+            print("Model Predicted")
+
+            ts = open(r'./omnetppManager/pickles/AveragingRegressor/D_TargScalar.pkl','rb')
+		    #ts = open(r'./omnetppManager/pickles/AveragingRegressor/CharmEstTargetScalar.pkl','rb')
+            tscalar = pickle.load(ts)
+            ts.close()
+            print("Scaled Back")
         
-        fs = open(r'./omnetppManager/pickles/AveragingRegressor/CharmEstFeatureScalar.pkl','rb')
-        fscalar = pickle.load(fs)
-        fs.close()
+
+		    # Averaging Regressor Prediction
+            predictions = model1.predict(scaled_input)
+		    
+		    #print(type(predictions))
+            print("PREDICTIONS ",predictions)
+            predictions = tscalar.inverse_transform(pd.DataFrame(predictions).transpose())
+		    
+            predictions = np.squeeze(inv_boxcox1p(predictions,0.20))
+		    
+        except:
+            print("General Config Selected")
+            predictions = np.zeros(4) 
         
-        scaled_input = fscalar.transform(bc_input)
-        
-        mod1 = open(r'./omnetppManager/pickles/AveragingRegressor/CharmAvgReg.pkl','rb')
-        model1 = pickle.load(mod1)
-        mod1.close()
-        
-        ts = open(r'./omnetppManager/pickles/AveragingRegressor/CharmEstTargetScalar.pkl','rb')
-        tscalar = pickle.load(ts)
-        ts.close()
-        
-        # Averaging Regressor
-        predictions = model1.predict(scaled_input)
-        
-        predictions = tscalar.inverse_transform(pd.DataFrame(predictions).transpose())
-        
-        predictions = np.squeeze(inv_boxcox1p(predictions,0.20))
-        
-        print(omnet)
-        print(allParams)
-        print("PREDICTIONS : ", predictions)
+        #print(omnet)
+        #print(allParams)
+        #print("PREDICTIONS : ", predictions.shape)
         return predictions
 
 ## Start a new simulation using the form wizard module
@@ -1287,7 +1455,78 @@ def get_redis_conn():
 
 # Sync sim status with queue / sim database
 def sync_simulations(redis_conn=get_redis_conn()):
+    #print("Sync")
     q = Queue(connection=get_redis_conn())
+
+    finished_jobs = len(q.finished_job_registry)
+    failed_jobs = len(q.failed_job_registry)
+
+    updated_jobs = 0
+    
+    for j in q.finished_job_registry.get_job_ids():
+        job = q.fetch_job(j)
+        store_sim_results(j, job.meta, job.result, job.exc_info, job=job)
+        q.finished_job_registry.remove(job)
+
+        update_sim_status(j, Simulation.Status.FINISHED)
+
+    for j in q.failed_job_registry.get_job_ids():
+        job = q.fetch_job(j)
+
+        store_sim_results(j, job.meta, job.result, job.exc_info, job=job)
+        q.failed_job_registry.remove(job)
+        try:
+            sim = Simulation.objects.get(simulation_id=j)
+            # do not update aborted sim to failed
+            if sim.status == 8:
+                pass
+            else:
+                # check if simulation was terminated by the server
+                sim.terminated = 1 #NOT_TERMINATED
+                server_termination_reasons = ["The simulation job exceeded the maximum time limit", "The simulation job exceeded the maximum disk space limit",
+                "The simulation exceeded the maximum RAM limit", "The results parsing exceeded the maximum RAM limit"]
+                for reason in server_termination_reasons:
+                    if reason in sim.simulation_error:
+                        if reason == server_termination_reasons[0]:
+                            sim.terminated = 3 #TERMINATED_EVENTS
+                        elif reason == server_termination_reasons[1]:
+                            sim.terminated = 6 #TERMINATED_DISK
+                        else:
+                            sim.terminated = 5 #TERMINATED_RAM
+                update_sim_status(j, Simulation.Status.FAILED, sim.terminated)
+        except Simulation.DoesNotExist:
+            print("Simulation does not exist")
+            sim = None
+
+    # update job status
+
+    for j in q.get_job_ids():
+        if update_sim_status(j, Simulation.Status.QUEUED):
+            updated_jobs += 1
+
+    for j in q.started_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.STARTED):
+            updated_jobs += 1
+        # update meta
+        store_sim_results(j, q.fetch_job(j).meta, job=q.fetch_job(j))
+
+    for j in q.deferred_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.DEFERRED):
+            updated_jobs += 1
+
+    for j in q.scheduled_job_registry.get_job_ids():
+        if update_sim_status(j, Simulation.Status.SCHEDULED):
+            updated_jobs += 1
+  
+    return {
+                "failed_jobs" : failed_jobs,
+                "finished_jobs" : finished_jobs,
+                "updated_jobs" : updated_jobs,
+            }
+            
+# Sync sim status with queue / sim database
+def sync_simulations2(redis_conn=get_redis_conn()):
+    q = Queue('secondary',connection=get_redis_conn())
 
     finished_jobs = len(q.finished_job_registry)
     failed_jobs = len(q.failed_job_registry)
@@ -1348,13 +1587,14 @@ def sync_simulations(redis_conn=get_redis_conn()):
     for j in q.scheduled_job_registry.get_job_ids():
         if update_sim_status(j, Simulation.Status.SCHEDULED):
             updated_jobs += 1
-
-
+  
     return {
                 "failed_jobs" : failed_jobs,
                 "finished_jobs" : finished_jobs,
                 "updated_jobs" : updated_jobs,
             }
+            
+
 
 # Sim helper
 
@@ -1385,21 +1625,42 @@ def createOmnetppFromForm(form_list, form_dict):
 
 ## Simulations Details
 def get_simulation_details(request):
+
+    sim_token = request.headers.get("HTTP-X-HEADER-ID")
+    
     json_response = {}
     
-    for sim in Simulation.objects.all():
-        print(str(sim))
-        s = {}
-        s['sim_id'] = sim.simulation_id
-        sid = str(sim.simulation_id)
-        s["title"] = sim.title
-        s["exec_server"] = sim.handled_by
-        s["simulation_server"] = sim.sim_server
-        s["predicted_peak_disk"] = sim.Predicted_DiskSpace
-        s["predicted_peak_RAM_Sim"] = sim.Predicted_RAM_Sim
-        s["predicted_peak_RAM_Res"] = sim.Predicted_RAM_Res
-        s["predicted_total_time"] = sim.Predicted_Time
-        json_response[sid] = s
+    if str(sim_token) == '123456789':
+
+        for sim in Simulation.objects.all():
+            print(str(sim))
+            s = {}
+            s['sim_id'] = sim.simulation_id
+            sid = str(sim.simulation_id)
+            s["title"] = sim.title
+            s["exec_server"] = sim.handled_by
+            s["simulation_server"] = sim.sim_server
+            s["predicted_peak_disk"] = sim.Predicted_DiskSpace
+            s["predicted_peak_RAM_Sim"] = sim.Predicted_RAM_Sim
+            s["predicted_peak_RAM_Res"] = sim.Predicted_RAM_Res
+            s["predicted_total_time"] = sim.Predicted_Time
+            json_response[sid] = s
+            
+    elif request.user.is_authenticated:
+        
+        for sim in Simulation.objects.all():
+            print(str(sim))
+            s = {}
+            s['sim_id'] = sim.simulation_id
+            sid = str(sim.simulation_id)
+            s["title"] = sim.title
+            s["exec_server"] = sim.handled_by
+            s["simulation_server"] = sim.sim_server
+            s["predicted_peak_disk"] = sim.Predicted_DiskSpace
+            s["predicted_peak_RAM_Sim"] = sim.Predicted_RAM_Sim
+            s["predicted_peak_RAM_Res"] = sim.Predicted_RAM_Res
+            s["predicted_total_time"] = sim.Predicted_Time
+            json_response[sid] = s
 
     # If nothing fits: empty json object
     return JsonResponse(json_response)
@@ -1443,7 +1704,7 @@ def get_server_resources(request):
 def get_server_config(request):
     server_token = request.headers.get("HTTP-X-HEADER-TOKEN")
     server_id = request.headers.get("HTTP-X-HEADER-SERVER-ID")
-
+    #print("==========",server_token)
     json_response = {}
 
     # Check for the headers

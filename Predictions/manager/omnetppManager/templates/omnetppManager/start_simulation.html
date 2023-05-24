@@ -27,7 +27,10 @@
     </table>
     <br>
     
-
+{% if wizard.steps.step1 == 3%}
+  <h5>Maximum Server Resources <b>{{Total_Server_Resources}}</b>  </h5><br>
+    <h5>Note :  <b>{{recommendation}}</b>  </h5><br>
+{% endif %}
 
     <input type="submit" value="next""/>
 </form>
